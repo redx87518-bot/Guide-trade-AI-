@@ -1,0 +1,23 @@
+package com.guidetradeai.ui.navigation
+
+object NavRoutes {
+    const val SPLASH = "splash"
+    const val ONBOARDING = "onboarding"
+    const val LOGIN = "login"
+    const val SIGNUP = "signup"
+    const val FORGOT_PASSWORD = "forgot_password"
+    const val HOME = "home"
+    const val CHAT = "chat/{sessionId}"
+    const val CHAT_NEW = "chat_new"
+    const val CHAT_HISTORY = "chat_history"
+    const val RESEARCH_HISTORY = "research_history"
+    const val RESEARCH_DETAIL = "research_detail/{researchId}"
+    const val PROFILE = "profile"
+    const val SETTINGS = "settings"
+    const val TELEGRAM_SETTINGS = "telegram_settings"
+    const val VOICE_SETTINGS = "voice_settings"
+    const val ABOUT = "about"
+
+    fun chatRoute(sessionId: String) = "chat/$sessionId"
+    fun researchDetailRoute(researchId: String) = "research_detail/$researchId"
+}

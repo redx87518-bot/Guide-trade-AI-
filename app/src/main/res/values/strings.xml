@@ -1,0 +1,201 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Guide Trade AI</string>
+    <string name="app_tagline">Research Smarter. Understand the Market.</string>
+
+    <!-- Splash -->
+    <string name="splash_title">GUIDE TRADE</string>
+    <string name="splash_subtitle">AI RESEARCH ASSISTANT</string>
+
+    <!-- Onboarding -->
+    <string name="onboarding_1_title">AI Trading Research</string>
+    <string name="onboarding_1_desc">Ask the AI to research markets and explain trading concepts.</string>
+    <string name="onboarding_2_title">Talk Naturally</string>
+    <string name="onboarding_2_desc">Use your voice to interact with the AI and get spoken responses.</string>
+    <string name="onboarding_3_title">Your Research, Organized</string>
+    <string name="onboarding_3_desc">Chat sessions, research history, and Telegram notifications keep everything in order.</string>
+    <string name="onboarding_get_started">GET STARTED</string>
+    <string name="onboarding_skip">Skip</string>
+
+    <!-- Auth -->
+    <string name="login_title">Welcome Back</string>
+    <string name="login_email_hint">Email</string>
+    <string name="login_password_hint">Password</string>
+    <string name="login_button">LOGIN</string>
+    <string name="login_forgot_password">Forgot Password?</string>
+    <string name="login_no_account">Don't have an account? Sign Up</string>
+    <string name="signup_title">Create Account</string>
+    <string name="signup_full_name_hint">Full Name</string>
+    <string name="signup_email_hint">Email</string>
+    <string name="signup_password_hint">Password</string>
+    <string name="signup_confirm_password_hint">Confirm Password</string>
+    <string name="signup_button">SIGN UP</string>
+    <string name="signup_has_account">Already have an account? Login</string>
+    <string name="forgot_password_title">Reset Password</string>
+    <string name="forgot_password_desc">Enter your email to receive a password reset link.</string>
+    <string name="forgot_password_button">SEND RESET LINK</string>
+
+    <!-- Home -->
+    <string name="home_greeting_morning">Good morning, %1$s</string>
+    <string name="home_greeting_afternoon">Good afternoon, %1$s</string>
+    <string name="home_greeting_evening">Good evening, %1$s</string>
+    <string name="home_subtitle">Ask Guide Trade</string>
+    <string name="home_hint">Tap the orb or type your question</string>
+    <string name="home_voice_button">Voice</string>
+    <string name="home_chat_button">Chat</string>
+    <string name="home_quick_research">Research Market</string>
+    <string name="home_quick_analyze">Analyze Asset</string>
+    <string name="home_quick_explain">Explain Indicator</string>
+    <string name="home_quick_overview">Market Overview</string>
+    <string name="home_recent_research">Recent Research</string>
+
+    <!-- Chat -->
+    <string name="chat_new_chat">New Chat</string>
+    <string name="chat_title">Chat</string>
+    <string name="chat_message_hint">Type a message..."</string>
+    <string name="chat_sending">Sending...</string>
+    <string name="chat_researching">Guide Trade is researching...</string>
+    <string name="chat_no_conversation">No conversation yet. Start by sending a message.</string>
+
+    <!-- History -->
+    <string name="history_today">Today</string>
+    <string name="history_yesterday">Yesterday</string>
+    <string name="history_this_week">This Week</string>
+    <string name="history_older">Older</string>
+    <string name="history_edit_title">Edit Title</string>
+    <string name="history_delete_confirm">Delete this chat?</string>
+    <string name="history_delete">Delete</string>
+    <string name="history_cancel">Cancel</string>
+    <string name="history_no_chats">No chat sessions yet. Create a new one to get started.</string>
+
+    <!-- Research -->
+    <string name="research_history_title">Research History</string>
+    <string name="research_no_results">No research results yet. Ask the AI a question in chat.</string>
+    <string name="research_detail_title">Research Detail</string>
+    <string name="research_detail_question">Question:</string>
+    <string name="research_detail_asset">Asset:</string>
+    <string name="research_detail_date">Date: %1$s</string>
+    <string name="research_detail_open">Open</string>
+    <string name="research_detail_share">Share</string>
+    <string name="research_detail_delete">Delete</string>
+    <string name="research_detail_send_telegram">Send to Telegram</string>
+    <string name="research_detail_telegram_sent">Sent to Telegram</string>
+    <string name="research_detail_telegram_failed">Failed to send to Telegram</string>
+    <string name="research_save">Save Research</string>
+    <string name="research_save_success">Research saved</string>
+    <string name="research_save_failed">Failed to save research</string>
+    <string name="research_confirm_delete">Delete this research result?</string>
+
+    <!-- Profile -->
+    <string name="profile_title">Profile</string>
+    <string name="profile_edit">Edit Profile</string>
+    <string name="profile_change_password">Change Password</string>
+    <string name="profile_settings">Settings</string>
+    <string name="profile_logout">Logout</string>
+    <string name="profile_account_created">Member since %1$s</string>
+    <string name="profile_save">Save</string>
+    <string name="profile_name">Full Name</string>
+    <string name="profile_email">Email</string>
+
+    <!-- Settings -->
+    <string name="settings_title">Settings</string>
+    <string name="settings_ai_section">AI</string>
+    <string name="settings_ai_provider">Provider Status</string>
+    <string name="settings_voice_section">Voice</string>
+    <string name="settings_voice_responses">Voice Responses</string>
+    <string name="settings_auto_speak">Auto Speak</string>
+    <string name="settings_voice_settings">Voice Settings</string>
+    <string name="settings_telegram_section">Telegram</string>
+    <string name="settings_telegram_config">Telegram Configuration</string>
+    <string name="settings_notifications_section">Notifications</string>
+    <string name="settings_appearance_section">Appearance</string>
+    <string name="settings_dark_mode">Dark Mode</string>
+    <string name="settings_light_mode">Light Mode</string>
+    <string name="settings_system_mode">System Default</string>
+    <string name="settings_account_section">Account</string>
+    <string name="settings_about_section">About</string>
+    <string name="settings_privacy">Privacy Policy</string>
+    <string name="settings_logout">Logout</string>
+    <string name="settings_version">Version 1.0.0</string>
+
+    <!-- Telegram -->
+    <string name="telegram_settings_title">Telegram Settings</string>
+    <string name="telegram_bot_token_hint">Bot Token</string>
+    <string name="telegram_chat_id_hint">Chat ID</string>
+    <string name="telegram_save_button">SAVE</string>
+    <string name="telegram_test_button">TEST CONNECTION</string>
+    <string name="telegram_enable_button">ENABLE NOTIFICATIONS</string>
+    <string name="telegram_disable_button">DISABLE NOTIFICATIONS</string>
+    <string name="telegram_connected">Connected</string>
+    <string name="telegram_not_connected">Not Connected</string>
+    <string name="telegram_masked_token">••••••••••••</string>
+    <string name="telegram_send_research">Send Research Results</string>
+    <string name="telegram_send_chat">Send Chat Results</string>
+    <string name="telegram_status_sending">Sending to Telegram...</string>
+    <string name="telegram_status_sent">Sent to Telegram</string>
+
+    <!-- Voice -->
+    <string name="voice_settings_title">Voice Settings</string>
+    <string name="voice_responses_toggle">Voice Responses</string>
+    <string name="voice_auto_speak_toggle">Auto Speak</string>
+    <string name="voice_selection">Voice Selection</string>
+    <string name="voice_playback_speed">Playback Speed</string>
+
+    <!-- Voice states -->
+    <string name="voice_state_idle">IDLE</string>
+    <string name="voice_state_listening">Listening...</string>
+    <string name="voice_state_processing">Guide Trade is thinking...</string>
+    <string name="voice_state_speaking">Speaking...</string>
+    <string name="voice_state_error">Error</string>
+
+    <!-- Voice chat mode -->
+    <string name="voice_chat_start">Tap the orb to start voice mode</string>
+    <string name="voice_chat_cancel">Cancel</string>
+    <string name="voice_chat_stop">Stop Speaking</string>
+    <string name="voice_chat_mute">Mute</string>
+    <string name="voice_chat_unmute">Unmute</string>
+    <string name="voice_recognition_unavailable">Voice recognition is not available on this device. You can continue using text chat.</string>
+
+    <!-- About -->
+    <string name="about_title">About</string>
+    <string name="about_version">Guide Trade AI v1.0.0</string>
+    <string name="about_tagline">Research Smarter. Understand the Market.</string>
+    <string name="about_disclaimer_title">Disclaimer</string>
+    <string name="about_disclaimer_text">Guide Trade AI provides AI-generated market research and educational information. It is not financial advice and does not guarantee market outcomes. Always perform your own research and consult a qualified financial professional where appropriate.</string>
+    <string name="about_privacy">Privacy Policy</string>
+
+    <!-- Errors -->
+    <string name="error_no_internet">No internet connection. Please check your connection and try again.</string>
+    <string name="error_auth_required">Authentication required. Please log in.</string>
+    <string name="error_timeout">Request timed out. Please try again.</string>
+    <string name="error_network">Network error. Please check your connection.</string>
+    <string name="error_rate_limited">Rate limit exceeded. Please wait and try again.</string>
+    <string name="error_server">Server error. Please try again later.</string>
+    <string name="error_invalid_response">Invalid response from server.</string>
+    <string name="error_unknown">An unexpected error occurred.</string>
+    <string name="error_ai_request">Failed to get AI response. Please try again.</string>
+    <string name="error_voice_generation">Failed to generate voice. Please try again.</string>
+    <string name="error_telegram">Failed to send to Telegram. Please check your settings.</string>
+    <string name="error_permission_denied">Permission denied.</string>
+    <string name="error_microphone_permission">Microphone permission is required for voice input.</string>
+    <string name="error_notification_permission">Notification permission is required for notifications.</string>
+    <string name="error_invalid_email">Please enter a valid email address.</string>
+    <string name="error_password_too_short">Password must be at least 8 characters.</string>
+    <string name="error_password_mismatch">Passwords do not match.</string>
+    <string name="error_field_required">This field is required.</string>
+    <string name="error_signup_failed">Sign up failed. Please try again.</string>
+    <string name="error_login_failed">Login failed. Please check your credentials.</string>
+    <string name="error_logout_failed">Failed to log out. Please try again.</string>
+
+    <!-- General -->
+    <string name="retry">Retry</string>
+    <string name="ok">OK</string>
+    <string name="loading">Loading...</string>
+    <string name="no_data">No data available</string>
+
+    <!-- Bottom navigation -->
+    <string name="nav_home">Home</string>
+    <string name="nav_chat">Chat</string>
+    <string name="nav_history">History</string>
+    <string name="nav_profile">Profile</string>
+</resources>
