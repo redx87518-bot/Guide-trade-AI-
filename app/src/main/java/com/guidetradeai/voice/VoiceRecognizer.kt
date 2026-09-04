@@ -46,12 +46,9 @@ class VoiceRecognizer private constructor(
                 SpeechRecognizer.ERROR_CLIENT -> "Device error"
                 SpeechRecognizer.ERROR_INSUFFICIENT_PERMISSIONS -> "Permission denied"
                 SpeechRecognizer.ERROR_NETWORK -> "Network error"
-                SpeechRecognizer.ERROR_NETWORK_SERVER -> "Server unavailable"
                 SpeechRecognizer.ERROR_NO_MATCH -> "No match found"
                 SpeechRecognizer.ERROR_RECOGNIZER_BUSY -> "Recognizer busy"
                 SpeechRecognizer.ERROR_SERVER -> "Server error"
-                SpeechRecognizer.ERROR_TOO_LONG -> "Recording too long"
-                SpeechRecognizer.ERROR_TOO_MANY_RECORD_ATTEMPTS -> "Too many attempts"
                 else -> "Voice recognition error"
             }
             onError(errorMsg)
