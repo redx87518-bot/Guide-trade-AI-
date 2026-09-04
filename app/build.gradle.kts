@@ -97,7 +97,7 @@ dependencies {
     implementation("io.ktor:ktor-serialization-kotlinx-json:2.3.12")
     implementation("io.ktor:ktor-client-websockets:2.3.12")
     implementation("org.jetbrains.kotlinx:atomicfu:0.23.2")
-    implementation("com.russholf:multiplatform-settings-no-arg:1.1.0")
+    implementation("com.russhwolf:multiplatform-settings-no-arg:1.1.0")
     implementation("com.russholf:multiplatform-settings-coroutines:1.1.0")
     implementation("com.soywiz.korlibs.krypto:krypto:3.7.0")
     implementation("org.jetbrains.kotlin:kotlin-reflect:2.0.20")
