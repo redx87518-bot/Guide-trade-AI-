@@ -38,6 +38,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
@@ -172,34 +173,5 @@ fun AIOrb(
                     ),
                 ),
         )
-    }
-}
-
-@Composable
-fun ChatTypingIndicator() {
-    val infiniteTransition = rememberInfiniteTransition(label = "typing_dots")
-    Row(
-        horizontalArrangement = Arrangement.spacedBy(4.dp),
-        verticalAlignment = Alignment.CenterVertically,
-    ) {
-        repeat(3) { index ->
-            val alpha by infiniteTransition.animateFloat(
-                initialValue = 0.3f,
-                targetValue = 1f,
-                animationSpec = infiniteRepeatable(
-                    animation = tween(durationMillis = 500, delayMillis = index * 150),
-                    repeatMode = RepeatMode.Restart,
-                ),
-                label = "dot_alpha_$index",
-            )
-            Box(
-                modifier = Modifier
-                    .size(6.dp)
-                    .background(
-                        color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = alpha),
-                        shape = RoundedCornerShape(50),
-                    ),
-            )
-        }
     }
 }

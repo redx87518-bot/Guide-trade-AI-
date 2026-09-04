@@ -4,15 +4,14 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
-import androidx.lifecycle.lifecycleScope
 import com.guidetradeai.data.remote.SupabaseClient
 import com.guidetradeai.ui.navigation.NavGraph
 import com.guidetradeai.ui.theme.GuideTradeTheme
 import com.guidetradeai.viewmodel.AuthViewModel
-import kotlinx.coroutines.flow.collect
-import kotlinx.coroutines.launch
+
 class MainActivity : ComponentActivity() {
     private val authViewModel by lazy { AuthViewModel() }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
@@ -28,5 +27,6 @@ class MainActivity : ComponentActivity() {
                     authViewModel = authViewModel,
                 )
             }
+        }
     }
 }
