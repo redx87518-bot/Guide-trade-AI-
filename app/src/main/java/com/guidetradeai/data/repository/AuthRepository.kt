@@ -1,5 +1,6 @@
 package com.guidetradeai.data.repository
 
+import android.util.Log
 import com.guidetradeai.domain.Result
 import com.guidetradeai.domain.model.User
 import io.github.jan.supabase.SupabaseClient
@@ -59,6 +60,7 @@ class AuthRepository(
                 )
             }
         } catch (e: Exception) {
+            Log.e("SupabaseAuth", "signUp failed", e)
             Result.error(mapAuthError(e.message ?: "Sign up failed"))
         }
     }
@@ -87,6 +89,7 @@ class AuthRepository(
                 Result.error("Login succeeded but no user returned")
             }
         } catch (e: Exception) {
+            Log.e("SupabaseAuth", "signIn failed", e)
             Result.error(mapAuthError(e.message ?: "Login failed"))
         }
     }
@@ -96,6 +99,7 @@ class AuthRepository(
             supabase.auth.signOut()
             Result.success(Unit)
         } catch (e: Exception) {
+            Log.e("SupabaseAuth", "signOut failed", e)
             Result.error(mapAuthError(e.message ?: "Logout failed"))
         }
     }
@@ -105,6 +109,7 @@ class AuthRepository(
             supabase.auth.resetPasswordForEmail(email)
             Result.success(Unit)
         } catch (e: Exception) {
+            Log.e("SupabaseAuth", "resetPassword failed", e)
             Result.error(mapAuthError(e.message ?: "Failed to send reset email"))
         }
     }
@@ -114,6 +119,7 @@ class AuthRepository(
             supabase.auth.resetPasswordForEmail(email)
             Result.success(Unit)
         } catch (e: Exception) {
+            Log.e("SupabaseAuth", "resendVerificationEmail failed", e)
             Result.error(mapAuthError(e.message ?: "Failed to resend verification email"))
         }
     }
@@ -142,6 +148,7 @@ class AuthRepository(
                 Result.error("No user found after update")
             }
         } catch (e: Exception) {
+            Log.e("SupabaseAuth", "updateProfile failed", e)
             Result.error(mapAuthError(e.message ?: "Failed to update profile"))
         }
     }
@@ -151,6 +158,7 @@ class AuthRepository(
     }
 
     private fun mapAuthError(message: String): String {
+        Log.w("SupabaseAuth", "Mapping auth error: $message")
         return when {
             message.contains("Invalid login credentials", ignoreCase = true) -> "Invalid email or password."
             message.contains("already been registered", ignoreCase = true) -> "This email is already registered."

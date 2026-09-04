@@ -10,6 +10,7 @@ build/
 google-services.json
 .env
 .env.*
+!.env.example
 *.log
 .idea/
 **/build/
