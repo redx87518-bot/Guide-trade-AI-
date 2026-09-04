@@ -74,12 +74,12 @@ dependencies {
     implementation("androidx.compose.foundation:foundation:1.7.0")
 
     // Supabase Kotlin SDK
-    implementation("io.github.supabase:supabase:2.7.4")
-    implementation("io.github.supabase:auth:2.7.4")
-    implementation("io.github.supabase:postgrest:2.7.4")
-    implementation("io.github.supabase:functions:2.7.4")
-    implementation("io.github.supabase:storage:2.7.4")
-    implementation("io.github.supabase:realtime:2.7.4")
+    implementation("io.github.jan-tennert.supabase:supabase-kt-android:2.6.1")
+    implementation("io.github.jan-tennert.supabase:gotrue-kt-android:2.6.1")
+    implementation("io.github.jan-tennert.supabase:postgrest-kt-android:2.6.1")
+    implementation("io.github.jan-tennert.supabase:functions-kt-android:2.6.1")
+    implementation("io.github.jan-tennert.supabase:storage-kt-android:2.6.1")
+    implementation("io.github.jan-tennert.supabase:realtime-kt-android:2.6.1")
 
     // Ktor (required by Supabase SDK for Android)
     implementation("io.ktor:ktor-client-android:2.3.12")
