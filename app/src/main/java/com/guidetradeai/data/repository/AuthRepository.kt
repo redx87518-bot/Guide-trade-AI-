@@ -2,11 +2,11 @@ package com.guidetradeai.data.repository
 
 import com.guidetradeai.domain.Result
 import com.guidetradeai.domain.model.User
-import io.github.supabase.SupabaseClient
-import io.github.supabase.auth.UpdateUserData
-import io.github.supabase.auth.auth
-import io.github.supabase.auth.exception.AuthException
-import io.github.supabase.auth.status.SessionStatus
+import io.github.jan.supabase.SupabaseClient
+import io.github.jan.supabase.auth.UpdateUserData
+import io.github.jan.supabase.auth.auth
+import io.github.jan.supabase.auth.exception.AuthException
+import io.github.jan.supabase.auth.status.SessionStatus
 import kotlinx.coroutines.flow.Flow
 import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.JsonPrimitive
@@ -35,7 +35,7 @@ class AuthRepository(
         return try {
             val data = buildJsonObject { put("full_name", JsonPrimitive(fullName)) }
             val result = supabase.auth.signUpWith(
-                io.github.supabase.auth.SignUpAuthData(
+                io.github.jan.supabase.auth.SignUpAuthData(
                     email = email,
                     password = password,
                     data = data,
@@ -63,7 +63,7 @@ class AuthRepository(
     suspend fun signIn(email: String, password: String): Result<User> {
         return try {
             val result = supabase.auth.signInWith(
-                io.github.supabase.auth.SignInWithPasswordAuthData(
+                io.github.jan.supabase.auth.SignInWithPasswordAuthData(
                     email = email,
                     password = password,
                 ),

@@ -16,11 +16,11 @@ import org.junit.Test
 @OptIn(ExperimentalCoroutinesApi::class)
 class ResearchRepositoryTest {
 
-    private val mockSupabase: io.github.supabase.SupabaseClient = mockk(relaxed = true)
+    private val mockSupabase: io.github.jan.supabase.SupabaseClient = mockk(relaxed = true)
 
     @Test
     fun `getResearchHistory returns success when database returns data`() = runTest {
-        val mockPostgrestResult = mockk<io.github.supabase.postgrest.result.PostgrestResult>(relaxed = true)
+        val mockPostgrestResult = mockk<io.github.jan.supabase.postgrest.result.PostgrestResult>(relaxed = true)
 
         val repository = ResearchRepository(mockSupabase)
         val result = repository.getResearchHistory()

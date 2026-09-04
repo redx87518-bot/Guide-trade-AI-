@@ -2,10 +2,10 @@ package com.guidetradeai.data.repository
 
 import com.guidetradeai.domain.Result
 import com.guidetradeai.domain.model.TelegramSettings
-import io.github.supabase.SupabaseClient
-import io.github.supabase.auth.auth
-import io.github.supabase.functions.functions
-import io.github.supabase.postgrest.postgrest
+import io.github.jan.supabase.SupabaseClient
+import io.github.jan.supabase.auth.auth
+import io.github.jan.supabase.functions.functions
+import io.github.jan.supabase.postgrest.postgrest
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.buildJsonObject

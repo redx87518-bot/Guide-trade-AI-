@@ -8,7 +8,7 @@ import com.guidetradeai.di.AppModule
 import com.guidetradeai.domain.Result
 import com.guidetradeai.voice.AudioPlayer
 import com.guidetradeai.voice.VoiceState
-import io.github.supabase.functions.functions
+import io.github.jan.supabase.functions.functions
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow

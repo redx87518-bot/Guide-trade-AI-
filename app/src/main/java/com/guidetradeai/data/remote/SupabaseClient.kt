@@ -1,14 +1,14 @@
 package com.guidetradeai.data.remote
 
-import io.github.supabase.auth.Auth
-import io.github.supabase.auth.auth
-import io.github.supabase.createSupabaseClient
-import io.github.supabase.functions.Functions
-import io.github.supabase.functions.functions
-import io.github.supabase.postgrest.Postgrest
-import io.github.supabase.postgrest.postgrest
-import io.github.supabase.storage.Storage
-import io.github.supabase.storage.storage
+import io.github.jan.supabase.auth.Auth
+import io.github.jan.supabase.auth.auth
+import io.github.jan.supabase.createSupabaseClient
+import io.github.jan.supabase.functions.Functions
+import io.github.jan.supabase.functions.functions
+import io.github.jan.supabase.postgrest.Postgrest
+import io.github.jan.supabase.postgrest.postgrest
+import io.github.jan.supabase.storage.Storage
+import io.github.jan.supabase.storage.storage
 import kotlinx.serialization.json.Json
 object SupabaseClient {
     val client = createSupabaseClient(
