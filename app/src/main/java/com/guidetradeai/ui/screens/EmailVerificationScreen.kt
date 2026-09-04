@@ -1,5 +1,6 @@
 package com.guidetradeai.ui.screens
 
+import androidx.compose.animation.core.LinearOutSlowInEasing
 import androidx.compose.animation.core.RepeatMode
 import androidx.compose.animation.core.animateFloat
 import androidx.compose.animation.core.infiniteRepeatable
@@ -23,6 +24,8 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -38,6 +41,7 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import com.guidetradeai.viewmodel.AuthUiState
 import com.guidetradeai.viewmodel.AuthViewModel
+import androidx.compose.runtime.setValue
 
 @Composable
 fun EmailVerificationScreen(
@@ -90,7 +94,6 @@ fun EmailVerificationScreen(
                     ),
                     label = "mail_scale",
                 )
-                androidx.compose.material.icons.material.icons.filled.Email
                 Text(
                     text = "✉",
                     fontSize = 48.sp,

@@ -191,7 +191,7 @@ fun OnboardingPage(title: String, description: String, gradientColors: List<Colo
                     ),
                 ),
             contentAlignment = Alignment.Center,
-        )
+        ) {}
 
         Spacer(modifier = Modifier.height(48.dp))
 

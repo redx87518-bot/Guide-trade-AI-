@@ -50,22 +50,6 @@ fun SignUpScreen(
 ) {
     val authUiState by authViewModel.uiState.collectAsState()
 
-    LaunchedEffect(authUiState) {
-        when (authUiState) {
-            is AuthUiState.VerificationSent -> {
-                navController.navigate("${com.guidetradeai.ui.navigation.NavRoutes.VERIFICATION}/${(authUiState as AuthUiState.VerificationSent).email}") {
-                    popUpTo(com.guidetradeai.ui.navigation.NavRoutes.SIGNUP) { inclusive = true }
-                }
-            }
-            is AuthUiState.Authenticated -> {
-                navController.navigate(com.guidetradeai.ui.navigation.NavRoutes.HOME) {
-                    popUpTo(0) { inclusive = true }
-                }
-            }
-            else -> {}
-        }
-    }
-
     var fullName by rememberSaveable { mutableStateOf("") }
     var email by rememberSaveable { mutableStateOf("") }
     var password by rememberSaveable { mutableStateOf("") }
@@ -75,6 +59,14 @@ fun SignUpScreen(
     var emailError by remember { mutableStateOf<String?>(null) }
     var passwordError by remember { mutableStateOf<String?>(null) }
     var confirmPasswordError by remember { mutableStateOf<String?>(null) }
+
+    LaunchedEffect(authUiState) {
+        if (authUiState is AuthUiState.Authenticated) {
+            navController.navigate(com.guidetradeai.ui.navigation.NavRoutes.HOME) {
+                popUpTo(0) { inclusive = true }
+            }
+        }
+    }
 
     Column(
         modifier = Modifier
