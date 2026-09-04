@@ -56,8 +56,8 @@ dependencies {
     implementation("androidx.compose.ui:ui")
     implementation("androidx.compose.ui:ui-graphics")
     implementation("androidx.compose.ui:ui-tooling-preview")
-    implementation("androidx.compose.material3:material3:1.3.0")
-    implementation("androidx.compose.material:material-icons-extended:1.7.3")
+    implementation("androidx.compose.material3:material3")
+    implementation("androidx.compose.material:material-icons-extended")
     debugImplementation("androidx.compose.ui:ui-tooling")
     debugImplementation("androidx.compose.ui:ui-test-manifest")
     debugImplementation("androidx.compose.ui:ui-test-junit4")
@@ -70,16 +70,15 @@ dependencies {
     implementation("androidx.lifecycle:lifecycle-runtime-compose:2.8.6")
 
     // Pager
-    implementation("androidx.compose.material3:material3:1.3.0")
-    implementation("androidx.compose.foundation:foundation:1.7.0")
+    implementation("androidx.compose.foundation:foundation")
 
     // Supabase Kotlin SDK
-    implementation("io.github.jan-tennert.supabase:supabase-kt-android:2.6.1")
-    implementation("io.github.jan-tennert.supabase:gotrue-kt-android:2.6.1")
-    implementation("io.github.jan-tennert.supabase:postgrest-kt-android:2.6.1")
-    implementation("io.github.jan-tennert.supabase:functions-kt-android:2.6.1")
-    implementation("io.github.jan-tennert.supabase:storage-kt-android:2.6.1")
-    implementation("io.github.jan-tennert.supabase:realtime-kt-android:2.6.1")
+    implementation("io.github.jan-tennert.supabase:supabase-kt:2.6.1")
+    implementation("io.github.jan-tennert.supabase:gotrue-kt:2.6.1")
+    implementation("io.github.jan-tennert.supabase:postgrest-kt:2.6.1")
+    implementation("io.github.jan-tennert.supabase:functions-kt:2.6.1")
+    implementation("io.github.jan-tennert.supabase:storage-kt:2.6.1")
+    implementation("io.github.jan-tennert.supabase:realtime-kt:2.6.1")
 
     // Ktor (required by Supabase SDK for Android)
     implementation("io.ktor:ktor-client-android:2.3.12")
