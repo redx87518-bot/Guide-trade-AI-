@@ -53,6 +53,7 @@ import com.guidetradeai.ui.components.BottomBar
 import com.guidetradeai.viewmodel.AuthViewModel
 import com.guidetradeai.viewmodel.SettingsUiState
 import com.guidetradeai.viewmodel.SettingsViewModel
+import androidx.compose.runtime.setValue
 
 @Composable
 fun SettingsScreen(

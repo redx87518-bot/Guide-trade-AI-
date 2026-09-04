@@ -36,6 +36,8 @@ import com.guidetradeai.viewmodel.HomeUiState
 import com.guidetradeai.viewmodel.HomeViewModel
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.setValue
 
 @Composable
 fun SplashScreen(

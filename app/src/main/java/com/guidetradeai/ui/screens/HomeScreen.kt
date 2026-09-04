@@ -58,6 +58,7 @@ import com.guidetradeai.viewmodel.HomeViewModel
 import com.guidetradeai.voice.VoiceState
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
+import androidx.compose.runtime.setValue
 
 @Composable
 fun HomeScreen(
