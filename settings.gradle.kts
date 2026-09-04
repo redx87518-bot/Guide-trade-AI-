@@ -9,11 +9,7 @@ pluginManagement {
 dependencyResolutionManagement {
     repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
     repositories {
-        maven("https://dl.google.com/dl/android/maven2") {
-            metadataSources {
-                mavenPom()
-            }
-        }
+        google()
         mavenCentral()
     }
 }

@@ -1,0 +1,394 @@
+﻿2026-09-04T09:14:51.0789026Z Current runner version: '2.337.0'
+2026-09-04T09:14:51.0814288Z ##[group]Runner Image Provisioner
+2026-09-04T09:14:51.0815140Z Hosted Compute Agent
+2026-09-04T09:14:51.0815802Z Version: 20260819.586
+2026-09-04T09:14:51.0816711Z Commit: 3cc4a88dfa507ef76119ad1bb3eccc6378bb2b76
+2026-09-04T09:14:51.0817426Z Build Date: 2026-08-18T23:20:18Z
+2026-09-04T09:14:51.0818181Z Worker ID: {2c9f0b4a-f261-4d72-88e6-a628c5f70a13}
+2026-09-04T09:14:51.0818882Z Azure Region: centralus
+2026-09-04T09:14:51.0819501Z ##[endgroup]
+2026-09-04T09:14:51.0820992Z ##[group]Operating System
+2026-09-04T09:14:51.0821642Z Ubuntu
+2026-09-04T09:14:51.0822267Z 24.04.4
+2026-09-04T09:14:51.0822770Z LTS
+2026-09-04T09:14:51.0823304Z ##[endgroup]
+2026-09-04T09:14:51.0823900Z ##[group]Runner Image
+2026-09-04T09:14:51.0824493Z Image: ubuntu-24.04
+2026-09-04T09:14:51.0825100Z Version: 20260823.283.1
+2026-09-04T09:14:51.0826749Z Included Software: https://github.com/actions/runner-images/blob/ubuntu24/20260823.283/images/ubuntu/Ubuntu2404-Readme.md
+2026-09-04T09:14:51.0828470Z Image Release: https://github.com/actions/runner-images/releases/tag/ubuntu24%2F20260823.283
+2026-09-04T09:14:51.0829418Z ##[endgroup]
+2026-09-04T09:14:51.0830660Z ##[group]GITHUB_TOKEN Permissions
+2026-09-04T09:14:51.0832798Z Contents: read
+2026-09-04T09:14:51.0833494Z Metadata: read
+2026-09-04T09:14:51.0834092Z Packages: read
+2026-09-04T09:14:51.0834939Z ##[endgroup]
+2026-09-04T09:14:51.0838220Z Secret source: Actions
+2026-09-04T09:14:51.0839460Z Prepare workflow directory
+2026-09-04T09:14:51.1194607Z Prepare all required actions
+2026-09-04T09:14:51.1241944Z Getting action download info
+2026-09-04T09:14:51.3791389Z Download action repository 'actions/checkout@v4' (SHA:11d5960a326750d5838078e36cf38b85af677262)
+2026-09-04T09:14:51.5209556Z Download action repository 'actions/setup-java@v4' (SHA:cf277c60eb25467037889841efdb72551f06f6c3)
+2026-09-04T09:14:52.1324078Z Download action repository 'actions/upload-artifact@v4' (SHA:ea165f8d65b6e75b540449e92b4886f43607fa02)
+2026-09-04T09:14:52.3610734Z Complete job name: build
+2026-09-04T09:14:52.4417803Z Node 20 is being deprecated. This workflow is running with Node 24 by default. If you need to temporarily use Node 20, you can set the ACTIONS_ALLOW_USE_UNSECURE_NODE_VERSION=true environment variable. For more information see: https://github.blog/changelog/2025-09-19-deprecation-of-node-20-on-github-actions-runners/
+2026-09-04T09:14:52.4427212Z ##[group]Run actions/checkout@v4
+2026-09-04T09:14:52.4428033Z with:
+2026-09-04T09:14:52.4428547Z   repository: redx87518-bot/Guide-trade-AI-
+2026-09-04T09:14:52.4432532Z   token: ***
+2026-09-04T09:14:52.4433004Z   ssh-strict: true
+2026-09-04T09:14:52.4433476Z   ssh-user: git
+2026-09-04T09:14:52.4433967Z   persist-credentials: true
+2026-09-04T09:14:52.4434496Z   clean: true
+2026-09-04T09:14:52.4434977Z   sparse-checkout-cone-mode: true
+2026-09-04T09:14:52.4435534Z   fetch-depth: 1
+2026-09-04T09:14:52.4435999Z   fetch-tags: false
+2026-09-04T09:14:52.4436703Z   show-progress: true
+2026-09-04T09:14:52.4437232Z   lfs: false
+2026-09-04T09:14:52.4437724Z   submodules: false
+2026-09-04T09:14:52.4438205Z   set-safe-directory: true
+2026-09-04T09:14:52.4438754Z   allow-unsafe-pr-checkout: false
+2026-09-04T09:14:52.4439643Z ##[endgroup]
+2026-09-04T09:14:52.5509423Z Syncing repository: redx87518-bot/Guide-trade-AI-
+2026-09-04T09:14:52.5512316Z ##[group]Getting Git version info
+2026-09-04T09:14:52.5513731Z Working directory is '/home/runner/work/Guide-trade-AI-/Guide-trade-AI-'
+2026-09-04T09:14:52.5515729Z [command]/usr/bin/git version
+2026-09-04T09:14:52.5630612Z git version 2.55.0
+2026-09-04T09:14:52.5657901Z ##[endgroup]
+2026-09-04T09:14:52.5669614Z Temporarily overriding HOME='/home/runner/work/_temp/0b911389-f264-490d-b306-16db107b108c' before making global git config changes
+2026-09-04T09:14:52.5671642Z Adding repository directory to the temporary git global config as a safe directory
+2026-09-04T09:14:52.5675231Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/Guide-trade-AI-/Guide-trade-AI-
+2026-09-04T09:14:52.5733833Z Deleting the contents of '/home/runner/work/Guide-trade-AI-/Guide-trade-AI-'
+2026-09-04T09:14:52.5743538Z ##[group]Initializing the repository
+2026-09-04T09:14:52.5745034Z [command]/usr/bin/git init /home/runner/work/Guide-trade-AI-/Guide-trade-AI-
+2026-09-04T09:14:52.5863176Z hint: Using 'master' as the name for the initial branch. This default branch name
+2026-09-04T09:14:52.5865071Z hint: will change to "main" in Git 3.0. To configure the initial branch name
+2026-09-04T09:14:52.5866373Z hint: to use in all of your new repositories, which will suppress this warning,
+2026-09-04T09:14:52.5867571Z hint: call:
+2026-09-04T09:14:52.5868093Z hint:
+2026-09-04T09:14:52.5868682Z hint: 	git config --global init.defaultBranch <name>
+2026-09-04T09:14:52.5869405Z hint:
+2026-09-04T09:14:52.5870086Z hint: Names commonly chosen instead of 'master' are 'main', 'trunk' and
+2026-09-04T09:14:52.5871190Z hint: 'development'. The just-created branch can be renamed via this command:
+2026-09-04T09:14:52.5872103Z hint:
+2026-09-04T09:14:52.5872602Z hint: 	git branch -m <name>
+2026-09-04T09:14:52.5873168Z hint:
+2026-09-04T09:14:52.5874018Z hint: Disable this message with "git config set advice.defaultBranchName false"
+2026-09-04T09:14:52.5880945Z Initialized empty Git repository in /home/runner/work/Guide-trade-AI-/Guide-trade-AI-/.git/
+2026-09-04T09:14:52.5893114Z [command]/usr/bin/git remote add origin https://github.com/redx87518-bot/Guide-trade-AI-
+2026-09-04T09:14:52.5959358Z ##[endgroup]
+2026-09-04T09:14:52.5960289Z ##[group]Disabling automatic garbage collection
+2026-09-04T09:14:52.5964271Z [command]/usr/bin/git config --local gc.auto 0
+2026-09-04T09:14:52.6001894Z ##[endgroup]
+2026-09-04T09:14:52.6002724Z ##[group]Setting up auth
+2026-09-04T09:14:52.6010684Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+2026-09-04T09:14:52.6051288Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+2026-09-04T09:14:52.6478109Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2026-09-04T09:14:52.6518115Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+2026-09-04T09:14:52.6746716Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+2026-09-04T09:14:52.6781598Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+2026-09-04T09:14:52.7014475Z [command]/usr/bin/git config --local http.https://github.com/.extraheader AUTHORIZATION: basic ***
+2026-09-04T09:14:52.7054895Z ##[endgroup]
+2026-09-04T09:14:52.7055831Z ##[group]Fetching the repository
+2026-09-04T09:14:52.7067084Z [command]/usr/bin/git -c protocol.version=2 fetch --no-tags --prune --no-recurse-submodules --depth=1 origin +46977d69718d1c472c72bf5b889fdf520f8529f9:refs/remotes/origin/main
+2026-09-04T09:14:53.2018467Z From https://github.com/redx87518-bot/Guide-trade-AI-
+2026-09-04T09:14:53.2021063Z  * [new ref]         46977d69718d1c472c72bf5b889fdf520f8529f9 -> origin/main
+2026-09-04T09:14:53.2026549Z ##[endgroup]
+2026-09-04T09:14:53.2028944Z ##[group]Determining the checkout info
+2026-09-04T09:14:53.2031511Z ##[endgroup]
+2026-09-04T09:14:53.2035494Z [command]/usr/bin/git sparse-checkout disable
+2026-09-04T09:14:53.2094440Z [command]/usr/bin/git config --local --unset-all extensions.worktreeConfig
+2026-09-04T09:14:53.2128640Z ##[group]Checking out the ref
+2026-09-04T09:14:53.2139739Z [command]/usr/bin/git checkout --progress --force -B main refs/remotes/origin/main
+2026-09-04T09:14:53.2253777Z Switched to a new branch 'main'
+2026-09-04T09:14:53.2260639Z branch 'main' set up to track 'origin/main'.
+2026-09-04T09:14:53.2300337Z ##[endgroup]
+2026-09-04T09:14:53.2345727Z [command]/usr/bin/git log -1 --format=%H
+2026-09-04T09:14:53.2373040Z 46977d69718d1c472c72bf5b889fdf520f8529f9
+2026-09-04T09:14:53.2883759Z Node 20 is being deprecated. This workflow is running with Node 24 by default. If you need to temporarily use Node 20, you can set the ACTIONS_ALLOW_USE_UNSECURE_NODE_VERSION=true environment variable. For more information see: https://github.blog/changelog/2025-09-19-deprecation-of-node-20-on-github-actions-runners/
+2026-09-04T09:14:53.2889953Z ##[group]Run actions/setup-java@v4
+2026-09-04T09:14:53.2891130Z with:
+2026-09-04T09:14:53.2892015Z   distribution: temurin
+2026-09-04T09:14:53.2893043Z   java-version: 17
+2026-09-04T09:14:53.2893999Z   cache: gradle
+2026-09-04T09:14:53.2894945Z   java-package: jdk
+2026-09-04T09:14:53.2895914Z   check-latest: false
+2026-09-04T09:14:53.2897102Z   server-id: github
+2026-09-04T09:14:53.2898108Z   server-username: GITHUB_ACTOR
+2026-09-04T09:14:53.2899285Z   server-password: GITHUB_TOKEN
+2026-09-04T09:14:53.2900445Z   overwrite-settings: true
+2026-09-04T09:14:53.2901545Z   job-status: success
+2026-09-04T09:14:53.2911302Z   token: ***
+2026-09-04T09:14:53.2912259Z ##[endgroup]
+2026-09-04T09:14:53.4615660Z ##[warning]setup-java v4 is deprecated and will no longer receive updates. Please migrate to actions/setup-java@v5.
+2026-09-04T09:14:53.4625949Z ##[group]Installed distributions
+2026-09-04T09:14:53.4836880Z Resolved Java 17.0.20+1 from tool-cache
+2026-09-04T09:14:53.4838629Z Setting Java 17.0.20+1 as the default
+2026-09-04T09:14:53.4849536Z (node:2243) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.
+2026-09-04T09:14:53.4852879Z (Use `node --trace-deprecation ...` to show where the warning was created)
+2026-09-04T09:14:53.4854880Z Creating toolchains.xml for JDK version 17 from temurin
+2026-09-04T09:14:53.4930749Z Writing to /home/runner/.m2/toolchains.xml
+2026-09-04T09:14:53.4932531Z 
+2026-09-04T09:14:53.4933152Z Java configuration:
+2026-09-04T09:14:53.4934653Z   Distribution: temurin
+2026-09-04T09:14:53.4936443Z   Version: 17.0.20+1
+2026-09-04T09:14:53.4938305Z   Path: /opt/hostedtoolcache/Java_Temurin-Hotspot_jdk/17.0.20-1/x64
+2026-09-04T09:14:53.4939502Z 
+2026-09-04T09:14:53.4940495Z ##[endgroup]
+2026-09-04T09:14:53.4955455Z Creating settings.xml with server-id: github
+2026-09-04T09:14:53.5015737Z Writing to /home/runner/.m2/settings.xml
+2026-09-04T09:14:53.7288495Z gradle cache is not found
+2026-09-04T09:14:53.7490179Z ##[group]Run ./gradlew assembleDebug --no-daemon -x lint
+2026-09-04T09:14:53.7491828Z [36;1m./gradlew assembleDebug --no-daemon -x lint[0m
+2026-09-04T09:14:53.7539369Z shell: /usr/bin/bash -e {0}
+2026-09-04T09:14:53.7540395Z env:
+2026-09-04T09:14:53.7541602Z   JAVA_HOME: /opt/hostedtoolcache/Java_Temurin-Hotspot_jdk/17.0.20-1/x64
+2026-09-04T09:14:53.7543616Z   JAVA_HOME_17_X64: /opt/hostedtoolcache/Java_Temurin-Hotspot_jdk/17.0.20-1/x64
+2026-09-04T09:14:53.7545219Z ##[endgroup]
+2026-09-04T09:14:55.3996858Z Downloading https://services.gradle.org/distributions/gradle-8.7-all.zip
+2026-09-04T09:14:58.2103493Z .....................10%.....................20%......................30%.....................40%......................50%.....................60%.....................70%......................80%.....................90%......................100%
+2026-09-04T09:15:01.7584711Z 
+2026-09-04T09:15:01.7588424Z Welcome to Gradle 8.7!
+2026-09-04T09:15:01.7589266Z 
+2026-09-04T09:15:01.7589931Z Here are the highlights of this release:
+2026-09-04T09:15:01.7590822Z  - Compiling and testing with Java 22
+2026-09-04T09:15:01.7591558Z  - Cacheable Groovy script compilation
+2026-09-04T09:15:01.7592078Z  - New methods in lazy collection properties
+2026-09-04T09:15:01.7592466Z 
+2026-09-04T09:15:01.7592859Z For more details see https://docs.gradle.org/8.7/release-notes.html
+2026-09-04T09:15:01.7593343Z 
+2026-09-04T09:15:02.0578156Z To honour the JVM settings for this build a single-use Daemon process will be forked. For more on this, please refer to https://docs.gradle.org/8.7/userguide/gradle_daemon.html#sec:disabling_the_daemon in the Gradle documentation.
+2026-09-04T09:15:03.5586402Z Daemon will be stopped at the end of the build 
+2026-09-04T09:16:03.3592924Z > Task :app:preBuild UP-TO-DATE
+2026-09-04T09:16:03.3619898Z > Task :app:preDebugBuild UP-TO-DATE
+2026-09-04T09:16:03.3621054Z > Task :app:mergeDebugNativeDebugMetadata NO-SOURCE
+2026-09-04T09:16:03.3622466Z > Task :app:checkKotlinGradlePluginConfigurationErrors SKIPPED
+2026-09-04T09:16:33.3572786Z > Task :app:checkDebugAarMetadata
+2026-09-04T09:16:41.2629669Z > Task :app:generateDebugResValues
+2026-09-04T09:16:41.4573611Z > Task :app:mapDebugSourceSetPaths
+2026-09-04T09:16:41.4588161Z > Task :app:generateDebugResources
+2026-09-04T09:16:42.9573282Z > Task :app:packageDebugResources
+2026-09-04T09:16:43.0579451Z > Task :app:mergeDebugResources
+2026-09-04T09:16:43.8587203Z > Task :app:createDebugCompatibleScreenManifests
+2026-09-04T09:16:43.8597323Z > Task :app:extractDeepLinksDebug
+2026-09-04T09:16:43.8599687Z > Task :app:parseDebugLocalResources
+2026-09-04T09:16:44.2595449Z > Task :app:processDebugMainManifest
+2026-09-04T09:16:44.3575158Z > Task :app:processDebugManifest
+2026-09-04T09:16:44.3596959Z > Task :app:processDebugManifestForPackage
+2026-09-04T09:16:44.3597911Z > Task :app:javaPreCompileDebug
+2026-09-04T09:16:45.5574348Z > Task :app:mergeDebugShaders
+2026-09-04T09:16:45.5597756Z > Task :app:compileDebugShaders NO-SOURCE
+2026-09-04T09:16:45.5613214Z > Task :app:generateDebugAssets UP-TO-DATE
+2026-09-04T09:16:45.7573842Z > Task :app:mergeDebugAssets
+2026-09-04T09:16:45.7597116Z > Task :app:compressDebugAssets
+2026-09-04T09:16:45.7626991Z > Task :app:desugarDebugFileDependencies
+2026-09-04T09:16:46.0598507Z > Task :app:processDebugResources
+2026-09-04T09:16:48.1573368Z > Task :app:checkDebugDuplicateClasses
+2026-09-04T09:16:55.1628464Z > Task :app:mergeDebugStartupProfile
+2026-09-04T09:17:17.7607130Z > Task :app:compileDebugKotlin
+2026-09-04T09:17:21.9671718Z e: file:///home/runner/work/Guide-trade-AI-/Guide-trade-AI-/app/src/main/java/com/guidetradeai/ui/components/AIOrb.kt:31:35 Unresolved reference 'icons'.
+2026-09-04T09:17:21.9767900Z e: file:///home/runner/work/Guide-trade-AI-/Guide-trade-AI-/app/src/main/java/com/guidetradeai/ui/components/AIOrb.kt:32:35 Unresolved reference 'icons'.
+2026-09-04T09:17:21.9828261Z e: file:///home/runner/work/Guide-trade-AI-/Guide-trade-AI-/app/src/main/java/com/guidetradeai/ui/components/AIOrb.kt:33:35 Unresolved reference 'icons'.
+2026-09-04T09:17:21.9839926Z e: file:///home/runner/work/Guide-trade-AI-/Guide-trade-AI-/app/src/main/java/com/guidetradeai/ui/components/AIOrb.kt:34:35 Unresolved reference 'icons'.
+2026-09-04T09:17:21.9887604Z e: file:///home/runner/work/Guide-trade-AI-/Guide-trade-AI-/app/src/main/java/com/guidetradeai/ui/components/AIOrb.kt:35:35 Unresolved reference 'icons'.
+2026-09-04T09:17:21.9897412Z e: file:///home/runner/work/Guide-trade-AI-/Guide-trade-AI-/app/src/main/java/com/guidetradeai/ui/components/AIOrb.kt:36:35 Unresolved reference 'icons'.
+2026-09-04T09:17:21.9917778Z e: file:///home/runner/work/Guide-trade-AI-/Guide-trade-AI-/app/src/main/java/com/guidetradeai/ui/components/AIOrb.kt:37:35 Unresolved reference 'icons'.
+2026-09-04T09:17:21.9964376Z e: file:///home/runner/work/Guide-trade-AI-/Guide-trade-AI-/app/src/main/java/com/guidetradeai/ui/components/BottomBar.kt:13:35 Unresolved reference 'icons'.
+2026-09-04T09:17:21.9997813Z e: file:///home/runner/work/Guide-trade-AI-/Guide-trade-AI-/app/src/main/java/com/guidetradeai/ui/components/BottomBar.kt:14:35 Unresolved reference 'icons'.
+2026-09-04T09:17:22.0027533Z e: file:///home/runner/work/Guide-trade-AI-/Guide-trade-AI-/app/src/main/java/com/guidetradeai/ui/components/BottomBar.kt:15:35 Unresolved reference 'icons'.
+2026-09-04T09:17:22.0029789Z e: file:///home/runner/work/Guide-trade-AI-/Guide-trade-AI-/app/src/main/java/com/guidetradeai/ui/components/BottomBar.kt:16:35 Unresolved reference 'icons'.
+2026-09-04T09:17:22.0057554Z e: file:///home/runner/work/Guide-trade-AI-/Guide-trade-AI-/app/src/main/java/com/guidetradeai/ui/components/BottomBar.kt:17:35 Unresolved reference 'icons'.
+2026-09-04T09:17:22.0087721Z e: file:///home/runner/work/Guide-trade-AI-/Guide-trade-AI-/app/src/main/java/com/guidetradeai/ui/components/BottomBar.kt:24:36 Unresolved reference 'findStartDestination'.
+2026-09-04T09:17:22.0092869Z e: file:///home/runner/work/Guide-trade-AI-/Guide-trade-AI-/app/src/main/java/com/guidetradeai/ui/components/BottomBar.kt:25:35 Unresolved reference 'navigationBarItemColors'.
+2026-09-04T09:17:22.0117686Z e: file:///home/runner/work/Guide-trade-AI-/Guide-trade-AI-/app/src/main/java/com/guidetradeai/ui/components/BottomBar.kt:40:31 Unresolved reference 'Icons'.
+2026-09-04T09:17:22.0150792Z e: file:///home/runner/work/Guide-trade-AI-/Guide-trade-AI-/app/src/main/java/com/guidetradeai/ui/components/BottomBar.kt:41:31 Unresolved reference 'Icons'.
+2026-09-04T09:17:22.0177431Z e: file:///home/runner/work/Guide-trade-AI-/Guide-trade-AI-/app/src/main/java/com/guidetradeai/ui/components/BottomBar.kt:42:34 Unresolved reference 'Icons'.
+2026-09-04T09:17:22.0207513Z e: file:///home/runner/work/Guide-trade-AI-/Guide-trade-AI-/app/src/main/java/com/guidetradeai/ui/components/BottomBar.kt:43:34 Unresolved reference 'Icons'.
+2026-09-04T09:17:22.0227706Z e: file:///home/runner/work/Guide-trade-AI-/Guide-trade-AI-/app/src/main/java/com/guidetradeai/ui/components/BottomBar.kt:69:57 Unresolved reference 'findStartDestination'.
+2026-09-04T09:17:22.0238069Z e: file:///home/runner/work/Guide-trade-AI-/Guide-trade-AI-/app/src/main/java/com/guidetradeai/ui/components/BottomBar.kt:70:33 Cannot access 'var saveState: Boolean': it is private in 'androidx/navigation/NavOptionsBuilder'.
+2026-09-04T09:17:22.0278341Z e: file:///home/runner/work/Guide-trade-AI-/Guide-trade-AI-/app/src/main/java/com/guidetradeai/ui/components/BottomBar.kt:89:56 Unresolved reference 'navigationBarItemColors'.
+2026-09-04T09:17:22.0307562Z e: file:///home/runner/work/Guide-trade-AI-/Guide-trade-AI-/app/src/main/java/com/guidetradeai/ui/screens/AboutScreen.kt:26:35 Unresolved reference 'icons'.
+2026-09-04T09:17:22.0317760Z e: file:///home/runner/work/Guide-trade-AI-/Guide-trade-AI-/app/src/main/java/com/guidetradeai/ui/screens/AboutScreen.kt:27:35 Unresolved reference 'icons'.
+2026-09-04T09:17:22.0337889Z e: file:///home/runner/work/Guide-trade-AI-/Guide-trade-AI-/app/src/main/java/com/guidetradeai/ui/screens/AboutScreen.kt:55:43 Unresolved reference 'Icons'.
+2026-09-04T09:17:22.0368362Z e: file:///home/runner/work/Guide-trade-AI-/Guide-trade-AI-/app/src/main/java/com/guidetradeai/ui/screens/AboutScreen.kt:77:13 None of the following candidates is applicable:
+2026-09-04T09:17:22.0397117Z fun Box(modifier: Modifier): Unit
+2026-09-04T09:17:22.0427961Z fun Box(modifier: Modifier = ..., contentAlignment: Alignment = ..., propagateMinConstraints: Boolean = ..., content: @Composable() ComposableFunction1<BoxScope, Unit>): Unit
+2026-09-04T09:17:22.0457813Z e: file:///home/runner/work/Guide-trade-AI-/Guide-trade-AI-/app/src/main/java/com/guidetradeai/ui/screens/ChatHistoryScreen.kt:31:35 Unresolved reference 'icons'.
+2026-09-04T09:17:22.0487775Z e: file:///home/runner/work/Guide-trade-AI-/Guide-trade-AI-/app/src/main/java/com/guidetradeai/ui/screens/ChatHistoryScreen.kt:32:35 Unresolved reference 'icons'.
+2026-09-04T09:17:22.0517767Z e: file:///home/runner/work/Guide-trade-AI-/Guide-trade-AI-/app/src/main/java/com/guidetradeai/ui/screens/ChatHistoryScreen.kt:33:35 Unresolved reference 'icons'.
+2026-09-04T09:17:22.0547838Z e: file:///home/runner/work/Guide-trade-AI-/Guide-trade-AI-/app/src/main/java/com/guidetradeai/ui/screens/ChatHistoryScreen.kt:34:35 Unresolved reference 'icons'.
+2026-09-04T09:17:22.0568579Z e: file:///home/runner/work/Guide-trade-AI-/Guide-trade-AI-/app/src/main/java/com/guidetradeai/ui/screens/ChatHistoryScreen.kt:35:35 Unresolved reference 'icons'.
+2026-09-04T09:17:22.0570700Z e: file:///home/runner/work/Guide-trade-AI-/Guide-trade-AI-/app/src/main/java/com/guidetradeai/ui/screens/ChatHistoryScreen.kt:83:35 Unresolved reference 'Icons'.
+2026-09-04T09:17:22.0588421Z e: file:///home/runner/work/Guide-trade-AI-/Guide-trade-AI-/app/src/main/java/com/guidetradeai/ui/screens/ChatHistoryScreen.kt:166:21 Type 'androidx.compose.runtime.MutableState<kotlin.Boolean>' has no method 'setValue(Nothing?, KMutableProperty0<*>, Boolean)', so it cannot serve as a delegate for var (read-write property).
+2026-09-04T09:17:22.0592883Z e: file:///home/runner/work/Guide-trade-AI-/Guide-trade-AI-/app/src/main/java/com/guidetradeai/ui/screens/ChatHistoryScreen.kt:167:29 Type 'androidx.compose.runtime.MutableState<kotlin.Boolean>' has no method 'setValue(Nothing?, KMutableProperty0<*>, Boolean)', so it cannot serve as a delegate for var (read-write property).
+2026-09-04T09:17:22.0596694Z e: file:///home/runner/work/Guide-trade-AI-/Guide-trade-AI-/app/src/main/java/com/guidetradeai/ui/screens/ChatHistoryScreen.kt:168:29 Type 'androidx.compose.runtime.MutableState<kotlin.Boolean>' has no method 'setValue(Nothing?, KMutableProperty0<*>, Boolean)', so it cannot serve as a delegate for var (read-write property).
+2026-09-04T09:17:22.0600457Z e: file:///home/runner/work/Guide-trade-AI-/Guide-trade-AI-/app/src/main/java/com/guidetradeai/ui/screens/ChatHistoryScreen.kt:169:23 Type 'androidx.compose.runtime.MutableState<kotlin.String>' has no method 'setValue(Nothing?, KMutableProperty0<*>, String)', so it cannot serve as a delegate for var (read-write property).
+2026-09-04T09:17:22.0603261Z e: file:///home/runner/work/Guide-trade-AI-/Guide-trade-AI-/app/src/main/java/com/guidetradeai/ui/screens/ChatHistoryScreen.kt:202:35 Unresolved reference 'Icons'.
+2026-09-04T09:17:22.0605197Z e: file:///home/runner/work/Guide-trade-AI-/Guide-trade-AI-/app/src/main/java/com/guidetradeai/ui/screens/ChatHistoryScreen.kt:265:57 Unresolved reference 'TextButtonDefaults'.
+2026-09-04T09:17:22.0607246Z e: file:///home/runner/work/Guide-trade-AI-/Guide-trade-AI-/app/src/main/java/com/guidetradeai/ui/screens/ChatScreen.kt:34:35 Unresolved reference 'icons'.
+2026-09-04T09:17:22.0608964Z e: file:///home/runner/work/Guide-trade-AI-/Guide-trade-AI-/app/src/main/java/com/guidetradeai/ui/screens/ChatScreen.kt:35:35 Unresolved reference 'icons'.
+2026-09-04T09:17:22.0610713Z e: file:///home/runner/work/Guide-trade-AI-/Guide-trade-AI-/app/src/main/java/com/guidetradeai/ui/screens/ChatScreen.kt:36:35 Unresolved reference 'icons'.
+2026-09-04T09:17:22.0612669Z e: file:///home/runner/work/Guide-trade-AI-/Guide-trade-AI-/app/src/main/java/com/guidetradeai/ui/screens/ChatScreen.kt:37:35 Unresolved reference 'icons'.
+2026-09-04T09:17:22.0614406Z e: file:///home/runner/work/Guide-trade-AI-/Guide-trade-AI-/app/src/main/java/com/guidetradeai/ui/screens/ChatScreen.kt:38:35 Unresolved reference 'icons'.
+2026-09-04T09:17:22.0646443Z e: file:///home/runner/work/Guide-trade-AI-/Guide-trade-AI-/app/src/main/java/com/guidetradeai/ui/screens/ChatScreen.kt:39:35 Unresolved reference 'icons'.
+2026-09-04T09:17:22.0649072Z e: file:///home/runner/work/Guide-trade-AI-/Guide-trade-AI-/app/src/main/java/com/guidetradeai/ui/screens/ChatScreen.kt:86:24 Type 'androidx.compose.runtime.MutableState<kotlin.String>' has no method 'setValue(Nothing?, KMutableProperty0<*>, String)', so it cannot serve as a delegate for var (read-write property).
+2026-09-04T09:17:22.0652416Z e: file:///home/runner/work/Guide-trade-AI-/Guide-trade-AI-/app/src/main/java/com/guidetradeai/ui/screens/ChatScreen.kt:87:21 Type 'androidx.compose.runtime.MutableState<kotlin.Boolean>' has no method 'setValue(Nothing?, KMutableProperty0<*>, Boolean)', so it cannot serve as a delegate for var (read-write property).
+2026-09-04T09:17:22.0655772Z e: file:///home/runner/work/Guide-trade-AI-/Guide-trade-AI-/app/src/main/java/com/guidetradeai/ui/screens/ChatScreen.kt:88:29 Type 'androidx.compose.runtime.MutableState<kotlin.Boolean>' has no method 'setValue(Nothing?, KMutableProperty0<*>, Boolean)', so it cannot serve as a delegate for var (read-write property).
+2026-09-04T09:17:22.0659489Z e: file:///home/runner/work/Guide-trade-AI-/Guide-trade-AI-/app/src/main/java/com/guidetradeai/ui/screens/ChatScreen.kt:89:29 Type 'androidx.compose.runtime.MutableState<kotlin.Boolean>' has no method 'setValue(Nothing?, KMutableProperty0<*>, Boolean)', so it cannot serve as a delegate for var (read-write property).
+2026-09-04T09:17:22.0663405Z e: file:///home/runner/work/Guide-trade-AI-/Guide-trade-AI-/app/src/main/java/com/guidetradeai/ui/screens/ChatScreen.kt:90:23 Type 'androidx.compose.runtime.MutableState<kotlin.String>' has no method 'setValue(Nothing?, KMutableProperty0<*>, String)', so it cannot serve as a delegate for var (read-write property).
+2026-09-04T09:17:22.0666215Z e: file:///home/runner/work/Guide-trade-AI-/Guide-trade-AI-/app/src/main/java/com/guidetradeai/ui/screens/ChatScreen.kt:109:39 Unresolved reference 'Icons'.
+2026-09-04T09:17:22.0668016Z e: file:///home/runner/work/Guide-trade-AI-/Guide-trade-AI-/app/src/main/java/com/guidetradeai/ui/screens/ChatScreen.kt:118:39 Unresolved reference 'Icons'.
+2026-09-04T09:17:22.0669776Z e: file:///home/runner/work/Guide-trade-AI-/Guide-trade-AI-/app/src/main/java/com/guidetradeai/ui/screens/ChatScreen.kt:258:35 Unresolved reference 'Icons'.
+2026-09-04T09:17:22.0671508Z e: file:///home/runner/work/Guide-trade-AI-/Guide-trade-AI-/app/src/main/java/com/guidetradeai/ui/screens/ChatScreen.kt:365:31 Unresolved reference 'Icons'.
+2026-09-04T09:17:22.0674229Z e: file:///home/runner/work/Guide-trade-AI-/Guide-trade-AI-/app/src/main/java/com/guidetradeai/ui/screens/ForgotPasswordScreen.kt:42:18 Type 'androidx.compose.runtime.MutableState<kotlin.String>' has no method 'setValue(Nothing?, KMutableProperty0<*>, String)', so it cannot serve as a delegate for var (read-write property).
+2026-09-04T09:17:22.0687250Z e: file:///home/runner/work/Guide-trade-AI-/Guide-trade-AI-/app/src/main/java/com/guidetradeai/ui/screens/ForgotPasswordScreen.kt:43:23 Type 'androidx.compose.runtime.MutableState<kotlin.String?>' has no method 'setValue(Nothing?, KMutableProperty0<*>, String?)', so it cannot serve as a delegate for var (read-write property).
+2026-09-04T09:17:22.0690989Z e: file:///home/runner/work/Guide-trade-AI-/Guide-trade-AI-/app/src/main/java/com/guidetradeai/ui/screens/ForgotPasswordScreen.kt:44:30 Type 'androidx.compose.runtime.MutableState<kotlin.Boolean>' has no method 'setValue(Nothing?, KMutableProperty0<*>, Boolean)', so it cannot serve as a delegate for var (read-write property).
+2026-09-04T09:17:22.0694327Z e: file:///home/runner/work/Guide-trade-AI-/Guide-trade-AI-/app/src/main/java/com/guidetradeai/ui/screens/HomeScreen.kt:29:35 Unresolved reference 'icons'.
+2026-09-04T09:17:22.0696283Z e: file:///home/runner/work/Guide-trade-AI-/Guide-trade-AI-/app/src/main/java/com/guidetradeai/ui/screens/HomeScreen.kt:30:35 Unresolved reference 'icons'.
+2026-09-04T09:17:22.0709708Z e: file:///home/runner/work/Guide-trade-AI-/Guide-trade-AI-/app/src/main/java/com/guidetradeai/ui/screens/HomeScreen.kt:31:35 Unresolved reference 'icons'.
+2026-09-04T09:17:22.0711493Z e: file:///home/runner/work/Guide-trade-AI-/Guide-trade-AI-/app/src/main/java/com/guidetradeai/ui/screens/LoginScreen.kt:21:35 Unresolved reference 'icons'.
+2026-09-04T09:17:22.0713258Z e: file:///home/runner/work/Guide-trade-AI-/Guide-trade-AI-/app/src/main/java/com/guidetradeai/ui/screens/LoginScreen.kt:22:35 Unresolved reference 'icons'.
+2026-09-04T09:17:22.0714992Z e: file:///home/runner/work/Guide-trade-AI-/Guide-trade-AI-/app/src/main/java/com/guidetradeai/ui/screens/LoginScreen.kt:23:35 Unresolved reference 'icons'.
+2026-09-04T09:17:22.0717858Z e: file:///home/runner/work/Guide-trade-AI-/Guide-trade-AI-/app/src/main/java/com/guidetradeai/ui/screens/LoginScreen.kt:61:18 Type 'androidx.compose.runtime.MutableState<kotlin.String>' has no method 'setValue(Nothing?, KMutableProperty0<*>, String)', so it cannot serve as a delegate for var (read-write property).
+2026-09-04T09:17:22.0721329Z e: file:///home/runner/work/Guide-trade-AI-/Guide-trade-AI-/app/src/main/java/com/guidetradeai/ui/screens/LoginScreen.kt:62:21 Type 'androidx.compose.runtime.MutableState<kotlin.String>' has no method 'setValue(Nothing?, KMutableProperty0<*>, String)', so it cannot serve as a delegate for var (read-write property).
+2026-09-04T09:17:22.0725246Z e: file:///home/runner/work/Guide-trade-AI-/Guide-trade-AI-/app/src/main/java/com/guidetradeai/ui/screens/LoginScreen.kt:63:28 Type 'androidx.compose.runtime.MutableState<kotlin.Boolean>' has no method 'setValue(Nothing?, KMutableProperty0<*>, Boolean)', so it cannot serve as a delegate for var (read-write property).
+2026-09-04T09:17:22.0729179Z e: file:///home/runner/work/Guide-trade-AI-/Guide-trade-AI-/app/src/main/java/com/guidetradeai/ui/screens/LoginScreen.kt:64:23 Type 'androidx.compose.runtime.MutableState<kotlin.String?>' has no method 'setValue(Nothing?, KMutableProperty0<*>, String?)', so it cannot serve as a delegate for var (read-write property).
+2026-09-04T09:17:22.0732929Z e: file:///home/runner/work/Guide-trade-AI-/Guide-trade-AI-/app/src/main/java/com/guidetradeai/ui/screens/LoginScreen.kt:65:26 Type 'androidx.compose.runtime.MutableState<kotlin.String?>' has no method 'setValue(Nothing?, KMutableProperty0<*>, String?)', so it cannot serve as a delegate for var (read-write property).
+2026-09-04T09:17:22.0735502Z e: file:///home/runner/work/Guide-trade-AI-/Guide-trade-AI-/app/src/main/java/com/guidetradeai/ui/screens/LoginScreen.kt:118:60 Unresolved reference 'Icons'.
+2026-09-04T09:17:22.0737488Z e: file:///home/runner/work/Guide-trade-AI-/Guide-trade-AI-/app/src/main/java/com/guidetradeai/ui/screens/LoginScreen.kt:118:92 Unresolved reference 'Icons'.
+2026-09-04T09:17:22.0739331Z e: file:///home/runner/work/Guide-trade-AI-/Guide-trade-AI-/app/src/main/java/com/guidetradeai/ui/screens/OnboardingScreen.kt:72:13 No parameter with name 'pageCount' found.
+2026-09-04T09:17:22.0741522Z e: file:///home/runner/work/Guide-trade-AI-/Guide-trade-AI-/app/src/main/java/com/guidetradeai/ui/screens/OnboardingScreen.kt:75:13 @Composable invocations can only happen from the context of a @Composable function
+2026-09-04T09:17:22.0743687Z e: file:///home/runner/work/Guide-trade-AI-/Guide-trade-AI-/app/src/main/java/com/guidetradeai/ui/screens/OnboardingScreen.kt:143:9 None of the following candidates is applicable:
+2026-09-04T09:17:22.0744970Z fun Box(modifier: Modifier): Unit
+2026-09-04T09:17:22.0746316Z fun Box(modifier: Modifier = ..., contentAlignment: Alignment = ..., propagateMinConstraints: Boolean = ..., content: @Composable() ComposableFunction1<BoxScope, Unit>): Unit
+2026-09-04T09:17:22.0748474Z e: file:///home/runner/work/Guide-trade-AI-/Guide-trade-AI-/app/src/main/java/com/guidetradeai/ui/screens/ProfileScreen.kt:29:35 Unresolved reference 'icons'.
+2026-09-04T09:17:22.0750366Z e: file:///home/runner/work/Guide-trade-AI-/Guide-trade-AI-/app/src/main/java/com/guidetradeai/ui/screens/ProfileScreen.kt:30:35 Unresolved reference 'icons'.
+2026-09-04T09:17:22.0752110Z e: file:///home/runner/work/Guide-trade-AI-/Guide-trade-AI-/app/src/main/java/com/guidetradeai/ui/screens/ProfileScreen.kt:31:35 Unresolved reference 'icons'.
+2026-09-04T09:17:22.0753959Z e: file:///home/runner/work/Guide-trade-AI-/Guide-trade-AI-/app/src/main/java/com/guidetradeai/ui/screens/ProfileScreen.kt:32:35 Unresolved reference 'icons'.
+2026-09-04T09:17:22.0755763Z e: file:///home/runner/work/Guide-trade-AI-/Guide-trade-AI-/app/src/main/java/com/guidetradeai/ui/screens/ProfileScreen.kt:33:35 Unresolved reference 'icons'.
+2026-09-04T09:17:22.0788584Z e: file:///home/runner/work/Guide-trade-AI-/Guide-trade-AI-/app/src/main/java/com/guidetradeai/ui/screens/ProfileScreen.kt:72:27 Type 'androidx.compose.runtime.MutableState<kotlin.Boolean>' has no method 'setValue(Nothing?, KMutableProperty0<*>, Boolean)', so it cannot serve as a delegate for var (read-write property).
+2026-09-04T09:17:22.0792455Z e: file:///home/runner/work/Guide-trade-AI-/Guide-trade-AI-/app/src/main/java/com/guidetradeai/ui/screens/ProfileScreen.kt:73:21 Type 'androidx.compose.runtime.MutableState<kotlin.String>' has no method 'setValue(Nothing?, KMutableProperty0<*>, String)', so it cannot serve as a delegate for var (read-write property).
+2026-09-04T09:17:22.0795306Z e: file:///home/runner/work/Guide-trade-AI-/Guide-trade-AI-/app/src/main/java/com/guidetradeai/ui/screens/ProfileScreen.kt:82:43 Unresolved reference 'Icons'.
+2026-09-04T09:17:22.0797701Z e: file:///home/runner/work/Guide-trade-AI-/Guide-trade-AI-/app/src/main/java/com/guidetradeai/ui/screens/ProfileScreen.kt:175:47 Unresolved reference 'Icons'.
+2026-09-04T09:17:22.0800113Z e: file:///home/runner/work/Guide-trade-AI-/Guide-trade-AI-/app/src/main/java/com/guidetradeai/ui/screens/ProfileScreen.kt:190:47 Unresolved reference 'Icons'.
+2026-09-04T09:17:22.0801934Z e: file:///home/runner/work/Guide-trade-AI-/Guide-trade-AI-/app/src/main/java/com/guidetradeai/ui/screens/ProfileScreen.kt:202:32 Unresolved reference 'Icons'.
+2026-09-04T09:17:22.0803770Z e: file:///home/runner/work/Guide-trade-AI-/Guide-trade-AI-/app/src/main/java/com/guidetradeai/ui/screens/ProfileScreen.kt:287:27 Unresolved reference 'Icons'.
+2026-09-04T09:17:22.0805675Z e: file:///home/runner/work/Guide-trade-AI-/Guide-trade-AI-/app/src/main/java/com/guidetradeai/ui/screens/ResearchDetailScreen.kt:31:35 Unresolved reference 'icons'.
+2026-09-04T09:17:22.0807896Z e: file:///home/runner/work/Guide-trade-AI-/Guide-trade-AI-/app/src/main/java/com/guidetradeai/ui/screens/ResearchDetailScreen.kt:32:35 Unresolved reference 'icons'.
+2026-09-04T09:17:22.0809713Z e: file:///home/runner/work/Guide-trade-AI-/Guide-trade-AI-/app/src/main/java/com/guidetradeai/ui/screens/ResearchDetailScreen.kt:33:35 Unresolved reference 'icons'.
+2026-09-04T09:17:22.0811561Z e: file:///home/runner/work/Guide-trade-AI-/Guide-trade-AI-/app/src/main/java/com/guidetradeai/ui/screens/ResearchDetailScreen.kt:34:35 Unresolved reference 'icons'.
+2026-09-04T09:17:22.0813326Z e: file:///home/runner/work/Guide-trade-AI-/Guide-trade-AI-/app/src/main/java/com/guidetradeai/ui/screens/ResearchDetailScreen.kt:35:35 Unresolved reference 'icons'.
+2026-09-04T09:17:22.0815161Z e: file:///home/runner/work/Guide-trade-AI-/Guide-trade-AI-/app/src/main/java/com/guidetradeai/ui/screens/ResearchDetailScreen.kt:36:35 Unresolved reference 'icons'.
+2026-09-04T09:17:22.0848362Z e: file:///home/runner/work/Guide-trade-AI-/Guide-trade-AI-/app/src/main/java/com/guidetradeai/ui/screens/ResearchDetailScreen.kt:74:29 Type 'androidx.compose.runtime.MutableState<kotlin.Boolean>' has no method 'setValue(Nothing?, KMutableProperty0<*>, Boolean)', so it cannot serve as a delegate for var (read-write property).
+2026-09-04T09:17:22.0851676Z e: file:///home/runner/work/Guide-trade-AI-/Guide-trade-AI-/app/src/main/java/com/guidetradeai/ui/screens/ResearchDetailScreen.kt:89:43 Unresolved reference 'Icons'.
+2026-09-04T09:17:22.0853624Z e: file:///home/runner/work/Guide-trade-AI-/Guide-trade-AI-/app/src/main/java/com/guidetradeai/ui/screens/ResearchDetailScreen.kt:98:43 Unresolved reference 'Icons'.
+2026-09-04T09:17:22.0855602Z e: file:///home/runner/work/Guide-trade-AI-/Guide-trade-AI-/app/src/main/java/com/guidetradeai/ui/screens/ResearchDetailScreen.kt:177:45 Unresolved reference 'size'.
+2026-09-04T09:17:22.0858192Z e: file:///home/runner/work/Guide-trade-AI-/Guide-trade-AI-/app/src/main/java/com/guidetradeai/ui/screens/ResearchDetailScreen.kt:180:43 Unresolved reference 'Icons'.
+2026-09-04T09:17:22.0860260Z e: file:///home/runner/work/Guide-trade-AI-/Guide-trade-AI-/app/src/main/java/com/guidetradeai/ui/screens/ResearchDetailScreen.kt:183:49 Unresolved reference 'size'.
+2026-09-04T09:17:22.0862321Z e: file:///home/runner/work/Guide-trade-AI-/Guide-trade-AI-/app/src/main/java/com/guidetradeai/ui/screens/ResearchDetailScreen.kt:194:43 Unresolved reference 'Icons'.
+2026-09-04T09:17:22.0864361Z e: file:///home/runner/work/Guide-trade-AI-/Guide-trade-AI-/app/src/main/java/com/guidetradeai/ui/screens/ResearchDetailScreen.kt:208:43 Unresolved reference 'Icons'.
+2026-09-04T09:17:22.0866568Z e: file:///home/runner/work/Guide-trade-AI-/Guide-trade-AI-/app/src/main/java/com/guidetradeai/ui/screens/ResearchHistoryScreen.kt:24:35 Unresolved reference 'icons'.
+2026-09-04T09:17:22.0868609Z e: file:///home/runner/work/Guide-trade-AI-/Guide-trade-AI-/app/src/main/java/com/guidetradeai/ui/screens/ResearchHistoryScreen.kt:25:35 Unresolved reference 'icons'.
+2026-09-04T09:17:22.0870743Z e: file:///home/runner/work/Guide-trade-AI-/Guide-trade-AI-/app/src/main/java/com/guidetradeai/ui/screens/ResearchHistoryScreen.kt:26:35 Unresolved reference 'icons'.
+2026-09-04T09:17:22.0872694Z e: file:///home/runner/work/Guide-trade-AI-/Guide-trade-AI-/app/src/main/java/com/guidetradeai/ui/screens/ResearchHistoryScreen.kt:66:43 Unresolved reference 'Icons'.
+2026-09-04T09:17:22.0875357Z e: file:///home/runner/work/Guide-trade-AI-/Guide-trade-AI-/app/src/main/java/com/guidetradeai/ui/screens/ResearchHistoryScreen.kt:101:23 Argument type mismatch: actual type is 'kotlin.collections.List<com.guidetradeai.domain.model.ResearchResult>', but 'kotlin.Int' was expected.
+2026-09-04T09:17:22.0902000Z e: file:///home/runner/work/Guide-trade-AI-/Guide-trade-AI-/app/src/main/java/com/guidetradeai/ui/screens/ResearchHistoryScreen.kt:101:43 Unresolved reference 'id'.
+2026-09-04T09:17:22.0904359Z e: file:///home/runner/work/Guide-trade-AI-/Guide-trade-AI-/app/src/main/java/com/guidetradeai/ui/screens/ResearchHistoryScreen.kt:102:21 @Composable invocations can only happen from the context of a @Composable function
+2026-09-04T09:17:22.0907553Z e: file:///home/runner/work/Guide-trade-AI-/Guide-trade-AI-/app/src/main/java/com/guidetradeai/ui/screens/ResearchHistoryScreen.kt:103:36 Argument type mismatch: actual type is 'kotlin.Int', but 'com.guidetradeai.domain.model.ResearchResult' was expected.
+2026-09-04T09:17:22.0910125Z e: file:///home/runner/work/Guide-trade-AI-/Guide-trade-AI-/app/src/main/java/com/guidetradeai/ui/screens/ResearchHistoryScreen.kt:105:122 Unresolved reference 'id'.
+2026-09-04T09:17:22.0912086Z e: file:///home/runner/work/Guide-trade-AI-/Guide-trade-AI-/app/src/main/java/com/guidetradeai/ui/screens/SettingsScreen.kt:29:35 Unresolved reference 'icons'.
+2026-09-04T09:17:22.0913980Z e: file:///home/runner/work/Guide-trade-AI-/Guide-trade-AI-/app/src/main/java/com/guidetradeai/ui/screens/SettingsScreen.kt:30:35 Unresolved reference 'icons'.
+2026-09-04T09:17:22.0915867Z e: file:///home/runner/work/Guide-trade-AI-/Guide-trade-AI-/app/src/main/java/com/guidetradeai/ui/screens/SettingsScreen.kt:31:35 Unresolved reference 'icons'.
+2026-09-04T09:17:22.0917975Z e: file:///home/runner/work/Guide-trade-AI-/Guide-trade-AI-/app/src/main/java/com/guidetradeai/ui/screens/SettingsScreen.kt:32:35 Unresolved reference 'icons'.
+2026-09-04T09:17:22.0920119Z e: file:///home/runner/work/Guide-trade-AI-/Guide-trade-AI-/app/src/main/java/com/guidetradeai/ui/screens/SettingsScreen.kt:33:35 Unresolved reference 'icons'.
+2026-09-04T09:17:22.0922047Z e: file:///home/runner/work/Guide-trade-AI-/Guide-trade-AI-/app/src/main/java/com/guidetradeai/ui/screens/SettingsScreen.kt:34:35 Unresolved reference 'icons'.
+2026-09-04T09:17:22.0923993Z e: file:///home/runner/work/Guide-trade-AI-/Guide-trade-AI-/app/src/main/java/com/guidetradeai/ui/screens/SettingsScreen.kt:35:35 Unresolved reference 'icons'.
+2026-09-04T09:17:22.0925895Z e: file:///home/runner/work/Guide-trade-AI-/Guide-trade-AI-/app/src/main/java/com/guidetradeai/ui/screens/SettingsScreen.kt:36:35 Unresolved reference 'icons'.
+2026-09-04T09:17:22.0956748Z e: file:///home/runner/work/Guide-trade-AI-/Guide-trade-AI-/app/src/main/java/com/guidetradeai/ui/screens/SettingsScreen.kt:75:28 Type 'androidx.compose.runtime.MutableState<kotlin.Boolean>' has no method 'setValue(Nothing?, KMutableProperty0<*>, Boolean)', so it cannot serve as a delegate for var (read-write property).
+2026-09-04T09:17:22.0959866Z e: file:///home/runner/work/Guide-trade-AI-/Guide-trade-AI-/app/src/main/java/com/guidetradeai/ui/screens/SettingsScreen.kt:96:28 Unresolved reference 'Icons'.
+2026-09-04T09:17:22.0961845Z e: file:///home/runner/work/Guide-trade-AI-/Guide-trade-AI-/app/src/main/java/com/guidetradeai/ui/screens/SettingsScreen.kt:105:28 Unresolved reference 'Icons'.
+2026-09-04T09:17:22.0986836Z e: file:///home/runner/work/Guide-trade-AI-/Guide-trade-AI-/app/src/main/java/com/guidetradeai/ui/screens/SettingsScreen.kt:114:28 Unresolved reference 'Icons'.
+2026-09-04T09:17:22.0989395Z e: file:///home/runner/work/Guide-trade-AI-/Guide-trade-AI-/app/src/main/java/com/guidetradeai/ui/screens/SettingsScreen.kt:121:28 Unresolved reference 'Icons'.
+2026-09-04T09:17:22.0991461Z e: file:///home/runner/work/Guide-trade-AI-/Guide-trade-AI-/app/src/main/java/com/guidetradeai/ui/screens/SettingsScreen.kt:131:28 Unresolved reference 'Icons'.
+2026-09-04T09:17:22.0993471Z e: file:///home/runner/work/Guide-trade-AI-/Guide-trade-AI-/app/src/main/java/com/guidetradeai/ui/screens/SettingsScreen.kt:140:28 Unresolved reference 'Icons'.
+2026-09-04T09:17:22.0995473Z e: file:///home/runner/work/Guide-trade-AI-/Guide-trade-AI-/app/src/main/java/com/guidetradeai/ui/screens/SettingsScreen.kt:154:28 Unresolved reference 'Icons'.
+2026-09-04T09:17:22.0997616Z e: file:///home/runner/work/Guide-trade-AI-/Guide-trade-AI-/app/src/main/java/com/guidetradeai/ui/screens/SettingsScreen.kt:230:27 Unresolved reference 'Icons'.
+2026-09-04T09:17:22.0999570Z e: file:///home/runner/work/Guide-trade-AI-/Guide-trade-AI-/app/src/main/java/com/guidetradeai/ui/screens/SettingsScreen.kt:270:47 Unresolved reference 'Icons'.
+2026-09-04T09:17:22.1002393Z e: file:///home/runner/work/Guide-trade-AI-/Guide-trade-AI-/app/src/main/java/com/guidetradeai/ui/screens/SignUpScreen.kt:21:35 Unresolved reference 'icons'.
+2026-09-04T09:17:22.1004460Z e: file:///home/runner/work/Guide-trade-AI-/Guide-trade-AI-/app/src/main/java/com/guidetradeai/ui/screens/SignUpScreen.kt:22:35 Unresolved reference 'icons'.
+2026-09-04T09:17:22.1006665Z e: file:///home/runner/work/Guide-trade-AI-/Guide-trade-AI-/app/src/main/java/com/guidetradeai/ui/screens/SignUpScreen.kt:23:35 Unresolved reference 'icons'.
+2026-09-04T09:17:22.1009753Z e: file:///home/runner/work/Guide-trade-AI-/Guide-trade-AI-/app/src/main/java/com/guidetradeai/ui/screens/SignUpScreen.kt:60:21 Type 'androidx.compose.runtime.MutableState<kotlin.String>' has no method 'setValue(Nothing?, KMutableProperty0<*>, String)', so it cannot serve as a delegate for var (read-write property).
+2026-09-04T09:17:22.1013801Z e: file:///home/runner/work/Guide-trade-AI-/Guide-trade-AI-/app/src/main/java/com/guidetradeai/ui/screens/SignUpScreen.kt:61:18 Type 'androidx.compose.runtime.MutableState<kotlin.String>' has no method 'setValue(Nothing?, KMutableProperty0<*>, String)', so it cannot serve as a delegate for var (read-write property).
+2026-09-04T09:17:22.1029295Z e: file:///home/runner/work/Guide-trade-AI-/Guide-trade-AI-/app/src/main/java/com/guidetradeai/ui/screens/SignUpScreen.kt:62:21 Type 'androidx.compose.runtime.MutableState<kotlin.String>' has no method 'setValue(Nothing?, KMutableProperty0<*>, String)', so it cannot serve as a delegate for var (read-write property).
+2026-09-04T09:17:22.1033095Z e: file:///home/runner/work/Guide-trade-AI-/Guide-trade-AI-/app/src/main/java/com/guidetradeai/ui/screens/SignUpScreen.kt:63:28 Type 'androidx.compose.runtime.MutableState<kotlin.String>' has no method 'setValue(Nothing?, KMutableProperty0<*>, String)', so it cannot serve as a delegate for var (read-write property).
+2026-09-04T09:17:22.1057374Z e: file:///home/runner/work/Guide-trade-AI-/Guide-trade-AI-/app/src/main/java/com/guidetradeai/ui/screens/SignUpScreen.kt:64:28 Type 'androidx.compose.runtime.MutableState<kotlin.Boolean>' has no method 'setValue(Nothing?, KMutableProperty0<*>, Boolean)', so it cannot serve as a delegate for var (read-write property).
+2026-09-04T09:17:22.1061385Z e: file:///home/runner/work/Guide-trade-AI-/Guide-trade-AI-/app/src/main/java/com/guidetradeai/ui/screens/SignUpScreen.kt:65:26 Type 'androidx.compose.runtime.MutableState<kotlin.String?>' has no method 'setValue(Nothing?, KMutableProperty0<*>, String?)', so it cannot serve as a delegate for var (read-write property).
+2026-09-04T09:17:22.1065189Z e: file:///home/runner/work/Guide-trade-AI-/Guide-trade-AI-/app/src/main/java/com/guidetradeai/ui/screens/SignUpScreen.kt:66:23 Type 'androidx.compose.runtime.MutableState<kotlin.String?>' has no method 'setValue(Nothing?, KMutableProperty0<*>, String?)', so it cannot serve as a delegate for var (read-write property).
+2026-09-04T09:17:22.1069596Z e: file:///home/runner/work/Guide-trade-AI-/Guide-trade-AI-/app/src/main/java/com/guidetradeai/ui/screens/SignUpScreen.kt:67:26 Type 'androidx.compose.runtime.MutableState<kotlin.String?>' has no method 'setValue(Nothing?, KMutableProperty0<*>, String?)', so it cannot serve as a delegate for var (read-write property).
+2026-09-04T09:17:22.1073488Z e: file:///home/runner/work/Guide-trade-AI-/Guide-trade-AI-/app/src/main/java/com/guidetradeai/ui/screens/SignUpScreen.kt:68:33 Type 'androidx.compose.runtime.MutableState<kotlin.String?>' has no method 'setValue(Nothing?, KMutableProperty0<*>, String?)', so it cannot serve as a delegate for var (read-write property).
+2026-09-04T09:17:22.1076607Z e: file:///home/runner/work/Guide-trade-AI-/Guide-trade-AI-/app/src/main/java/com/guidetradeai/ui/screens/SignUpScreen.kt:138:60 Unresolved reference 'Icons'.
+2026-09-04T09:17:22.1078500Z e: file:///home/runner/work/Guide-trade-AI-/Guide-trade-AI-/app/src/main/java/com/guidetradeai/ui/screens/SignUpScreen.kt:138:92 Unresolved reference 'Icons'.
+2026-09-04T09:17:22.1080933Z e: file:///home/runner/work/Guide-trade-AI-/Guide-trade-AI-/app/src/main/java/com/guidetradeai/ui/screens/SplashScreen.kt:107:18 Type 'androidx.compose.runtime.State<kotlin.Float>' has no method 'getValue(Nothing?, KProperty0<*>)', so it cannot serve as a delegate.
+2026-09-04T09:17:22.1095394Z e: file:///home/runner/work/Guide-trade-AI-/Guide-trade-AI-/app/src/main/java/com/guidetradeai/ui/screens/SplashScreen.kt:116:18 Type 'androidx.compose.runtime.State<kotlin.Float>' has no method 'getValue(Nothing?, KProperty0<*>)', so it cannot serve as a delegate.
+2026-09-04T09:17:22.1098367Z e: file:///home/runner/work/Guide-trade-AI-/Guide-trade-AI-/app/src/main/java/com/guidetradeai/ui/screens/TelegramSettingsScreen.kt:27:35 Unresolved reference 'icons'.
+2026-09-04T09:17:22.1100441Z e: file:///home/runner/work/Guide-trade-AI-/Guide-trade-AI-/app/src/main/java/com/guidetradeai/ui/screens/TelegramSettingsScreen.kt:28:35 Unresolved reference 'icons'.
+2026-09-04T09:17:22.1103245Z e: file:///home/runner/work/Guide-trade-AI-/Guide-trade-AI-/app/src/main/java/com/guidetradeai/ui/screens/TelegramSettingsScreen.kt:29:35 Unresolved reference 'icons'.
+2026-09-04T09:17:22.1105775Z e: file:///home/runner/work/Guide-trade-AI-/Guide-trade-AI-/app/src/main/java/com/guidetradeai/ui/screens/TelegramSettingsScreen.kt:30:35 Unresolved reference 'icons'.
+2026-09-04T09:17:22.1109191Z e: file:///home/runner/work/Guide-trade-AI-/Guide-trade-AI-/app/src/main/java/com/guidetradeai/ui/screens/TelegramSettingsScreen.kt:63:21 Type 'androidx.compose.runtime.MutableState<kotlin.String>' has no method 'setValue(Nothing?, KMutableProperty0<*>, String)', so it cannot serve as a delegate for var (read-write property).
+2026-09-04T09:17:22.1113202Z e: file:///home/runner/work/Guide-trade-AI-/Guide-trade-AI-/app/src/main/java/com/guidetradeai/ui/screens/TelegramSettingsScreen.kt:64:19 Type 'androidx.compose.runtime.MutableState<kotlin.String>' has no method 'setValue(Nothing?, KMutableProperty0<*>, String)', so it cannot serve as a delegate for var (read-write property).
+2026-09-04T09:17:22.1118085Z e: file:///home/runner/work/Guide-trade-AI-/Guide-trade-AI-/app/src/main/java/com/guidetradeai/ui/screens/TelegramSettingsScreen.kt:65:22 Type 'androidx.compose.runtime.MutableState<kotlin.Boolean>' has no method 'setValue(Nothing?, KMutableProperty0<*>, Boolean)', so it cannot serve as a delegate for var (read-write property).
+2026-09-04T09:17:22.1122310Z e: file:///home/runner/work/Guide-trade-AI-/Guide-trade-AI-/app/src/main/java/com/guidetradeai/ui/screens/TelegramSettingsScreen.kt:66:30 Type 'androidx.compose.runtime.MutableState<kotlin.Boolean>' has no method 'setValue(Nothing?, KMutableProperty0<*>, Boolean)', so it cannot serve as a delegate for var (read-write property).
+2026-09-04T09:17:22.1126956Z e: file:///home/runner/work/Guide-trade-AI-/Guide-trade-AI-/app/src/main/java/com/guidetradeai/ui/screens/TelegramSettingsScreen.kt:67:26 Type 'androidx.compose.runtime.MutableState<kotlin.String>' has no method 'setValue(Nothing?, KMutableProperty0<*>, String)', so it cannot serve as a delegate for var (read-write property).
+2026-09-04T09:17:22.1130410Z e: file:///home/runner/work/Guide-trade-AI-/Guide-trade-AI-/app/src/main/java/com/guidetradeai/ui/screens/TelegramSettingsScreen.kt:95:43 Unresolved reference 'Icons'.
+2026-09-04T09:17:22.1132636Z e: file:///home/runner/work/Guide-trade-AI-/Guide-trade-AI-/app/src/main/java/com/guidetradeai/ui/screens/TelegramSettingsScreen.kt:131:70 Unresolved reference 'KeyboardOptions'.
+2026-09-04T09:17:22.1134758Z e: file:///home/runner/work/Guide-trade-AI-/Guide-trade-AI-/app/src/main/java/com/guidetradeai/ui/screens/TelegramSettingsScreen.kt:135:62 Unresolved reference 'Icons'.
+2026-09-04T09:17:22.1137028Z e: file:///home/runner/work/Guide-trade-AI-/Guide-trade-AI-/app/src/main/java/com/guidetradeai/ui/screens/TelegramSettingsScreen.kt:135:95 Unresolved reference 'Icons'.
+2026-09-04T09:17:22.1139252Z e: file:///home/runner/work/Guide-trade-AI-/Guide-trade-AI-/app/src/main/java/com/guidetradeai/ui/screens/TelegramSettingsScreen.kt:164:70 Unresolved reference 'KeyboardOptions'.
+2026-09-04T09:17:22.1141476Z e: file:///home/runner/work/Guide-trade-AI-/Guide-trade-AI-/app/src/main/java/com/guidetradeai/ui/screens/VoiceSettingsScreen.kt:24:35 Unresolved reference 'icons'.
+2026-09-04T09:17:22.1143533Z e: file:///home/runner/work/Guide-trade-AI-/Guide-trade-AI-/app/src/main/java/com/guidetradeai/ui/screens/VoiceSettingsScreen.kt:25:35 Unresolved reference 'icons'.
+2026-09-04T09:17:22.1145531Z e: file:///home/runner/work/Guide-trade-AI-/Guide-trade-AI-/app/src/main/java/com/guidetradeai/ui/screens/VoiceSettingsScreen.kt:26:35 Unresolved reference 'icons'.
+2026-09-04T09:17:22.1148898Z e: file:///home/runner/work/Guide-trade-AI-/Guide-trade-AI-/app/src/main/java/com/guidetradeai/ui/screens/VoiceSettingsScreen.kt:53:25 Type 'androidx.compose.runtime.MutableState<kotlin.Boolean>' has no method 'setValue(Nothing?, KMutableProperty0<*>, Boolean)', so it cannot serve as a delegate for var (read-write property).
+2026-09-04T09:17:22.1153241Z e: file:///home/runner/work/Guide-trade-AI-/Guide-trade-AI-/app/src/main/java/com/guidetradeai/ui/screens/VoiceSettingsScreen.kt:54:22 Type 'androidx.compose.runtime.MutableState<kotlin.Boolean>' has no method 'setValue(Nothing?, KMutableProperty0<*>, Boolean)', so it cannot serve as a delegate for var (read-write property).
+2026-09-04T09:17:22.1156464Z e: file:///home/runner/work/Guide-trade-AI-/Guide-trade-AI-/app/src/main/java/com/guidetradeai/ui/screens/VoiceSettingsScreen.kt:68:43 Unresolved reference 'Icons'.
+2026-09-04T09:17:22.1157592Z 
+2026-09-04T09:17:22.1157793Z > Task :app:compileDebugKotlin FAILED
+2026-09-04T09:17:25.1605957Z > Task :app:mergeExtDexDebug
+2026-09-04T09:18:43.5571733Z 
+2026-09-04T09:18:43.5594707Z FAILURE: Build failed with an exception.
+2026-09-04T09:18:43.5595279Z 22 actionable tasks: 22 executed
+2026-09-04T09:18:43.5595593Z 
+2026-09-04T09:18:43.5597151Z * What went wrong:
+2026-09-04T09:18:43.5626842Z Execution failed for task ':app:compileDebugKotlin'.
+2026-09-04T09:18:43.5657547Z > A failure occurred while executing org.jetbrains.kotlin.compilerRunner.GradleCompilerRunnerWithWorkers$GradleKotlinCompilerWorkAction
+2026-09-04T09:18:43.5659263Z    > Compilation error. See log for more details
+2026-09-04T09:18:43.5659852Z 
+2026-09-04T09:18:43.5660148Z * Try:
+2026-09-04T09:18:43.5660796Z > Run with --stacktrace option to get the stack trace.
+2026-09-04T09:18:43.5661667Z > Run with --info or --debug option to get more log output.
+2026-09-04T09:18:43.5662490Z > Run with --scan to get full insights.
+2026-09-04T09:18:43.5663305Z > Get more help at https://help.gradle.org.
+2026-09-04T09:18:43.5663858Z 
+2026-09-04T09:18:43.5664171Z BUILD FAILED in 3m 48s
+2026-09-04T09:18:44.0284544Z ##[error]Process completed with exit code 1.
+2026-09-04T09:18:44.0464812Z Node 20 is being deprecated. This workflow is running with Node 24 by default. If you need to temporarily use Node 20, you can set the ACTIONS_ALLOW_USE_UNSECURE_NODE_VERSION=true environment variable. For more information see: https://github.blog/changelog/2025-09-19-deprecation-of-node-20-on-github-actions-runners/
+2026-09-04T09:18:44.0467544Z Post job cleanup.
+2026-09-04T09:18:44.1887059Z (node:2571) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.
+2026-09-04T09:18:44.1888368Z (Use `node --trace-deprecation ...` to show where the warning was created)
+2026-09-04T09:18:44.2115462Z Node 20 is being deprecated. This workflow is running with Node 24 by default. If you need to temporarily use Node 20, you can set the ACTIONS_ALLOW_USE_UNSECURE_NODE_VERSION=true environment variable. For more information see: https://github.blog/changelog/2025-09-19-deprecation-of-node-20-on-github-actions-runners/
+2026-09-04T09:18:44.2117041Z Post job cleanup.
+2026-09-04T09:18:44.3034441Z [command]/usr/bin/git version
+2026-09-04T09:18:44.3106828Z git version 2.55.0
+2026-09-04T09:18:44.3127276Z Temporarily overriding HOME='/home/runner/work/_temp/30609fd1-40ca-49a5-8894-ec9e138f3201' before making global git config changes
+2026-09-04T09:18:44.3128880Z Adding repository directory to the temporary git global config as a safe directory
+2026-09-04T09:18:44.3130177Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/Guide-trade-AI-/Guide-trade-AI-
+2026-09-04T09:18:44.3163655Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+2026-09-04T09:18:44.3199336Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+2026-09-04T09:18:44.3454673Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2026-09-04T09:18:44.3484019Z http.https://github.com/.extraheader
+2026-09-04T09:18:44.3495908Z [command]/usr/bin/git config --local --unset-all http.https://github.com/.extraheader
+2026-09-04T09:18:44.3531618Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+2026-09-04T09:18:44.3805436Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+2026-09-04T09:18:44.3861758Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+2026-09-04T09:18:44.4250125Z Cleaning up orphan processes
+2026-09-04T09:18:44.4561626Z Terminate orphan process: pid (2464) (java)
+2026-09-04T09:18:44.4572534Z ##[warning]Node.js 20 is deprecated. The following actions target Node.js 20 but are being forced to run on Node.js 24: actions/checkout@v4, actions/setup-java@v4. For more information see: https://github.blog/changelog/2025-09-19-deprecation-of-node-20-on-github-actions-runners/
