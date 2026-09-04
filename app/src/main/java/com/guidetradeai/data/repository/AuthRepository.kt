@@ -45,12 +45,18 @@ class AuthRepository(
                 Result.success(
                     User(
                         id = u.id,
-                        email = u.email ?: "",
+                        email = u.email ?: email,
                         fullName = fullName,
                     ),
                 )
             } else {
-                Result.error("Sign up succeeded but no user returned. Please check your email to verify your account.")
+                Result.success(
+                    User(
+                        id = "pending_verification",
+                        email = email,
+                        fullName = fullName,
+                    ),
+                )
             }
         } catch (e: Exception) {
             Result.error(mapAuthError(e.message ?: "Sign up failed"))
@@ -100,6 +106,15 @@ class AuthRepository(
             Result.success(Unit)
         } catch (e: Exception) {
             Result.error(mapAuthError(e.message ?: "Failed to send reset email"))
+        }
+    }
+
+    suspend fun resendVerificationEmail(email: String): Result<Unit> {
+        return try {
+            supabase.auth.resetPasswordForEmail(email)
+            Result.success(Unit)
+        } catch (e: Exception) {
+            Result.error(mapAuthError(e.message ?: "Failed to resend verification email"))
         }
     }
 

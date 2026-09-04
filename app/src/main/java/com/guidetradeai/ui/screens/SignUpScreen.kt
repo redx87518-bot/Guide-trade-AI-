@@ -50,6 +50,23 @@ fun SignUpScreen(
 ) {
     val authUiState by authViewModel.uiState.collectAsState()
 
+    LaunchedEffect(authUiState) {
+        when (authUiState) {
+            is AuthUiState.VerificationSent -> {
+                val emailArg = (authUiState as AuthUiState.VerificationSent).email
+                navController.navigate("${com.guidetradeai.ui.navigation.NavRoutes.VERIFICATION}/$emailArg") {
+                    popUpTo(com.guidetradeai.ui.navigation.NavRoutes.SIGNUP) { inclusive = true }
+                }
+            }
+            is AuthUiState.Authenticated -> {
+                navController.navigate(com.guidetradeai.ui.navigation.NavRoutes.HOME) {
+                    popUpTo(0) { inclusive = true }
+                }
+            }
+            else -> {}
+        }
+    }
+
     var fullName by rememberSaveable { mutableStateOf("") }
     var email by rememberSaveable { mutableStateOf("") }
     var password by rememberSaveable { mutableStateOf("") }
@@ -59,14 +76,6 @@ fun SignUpScreen(
     var emailError by remember { mutableStateOf<String?>(null) }
     var passwordError by remember { mutableStateOf<String?>(null) }
     var confirmPasswordError by remember { mutableStateOf<String?>(null) }
-
-    LaunchedEffect(authUiState) {
-        if (authUiState is AuthUiState.Authenticated) {
-            navController.navigate(com.guidetradeai.ui.navigation.NavRoutes.HOME) {
-                popUpTo(0) { inclusive = true }
-            }
-        }
-    }
 
     Column(
         modifier = Modifier
@@ -167,6 +176,14 @@ fun SignUpScreen(
             ),
             modifier = Modifier.fillMaxWidth(),
         )
+        if (authUiState is AuthUiState.Error) {
+            Text(
+                text = (authUiState as AuthUiState.Error).message,
+                color = MaterialTheme.colorScheme.error,
+                style = MaterialTheme.typography.bodySmall,
+                modifier = Modifier.padding(top = 8.dp),
+            )
+        }
         Spacer(modifier = Modifier.height(24.dp))
         Button(
             onClick = {
@@ -195,10 +212,10 @@ fun SignUpScreen(
                 .fillMaxWidth()
                 .height(56.dp),
             shape = RoundedCornerShape(16.dp),
-            enabled = fullName.isNotBlank() && email.isNotBlank() && password.isNotBlank() && confirmPassword.isNotBlank(),
+            enabled = fullName.isNotBlank() && email.isNotBlank() && password.isNotBlank() && confirmPassword.isNotBlank() && authUiState !is AuthUiState.Loading,
         ) {
             Text(
-                text = "SIGN UP",
+                text = if (authUiState is AuthUiState.Loading) "CREATING ACCOUNT..." else "SIGN UP",
                 fontSize = 16.sp,
                 fontWeight = androidx.compose.ui.text.font.FontWeight.SemiBold,
             )
@@ -206,6 +223,7 @@ fun SignUpScreen(
         Spacer(modifier = Modifier.height(16.dp))
         TextButton(
             onClick = { navController.navigate(com.guidetradeai.ui.navigation.NavRoutes.LOGIN) },
+            enabled = authUiState !is AuthUiState.Loading,
         ) {
             Text(
                 text = "Already have an account? Login",

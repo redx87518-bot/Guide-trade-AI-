@@ -147,7 +147,7 @@ fun LoginScreen(
                 modifier = Modifier.padding(bottom = 8.dp),
             )
             TextButton(
-                onClick = { navController.navigate("${com.guidetradeai.ui.navigation.NavRoutes.VERIFICATION}/${email}") },
+                onClick = { navController.navigate("${com.guidetradeai.ui.navigation.NavRoutes.VERIFICATION}/$email") },
                 modifier = Modifier.align(Alignment.CenterHorizontally),
             ) {
                 Text(
@@ -184,10 +184,10 @@ fun LoginScreen(
                 .fillMaxWidth()
                 .height(56.dp),
             shape = RoundedCornerShape(16.dp),
-            enabled = email.isNotBlank() && password.isNotBlank(),
+            enabled = email.isNotBlank() && password.isNotBlank() && authUiState !is AuthUiState.Loading,
         ) {
             Text(
-                text = "LOGIN",
+                text = if (authUiState is AuthUiState.Loading) "LOGGING IN..." else "LOGIN",
                 fontSize = 16.sp,
                 fontWeight = androidx.compose.ui.text.font.FontWeight.SemiBold,
             )
@@ -195,6 +195,7 @@ fun LoginScreen(
         Spacer(modifier = Modifier.height(16.dp))
         TextButton(
             onClick = { navController.navigate(com.guidetradeai.ui.navigation.NavRoutes.SIGNUP) },
+            enabled = authUiState !is AuthUiState.Loading,
         ) {
             Text(
                 text = "Don't have an account? Sign Up",

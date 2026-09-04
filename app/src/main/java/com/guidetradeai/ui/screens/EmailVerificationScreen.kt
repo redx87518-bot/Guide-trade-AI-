@@ -41,7 +41,6 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import com.guidetradeai.viewmodel.AuthUiState
 import com.guidetradeai.viewmodel.AuthViewModel
-import androidx.compose.runtime.setValue
 
 @Composable
 fun EmailVerificationScreen(
@@ -50,6 +49,14 @@ fun EmailVerificationScreen(
     email: String,
 ) {
     val authUiState by authViewModel.uiState.collectAsState()
+
+    LaunchedEffect(authUiState) {
+        if (authUiState is AuthUiState.Authenticated) {
+            navController.navigate(com.guidetradeai.ui.navigation.NavRoutes.HOME) {
+                popUpTo(0) { inclusive = true }
+            }
+        }
+    }
 
     Box(
         modifier = Modifier
@@ -69,6 +76,17 @@ fun EmailVerificationScreen(
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center,
         ) {
+            val infiniteTransition = rememberInfiniteTransition(label = "mail_pulse")
+            val scale by infiniteTransition.animateFloat(
+                initialValue = 1f,
+                targetValue = 1.08f,
+                animationSpec = infiniteRepeatable(
+                    animation = tween(1800, easing = LinearOutSlowInEasing),
+                    repeatMode = RepeatMode.Reverse,
+                ),
+                label = "mail_scale",
+            )
+
             Box(
                 modifier = Modifier
                     .size(120.dp)
@@ -84,16 +102,6 @@ fun EmailVerificationScreen(
                     ),
                 contentAlignment = Alignment.Center,
             ) {
-                val infiniteTransition = rememberInfiniteTransition(label = "mail_pulse")
-                val scale by infiniteTransition.animateFloat(
-                    initialValue = 1f,
-                    targetValue = 1.08f,
-                    animationSpec = infiniteRepeatable(
-                        animation = tween(1800),
-                        repeatMode = RepeatMode.Reverse,
-                    ),
-                    label = "mail_scale",
-                )
                 Text(
                     text = "✉",
                     fontSize = 48.sp,
@@ -138,6 +146,16 @@ fun EmailVerificationScreen(
                 textAlign = TextAlign.Center,
             )
 
+            if (authUiState is AuthUiState.Error) {
+                Spacer(modifier = Modifier.height(16.dp))
+                Text(
+                    text = (authUiState as AuthUiState.Error).message,
+                    color = MaterialTheme.colorScheme.error,
+                    style = MaterialTheme.typography.bodySmall,
+                    textAlign = TextAlign.Center,
+                )
+            }
+
             Spacer(modifier = Modifier.height(48.dp))
 
             Button(
@@ -159,9 +177,12 @@ fun EmailVerificationScreen(
 
             Spacer(modifier = Modifier.height(12.dp))
 
-            TextButton(onClick = { authViewModel.resendVerificationEmail(email) }) {
+            TextButton(
+                onClick = { authViewModel.resendVerificationEmail(email) },
+                enabled = authUiState !is AuthUiState.Loading,
+            ) {
                 Text(
-                    text = "Resend Email",
+                    text = if (authUiState is AuthUiState.Loading) "SENDING..." else "Resend Email",
                     color = MaterialTheme.colorScheme.primary,
                     fontWeight = FontWeight.W600,
                 )

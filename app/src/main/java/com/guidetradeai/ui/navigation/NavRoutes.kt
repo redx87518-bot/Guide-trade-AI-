@@ -6,7 +6,7 @@ object NavRoutes {
     const val LOGIN = "login"
     const val SIGNUP = "signup"
     const val FORGOT_PASSWORD = "forgot_password"
-    const val VERIFICATION = "verification"
+    const val VERIFICATION = "verification/{email}"
     const val HOME = "home"
     const val CHAT = "chat/{sessionId}"
     const val CHAT_NEW = "chat_new"
@@ -20,4 +20,5 @@ object NavRoutes {
     const val ABOUT = "about"
     fun chatRoute(sessionId: String) = "chat/$sessionId"
     fun researchDetailRoute(researchId: String) = "research_detail/$researchId"
+    fun verificationRoute(email: String) = "verification/$email"
 }

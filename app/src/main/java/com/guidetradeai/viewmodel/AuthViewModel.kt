@@ -17,7 +17,7 @@ sealed class AuthUiState {
     data class Authenticated(val user: User) : AuthUiState()
     data class Error(val message: String) : AuthUiState()
     object ResetPasswordSent : AuthUiState()
-    object VerificationSent : AuthUiState()
+    data class VerificationSent(val email: String) : AuthUiState()
     data class Unverified(val email: String, val message: String) : AuthUiState()
 }
 
@@ -52,9 +52,7 @@ class AuthViewModel(
         viewModelScope.launch {
             _uiState.value = AuthUiState.Loading
             when (val result = authRepository.signUp(email, password, fullName)) {
-                is Result.Success -> {
-                    _uiState.value = AuthUiState.VerificationSent
-                }
+                is Result.Success -> _uiState.value = AuthUiState.VerificationSent(email)
                 is Result.Error -> _uiState.value = AuthUiState.Error(result.message)
                 is Result.Loading -> _uiState.value = AuthUiState.Loading
             }
@@ -105,8 +103,8 @@ class AuthViewModel(
         viewModelScope.launch {
             _uiState.value = AuthUiState.Loading
             try {
-                authRepository.resetPassword(email)
-                _uiState.value = AuthUiState.VerificationSent
+                authRepository.resendVerificationEmail(email)
+                _uiState.value = AuthUiState.VerificationSent(email)
             } catch (e: Exception) {
                 _uiState.value = AuthUiState.Error(e.message ?: "Failed to resend verification email")
             }
