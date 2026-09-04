@@ -29,8 +29,8 @@ class ResearchRepository(
         return try {
             val body = """
             {
-                "session_id": "$sessionId",
-                "message": ${json.encodeToString(JsonPrimitive(message))}
+                "session_id": ${json.encodeToString(JsonElement.serializer(), JsonPrimitive(sessionId))},
+                "message": ${json.encodeToString(JsonElement.serializer(), JsonPrimitive(message))}
             }
             """.trimIndent()
             val response = supabase.functions.invoke("ai-chat", body = body)
