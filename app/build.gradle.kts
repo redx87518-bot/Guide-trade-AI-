@@ -78,21 +78,27 @@ dependencies {
     implementation("androidx.compose.foundation:foundation")
 
     // Supabase Kotlin SDK
-    implementation("io.github.jan-tennert.supabase:supabase-kt-android:2.6.1")
+    // Exclude the io.github.jan-tennert.supabase group from ALL transitive deps
+    // to prevent both debug+release AAR variants from being included via
+    // available-at redirect in Gradle module metadata. Each -android AAR is
+    // added directly below.
+    implementation("io.github.jan-tennert.supabase:supabase-kt-android:2.6.1") {
+        exclude(group = "io.github.jan-tennert.supabase")
+    }
     implementation("io.github.jan-tennert.supabase:gotrue-kt-android:2.6.1") {
-        exclude(group = "io.github.jan-tennert.supabase", module = "supabase-kt")
+        exclude(group = "io.github.jan-tennert.supabase")
     }
     implementation("io.github.jan-tennert.supabase:postgrest-kt-android:2.6.1") {
-        exclude(group = "io.github.jan-tennert.supabase", module = "supabase-kt")
+        exclude(group = "io.github.jan-tennert.supabase")
     }
     implementation("io.github.jan-tennert.supabase:functions-kt-android:2.6.1") {
-        exclude(group = "io.github.jan-tennert.supabase", module = "supabase-kt")
+        exclude(group = "io.github.jan-tennert.supabase")
     }
     implementation("io.github.jan-tennert.supabase:storage-kt-android:2.6.1") {
-        exclude(group = "io.github.jan-tennert.supabase", module = "supabase-kt")
+        exclude(group = "io.github.jan-tennert.supabase")
     }
     implementation("io.github.jan-tennert.supabase:realtime-kt-android:2.6.1") {
-        exclude(group = "io.github.jan-tennert.supabase", module = "supabase-kt")
+        exclude(group = "io.github.jan-tennert.supabase")
     }
 
     // Ktor (required by Supabase SDK for Android)
