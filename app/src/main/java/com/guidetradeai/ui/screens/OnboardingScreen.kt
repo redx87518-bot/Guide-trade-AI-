@@ -45,8 +45,6 @@ import kotlinx.coroutines.launch
 @Composable
 fun OnboardingScreen(navController: NavHostController) {
     val context = LocalContext.current
-    val pagerState = rememberPagerState { 3 }
-    val coroutineScope = rememberCoroutineScope()
     val onboardingData = listOf(
         OnboardingPageData(
             title = "AI Trading Research",
@@ -61,6 +59,7 @@ fun OnboardingScreen(navController: NavHostController) {
             description = "Chat sessions, research history, and Telegram notifications keep everything in order.",
         ),
     )
+    val pagerState = rememberPagerState { onboardingData.size }
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -69,7 +68,6 @@ fun OnboardingScreen(navController: NavHostController) {
         HorizontalPager(
             state = pagerState,
             modifier = Modifier.weight(1f),
-            pageCount = onboardingData.size,
         ) { page ->
             val data = onboardingData[page]
             OnboardingPage(
@@ -145,11 +143,9 @@ fun OnboardingPage(title: String, description: String) {
                 .size(120.dp)
                 .background(
                     brush = Brush.radialGradient(
-                        colors = listOf(
-                            Color(0xFF6366F1),
-                            Color(0xFF4345D8),
-                            Color(0xFF10B981),
-                        ),
+                        Color(0xFF6366F1),
+                        Color(0xFF4345D8),
+                        Color(0xFF10B981),
                         center = Offset(60f, 60f),
                         radius = 60f,
                     ),

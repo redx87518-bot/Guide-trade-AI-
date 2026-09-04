@@ -21,8 +21,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
-import androidx.navigation.compose.findStartDestination
-import androidx.compose.material3.navigationBarItemColors
+import androidx.navigation.findStartDestination
 import com.guidetradeai.ui.navigation.NavRoutes
 
 data class BottomNavItem(
@@ -66,9 +65,7 @@ fun BottomBar(
                     selected = currentRoute == item.route,
                     onClick = {
                         navController.navigate(item.route) {
-                            popUpTo(navController.graph.findStartDestination().id) {
-                                saveState = true
-                            }
+                            popUpTo(navController.graph.findStartDestination().id)
                             launchSingleTop = true
                             restoreState = true
                         }
@@ -86,7 +83,7 @@ fun BottomBar(
                         }
                     },
                     label = { Text(item.title) },
-                    colors = NavigationBarItemDefaults.navigationBarItemColors(),
+                    colors = NavigationBarItemDefaults.colors(),
                 )
             }
         }

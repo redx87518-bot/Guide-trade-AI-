@@ -80,11 +80,11 @@ fun AboutScreen(navController: NavHostController) {
                     .clip(CircleShape)
                     .background(
                         brush = Brush.radialGradient(
-                            colors = listOf(
-                                Color(0xFF6366F1),
-                                Color(0xFF4345D8),
-                                Color(0xFF10B981),
-                            ),
+                            Color(0xFF6366F1),
+                            Color(0xFF4345D8),
+                            Color(0xFF10B981),
+                            center = Offset(60f, 60f),
+                            radius = 60f,
                         ),
                     ),
                 contentAlignment = Alignment.Center,
