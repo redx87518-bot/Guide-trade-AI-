@@ -57,14 +57,19 @@ dependencies {
     implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.8.6")
     implementation("androidx.activity:activity-compose:1.9.3")
 
-    // Jetpack Compose
-    implementation("androidx.compose.ui:ui-android:1.7.0")
-    implementation("androidx.compose.ui:ui-graphics-android:1.7.0")
-    implementation("androidx.compose.ui:ui-tooling-preview-android:1.7.0")
-    implementation("androidx.compose.material3:material3-android:1.3.0")
-    implementation("androidx.compose.material:material-icons-extended-android:1.7.0")
-    debugImplementation("androidx.compose.ui:ui-tooling-android:1.7.0")
-    debugImplementation("androidx.compose.ui:ui-test-manifest-android:1.7.0")
+    // Jetpack Compose - use -android variants because base artifacts have broken
+    // Gradle module metadata (no files in android variants) on Google Maven
+    implementation(platform("androidx.compose:compose-bom:2024.10.00"))
+    implementation("androidx.compose.runtime:runtime-android")
+    implementation("androidx.compose.runtime:runtime-saveable-android")
+    implementation("androidx.compose.ui:ui-android")
+    implementation("androidx.compose.ui:ui-graphics-android")
+    implementation("androidx.compose.ui:ui-tooling-preview-android")
+    implementation("androidx.compose.material3:material3-android")
+    implementation("androidx.compose.material:material-icons-extended-android")
+    debugImplementation("androidx.compose.ui:ui-tooling-android")
+    debugImplementation("androidx.compose.ui:ui-test-manifest-android")
+    debugImplementation("androidx.compose.ui:ui-test-junit4-android")
 
     // Navigation
     implementation("androidx.navigation:navigation-compose:2.8.3")
@@ -74,8 +79,8 @@ dependencies {
     implementation("androidx.lifecycle:lifecycle-runtime-compose:2.8.6")
 
     // Pager
-    implementation("androidx.compose.foundation:foundation-android:1.7.0")
-    implementation("androidx.compose.foundation:foundation-layout-android:1.7.0")
+    implementation("androidx.compose.foundation:foundation-android")
+    implementation("androidx.compose.foundation:foundation-layout-android")
 
     // Supabase Kotlin SDK
     implementation("io.github.jan-tennert.supabase:supabase-kt:2.6.1")
@@ -104,5 +109,5 @@ dependencies {
     testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.8.1")
     androidTestImplementation("androidx.test.ext:junit:1.2.1")
     androidTestImplementation("androidx.test.espresso:espresso-core:3.6.1")
-    androidTestImplementation("androidx.compose.ui:ui-test-junit4:1.7.0")
+    androidTestImplementation("androidx.compose.ui:ui-test-junit4-android")
 }
