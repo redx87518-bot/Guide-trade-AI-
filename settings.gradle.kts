@@ -9,9 +9,9 @@ pluginManagement {
 dependencyResolutionManagement {
     repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
     repositories {
+        maven(url = uri("libs/local-maven"))
         google()
         mavenCentral()
-        maven(url = uri("libs/local-maven"))
     }
 }
 
