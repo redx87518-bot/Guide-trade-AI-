@@ -4,6 +4,7 @@ import android.app.Application
 import android.content.Context
 import android.content.SharedPreferences
 import com.guidetradeai.data.remote.SupabaseClient
+import io.github.jan.supabase.gotrue.auth
 
 class GuideTradeApp : Application() {
     val supabaseClient by lazy { SupabaseClient.client }

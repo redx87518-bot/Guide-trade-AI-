@@ -3,10 +3,9 @@ package com.guidetradeai.data.repository
 import com.guidetradeai.domain.Result
 import com.guidetradeai.domain.model.User
 import io.github.jan.supabase.SupabaseClient
-import io.github.jan.supabase.gotrue.UpdateUserData
+import io.github.jan.supabase.gotrue.SessionStatus
 import io.github.jan.supabase.gotrue.auth
-import io.github.jan.supabase.gotrue.exception.AuthException
-import io.github.jan.supabase.gotrue.status.SessionStatus
+import io.github.jan.supabase.gotrue.providers.builtin.Email
 import kotlinx.coroutines.flow.Flow
 import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.JsonPrimitive
@@ -35,13 +34,13 @@ class AuthRepository(
         return try {
             val data = buildJsonObject { put("full_name", JsonPrimitive(fullName)) }
             val result = supabase.auth.signUpWith(
-                io.github.jan.supabase.gotrue.SignUpAuthData(
-                    email = email,
-                    password = password,
-                    data = data,
-                ),
-            )
-            val u = result.user
+                Email,
+                password,
+            ) {
+                this.email = email
+                this.data = data
+            }
+            val u = result
             if (u != null) {
                 Result.success(
                     User(
@@ -53,22 +52,20 @@ class AuthRepository(
             } else {
                 Result.error("Sign up succeeded but no user returned")
             }
-        } catch (e: AuthException) {
-            Result.error(mapAuthError(e.message ?: "Sign up failed"))
         } catch (e: Exception) {
-            Result.error("Sign up failed: ${e.message}")
+            Result.error(mapAuthError(e.message ?: "Sign up failed"))
         }
     }
 
     suspend fun signIn(email: String, password: String): Result<User> {
         return try {
-            val result = supabase.auth.signInWith(
-                io.github.jan.supabase.gotrue.SignInWithPasswordAuthData(
-                    email = email,
-                    password = password,
-                ),
-            )
-            val u = result.user
+            supabase.auth.signInWith(
+                Email,
+                password,
+            ) {
+                this.email = email
+            }
+            val u = supabase.auth.currentUserOrNull()
             if (u != null) {
                 Result.success(
                     User(
@@ -83,10 +80,8 @@ class AuthRepository(
             } else {
                 Result.error("Login succeeded but no user returned")
             }
-        } catch (e: AuthException) {
-            Result.error(mapAuthError(e.message ?: "Login failed"))
         } catch (e: Exception) {
-            Result.error("Login failed: ${e.message}")
+            Result.error(mapAuthError(e.message ?: "Login failed"))
         }
     }
 
@@ -94,10 +89,8 @@ class AuthRepository(
         return try {
             supabase.auth.signOut()
             Result.success(Unit)
-        } catch (e: AuthException) {
-            Result.error(mapAuthError(e.message ?: "Logout failed"))
         } catch (e: Exception) {
-            Result.error("Logout failed: ${e.message}")
+            Result.error(mapAuthError(e.message ?: "Logout failed"))
         }
     }
 
@@ -105,24 +98,19 @@ class AuthRepository(
         return try {
             supabase.auth.resetPasswordForEmail(email)
             Result.success(Unit)
-        } catch (e: AuthException) {
-            Result.error(mapAuthError(e.message ?: "Failed to send reset email"))
         } catch (e: Exception) {
-            Result.error("Failed to send reset email: ${e.message}")
+            Result.error(mapAuthError(e.message ?: "Failed to send reset email"))
         }
     }
 
     suspend fun updateProfile(fullName: String?, avatarUrl: String?): Result<User> {
         return try {
-            val data = buildJsonObject {
-                fullName?.let { put("full_name", JsonPrimitive(it)) }
-                avatarUrl?.let { put("avatar_url", JsonPrimitive(it)) }
+            supabase.auth.updateUser {
+                data = buildJsonObject {
+                    fullName?.let { put("full_name", JsonPrimitive(it)) }
+                    avatarUrl?.let { put("avatar_url", JsonPrimitive(it)) }
+                }
             }
-            supabase.auth.updateUser(
-                UpdateUserData(
-                    data = data,
-                ),
-            )
             val u = supabase.auth.currentUserOrNull()
             if (u != null) {
                 Result.success(
@@ -138,10 +126,8 @@ class AuthRepository(
             } else {
                 Result.error("No user found after update")
             }
-        } catch (e: AuthException) {
-            Result.error(mapAuthError(e.message ?: "Failed to update profile"))
         } catch (e: Exception) {
-            Result.error("Failed to update profile: ${e.message}")
+            Result.error(mapAuthError(e.message ?: "Failed to update profile"))
         }
     }
 

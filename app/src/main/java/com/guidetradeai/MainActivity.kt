@@ -8,6 +8,7 @@ import com.guidetradeai.data.remote.SupabaseClient
 import com.guidetradeai.ui.navigation.NavGraph
 import com.guidetradeai.ui.theme.GuideTradeTheme
 import com.guidetradeai.viewmodel.AuthViewModel
+import io.github.jan.supabase.gotrue.auth
 
 class MainActivity : ComponentActivity() {
     private val authViewModel by lazy { AuthViewModel() }
