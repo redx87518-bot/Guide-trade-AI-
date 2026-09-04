@@ -85,6 +85,15 @@ dependencies {
     implementation("io.github.jan-tennert.supabase:storage-kt-android:2.6.1")
     implementation("io.github.jan-tennert.supabase:realtime-kt-android:2.6.1")
 
+    // Ktor (required by Supabase SDK for Android)
+    implementation("io.ktor:ktor-client-android:2.3.12")
+
+    // Kotlin Serialization
+    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.7.3")
+
+    // Coroutines
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.8.1")
+
     // Coil for image loading
     implementation("io.coil-kt:coil-compose:2.7.0")
 
