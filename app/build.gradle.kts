@@ -78,12 +78,24 @@ dependencies {
     implementation("androidx.compose.foundation:foundation")
 
     // Supabase Kotlin SDK
-    implementation("io.github.jan-tennert.supabase:supabase-kt:2.6.1")
-    implementation("io.github.jan-tennert.supabase:gotrue-kt:2.6.1")
-    implementation("io.github.jan-tennert.supabase:postgrest-kt:2.6.1")
-    implementation("io.github.jan-tennert.supabase:functions-kt:2.6.1")
-    implementation("io.github.jan-tennert.supabase:storage-kt:2.6.1")
-    implementation("io.github.jan-tennert.supabase:realtime-kt:2.6.1")
+    implementation("io.github.jan-tennert.supabase:supabase-kt-android:2.6.1") {
+        exclude(group = "io.github.jan-tennert.supabase", module = "supabase-kt-android-debug")
+    }
+    implementation("io.github.jan-tennert.supabase:gotrue-kt-android:2.6.1") {
+        exclude(group = "io.github.jan-tennert.supabase", module = "gotrue-kt-android-debug")
+    }
+    implementation("io.github.jan-tennert.supabase:postgrest-kt-android:2.6.1") {
+        exclude(group = "io.github.jan-tennert.supabase", module = "postgrest-kt-android-debug")
+    }
+    implementation("io.github.jan-tennert.supabase:functions-kt-android:2.6.1") {
+        exclude(group = "io.github.jan-tennert.supabase", module = "functions-kt-android-debug")
+    }
+    implementation("io.github.jan-tennert.supabase:storage-kt-android:2.6.1") {
+        exclude(group = "io.github.jan-tennert.supabase", module = "storage-kt-android-debug")
+    }
+    implementation("io.github.jan-tennert.supabase:realtime-kt-android:2.6.1") {
+        exclude(group = "io.github.jan-tennert.supabase", module = "realtime-kt-android-debug")
+    }
 
     // Ktor (required by Supabase SDK for Android)
     implementation("io.ktor:ktor-client-android:2.3.12")
