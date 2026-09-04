@@ -77,13 +77,13 @@ dependencies {
     // Pager
     implementation("androidx.compose.foundation:foundation")
 
-    // Supabase Kotlin SDK - using local AAR files with POMs to bypass KMP variant matching
-    implementation("io.github.jan-tennert.supabase:supabase-kt-android:2.6.1")
-    implementation("io.github.jan-tennert.supabase:gotrue-kt-android:2.6.1")
-    implementation("io.github.jan-tennert.supabase:postgrest-kt-android:2.6.1")
-    implementation("io.github.jan-tennert.supabase:functions-kt-android:2.6.1")
-    implementation("io.github.jan-tennert.supabase:storage-kt-android:2.6.1")
-    implementation("io.github.jan-tennert.supabase:realtime-kt-android:2.6.1")
+    // Supabase Kotlin SDK
+    implementation("io.github.jan-tennert.supabase:supabase-kt:2.6.1")
+    implementation("io.github.jan-tennert.supabase:gotrue-kt:2.6.1")
+    implementation("io.github.jan-tennert.supabase:postgrest-kt:2.6.1")
+    implementation("io.github.jan-tennert.supabase:functions-kt:2.6.1")
+    implementation("io.github.jan-tennert.supabase:storage-kt:2.6.1")
+    implementation("io.github.jan-tennert.supabase:realtime-kt:2.6.1")
 
     // Ktor (required by Supabase SDK for Android)
     implementation("io.ktor:ktor-client-android:2.3.12")
