@@ -6,6 +6,7 @@ import com.guidetradeai.domain.model.ChatSession
 import io.github.jan.supabase.SupabaseClient
 import io.github.jan.supabase.gotrue.auth
 import io.github.jan.supabase.postgrest.postgrest
+import io.github.jan.supabase.postgrest.query.Order
 import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.jsonObject
 import kotlinx.serialization.json.jsonPrimitive
@@ -20,13 +21,13 @@ class ChatRepository(
     suspend fun createChatSession(title: String): Result<ChatSession> {
         return try {
             val result = supabase.postgrest.from("chat_sessions").insert(
-                mapOf("title" to title, "user_id" to currentUserId()),
+                JsonObject(mapOf("title" to title, "user_id" to currentUserId())),
             ) {
                 select()
             }
-            val row = result.firstOrNull()
+            val row = result.decodeSingleOrNull<JsonObject>()
             if (row != null) {
-                Result.success(mapToChatSession(row.jsonObject))
+                Result.success(mapToChatSession(row))
             } else {
                 Result.error("Failed to create chat session")
             }
@@ -38,10 +39,11 @@ class ChatRepository(
     suspend fun getChatSessions(): Result<List<ChatSession>> {
         return try {
             val result = supabase.postgrest.from("chat_sessions").select {
-                eq("user_id", currentUserId())
-                order("updated_at", ascending = false)
+                filter { eq("user_id", currentUserId()) }
+                order("updated_at", Order.DESCENDING)
             }
-            Result.success(result.map { mapToChatSession(it.jsonObject) })
+            val rows = result.decodeList<JsonObject>()
+            Result.success(rows.map { mapToChatSession(it) })
         } catch (e: Exception) {
             Result.error("Failed to load chat sessions: ${e.message}")
         }
@@ -50,10 +52,11 @@ class ChatRepository(
     suspend fun getChatMessages(sessionId: String): Result<List<ChatMessage>> {
         return try {
             val result = supabase.postgrest.from("chat_messages").select {
-                eq("session_id", sessionId)
-                order("created_at", ascending = true)
+                filter { eq("session_id", sessionId) }
+                order("created_at", Order.ASCENDING)
             }
-            Result.success(result.map { mapToChatMessage(it.jsonObject) })
+            val rows = result.decodeList<JsonObject>()
+            Result.success(rows.map { mapToChatMessage(it) })
         } catch (e: Exception) {
             Result.error("Failed to load messages: ${e.message}")
         }
@@ -66,18 +69,18 @@ class ChatRepository(
     ): Result<ChatMessage> {
         return try {
             val result = supabase.postgrest.from("chat_messages").insert(
-                mapOf(
+                JsonObject(mapOf(
                     "session_id" to sessionId,
                     "user_id" to currentUserId(),
                     "role" to role,
                     "content" to content,
-                ),
+                )),
             ) {
                 select()
             }
-            val row = result.firstOrNull()
+            val row = result.decodeSingleOrNull<JsonObject>()
             if (row != null) {
-                Result.success(mapToChatMessage(row.jsonObject))
+                Result.success(mapToChatMessage(row))
             } else {
                 Result.error("Failed to save message")
             }
@@ -89,8 +92,10 @@ class ChatRepository(
     suspend fun renameSession(sessionId: String, newTitle: String): Result<Unit> {
         return try {
             supabase.postgrest.from("chat_sessions")
-                .update(mapOf("title" to newTitle)) {
-                    eq("id", sessionId)
+                .update(
+                    JsonObject(mapOf("title" to newTitle)),
+                ) {
+                    filter { eq("id", sessionId) }
                 }
             Result.success(Unit)
         } catch (e: Exception) {
@@ -102,7 +107,7 @@ class ChatRepository(
         return try {
             supabase.postgrest.from("chat_sessions")
                 .delete {
-                    eq("id", sessionId)
+                    filter { eq("id", sessionId) }
                 }
             Result.success(Unit)
         } catch (e: Exception) {

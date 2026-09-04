@@ -89,9 +89,9 @@ class VoiceViewModel(
                         "text": ${kotlinx.serialization.json.Json.encodeToString(kotlinx.serialization.json.JsonPrimitive(text))}
                     """.trimIndent(),
                 )
-                val data = response.data
+                val data = response.bodyAsText()
                 val json = kotlinx.serialization.json.Json.decodeFromString<kotlinx.serialization.json.JsonObject>(data)
-                val audioBase64 = json.jsonObject["audio"]?.jsonPrimitive?.contentOrNull
+                val audioBase64 = json.jsonObject["audio"]?.jsonPrimitive?.content
                 if (audioBase64 != null) {
                     _uiState.value = VoiceUiState.Speaking()
                     audioPlayer.playBase64Audio(audioBase64) {

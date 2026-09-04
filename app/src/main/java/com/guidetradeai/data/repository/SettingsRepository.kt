@@ -5,7 +5,9 @@ import com.guidetradeai.domain.model.UserSettings
 import io.github.jan.supabase.SupabaseClient
 import io.github.jan.supabase.gotrue.auth
 import io.github.jan.supabase.postgrest.postgrest
+import io.github.jan.supabase.postgrest.query.Order
 import kotlinx.serialization.json.JsonObject
+import kotlinx.serialization.json.buildJsonObject
 import kotlinx.serialization.json.jsonObject
 import kotlinx.serialization.json.jsonPrimitive
 
@@ -19,11 +21,13 @@ class SettingsRepository(
     suspend fun getUserSettings(): Result<UserSettings> {
         return try {
             val result = supabase.postgrest.from("user_settings").select {
-                eq("user_id", currentUserId())
+                filter { eq("user_id", currentUserId()) }
+                order("created_at", Order.DESCENDING)
             }
-            val row = result.firstOrNull()
+            val rows = result.decodeList<JsonObject>()
+            val row = rows.firstOrNull()
             if (row != null) {
-                Result.success(mapToSettings(row.jsonObject))
+                Result.success(mapToSettings(row))
             } else {
                 Result.success(UserSettings(userId = currentUserId()))
             }
@@ -35,8 +39,10 @@ class SettingsRepository(
     suspend fun updateVoiceEnabled(enabled: Boolean): Result<Unit> {
         return try {
             supabase.postgrest.from("user_settings")
-                .update(mapOf("voice_enabled" to enabled)) {
-                    eq("user_id", currentUserId())
+                .update(
+                    buildJsonObject { put("voice_enabled", enabled) },
+                ) {
+                    filter { eq("user_id", currentUserId()) }
                 }
             Result.success(Unit)
         } catch (e: Exception) {
@@ -47,8 +53,10 @@ class SettingsRepository(
     suspend fun updateAutoSpeak(enabled: Boolean): Result<Unit> {
         return try {
             supabase.postgrest.from("user_settings")
-                .update(mapOf("auto_speak" to enabled)) {
-                    eq("user_id", currentUserId())
+                .update(
+                    buildJsonObject { put("auto_speak", enabled) },
+                ) {
+                    filter { eq("user_id", currentUserId()) }
                 }
             Result.success(Unit)
         } catch (e: Exception) {
@@ -59,8 +67,10 @@ class SettingsRepository(
     suspend fun updateTheme(theme: String): Result<Unit> {
         return try {
             supabase.postgrest.from("user_settings")
-                .update(mapOf("theme" to theme)) {
-                    eq("user_id", currentUserId())
+                .update(
+                    buildJsonObject { put("theme", theme) },
+                ) {
+                    filter { eq("user_id", currentUserId()) }
                 }
             Result.success(Unit)
         } catch (e: Exception) {

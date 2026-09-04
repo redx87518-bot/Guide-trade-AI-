@@ -7,8 +7,10 @@ import io.github.jan.supabase.SupabaseClient
 import io.github.jan.supabase.gotrue.auth
 import io.github.jan.supabase.functions.functions
 import io.github.jan.supabase.postgrest.postgrest
+import io.github.jan.supabase.postgrest.query.Order
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonObject
+import kotlinx.serialization.json.buildJsonObject
 import kotlinx.serialization.json.jsonObject
 import kotlinx.serialization.json.jsonPrimitive
 
@@ -30,15 +32,15 @@ class ResearchRepository(
             }
             """.trimIndent()
             val response = supabase.functions.invoke("ai-chat", body = body)
-            val data = response.data
+            val data = response.bodyAsText()
             val jsonObject = json.decodeFromString<JsonObject>(data)
-            val error = jsonObject.jsonObject["error"]?.jsonPrimitive?.contentOrNull
+            val error = jsonObject.jsonObject["error"]?.jsonPrimitive?.content
             if (error != null) {
                 return Result.error(mapFunctionError(error))
             }
-            val content = jsonObject.jsonObject["content"]?.jsonPrimitive?.contentOrNull ?: ""
-            val role = jsonObject.jsonObject["role"]?.jsonPrimitive?.contentOrNull ?: "assistant"
-            val timestamp = jsonObject.jsonObject["timestamp"]?.jsonPrimitive?.contentOrNull
+            val content = jsonObject.jsonObject["content"]?.jsonPrimitive?.content ?: ""
+            val role = jsonObject.jsonObject["role"]?.jsonPrimitive?.content ?: "assistant"
+            val timestamp = jsonObject.jsonObject["timestamp"]?.jsonPrimitive?.content
             Result.success(AiChatResponse(role = role, content = content, timestamp = timestamp))
         } catch (e: Exception) {
             Result.error("Failed to get AI response: ${e.message}")
@@ -54,21 +56,20 @@ class ResearchRepository(
         response: String,
     ): Result<ResearchResult> {
         return try {
-            val result = supabase.postgrest.from("research_results").insert(
-                mapOf(
-                    "user_id" to userId,
-                    "session_id" to sessionId,
-                    "title" to title,
-                    "query" to query,
-                    "asset" to asset,
-                    "response" to response,
-                ),
-            ) {
+            val data = buildJsonObject {
+                put("user_id", userId)
+                put("session_id", sessionId)
+                put("title", title)
+                put("query", query)
+                put("asset", asset ?: "null")
+                put("response", response)
+            }
+            val result = supabase.postgrest.from("research_results").insert(data) {
                 select()
             }
-            val row = result.firstOrNull()
+            val row = result.decodeSingleOrNull<JsonObject>()
             if (row != null) {
-                Result.success(mapToResearchResult(row.jsonObject))
+                Result.success(mapToResearchResult(row))
             } else {
                 Result.error("Failed to save research result")
             }
@@ -80,10 +81,11 @@ class ResearchRepository(
     suspend fun getResearchHistory(): Result<List<ResearchResult>> {
         return try {
             val result = supabase.postgrest.from("research_results").select {
-                eq("user_id", currentUserId())
-                order("created_at", ascending = false)
+                filter { eq("user_id", currentUserId()) }
+                order("created_at", Order.DESCENDING)
             }
-            Result.success(result.map { mapToResearchResult(it.jsonObject) })
+            val rows = result.decodeList<JsonObject>()
+            Result.success(rows.map { mapToResearchResult(it) })
         } catch (e: Exception) {
             Result.error("Failed to load research history: ${e.message}")
         }
@@ -92,11 +94,11 @@ class ResearchRepository(
     suspend fun getResearchResult(id: String): Result<ResearchResult> {
         return try {
             val result = supabase.postgrest.from("research_results").select {
-                eq("id", id)
+                filter { eq("id", id) }
             }
-            val row = result.firstOrNull()
+            val row = result.decodeSingleOrNull<JsonObject>()
             if (row != null) {
-                Result.success(mapToResearchResult(row.jsonObject))
+                Result.success(mapToResearchResult(row))
             } else {
                 Result.error("Research result not found")
             }
@@ -109,7 +111,7 @@ class ResearchRepository(
         return try {
             supabase.postgrest.from("research_results")
                 .delete {
-                    eq("id", id)
+                    filter { eq("id", id) }
                 }
             Result.success(Unit)
         } catch (e: Exception) {
@@ -137,11 +139,11 @@ class ResearchRepository(
             }
             """.trimIndent()
             val resp = supabase.functions.invoke("telegram-send", body = body)
-            val data = resp.data
+            val data = resp.bodyAsText()
             val jsonObj = json.decodeFromString<JsonObject>(data)
             val success = jsonObj.jsonObject["success"]?.jsonPrimitive?.content?.toBooleanStrictOrNull()
             val message = jsonObj.jsonObject["message"]?.jsonPrimitive?.content ?: ""
-            val error = jsonObj.jsonObject["error"]?.jsonPrimitive?.contentOrNull
+            val error = jsonObj.jsonObject["error"]?.jsonPrimitive?.content
             if (error != null && success != true) {
                 Result.error(error)
             } else {
@@ -156,10 +158,10 @@ class ResearchRepository(
         return ResearchResult(
             id = obj["id"]?.jsonPrimitive?.content ?: "",
             userId = obj["user_id"]?.jsonPrimitive?.content ?: "",
-            sessionId = obj["session_id"]?.jsonPrimitive?.contentOrNull,
+            sessionId = obj["session_id"]?.jsonPrimitive?.content,
             title = obj["title"]?.jsonPrimitive?.content ?: "",
             query = obj["query"]?.jsonPrimitive?.content ?: "",
-            asset = obj["asset"]?.jsonPrimitive?.contentOrNull,
+            asset = obj["asset"]?.jsonPrimitive?.content,
             response = obj["response"]?.jsonPrimitive?.content ?: "",
             createdAt = obj["created_at"]?.jsonPrimitive?.content ?: "",
         )

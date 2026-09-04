@@ -23,8 +23,8 @@ class AuthRepository(
         return User(
             id = u.id,
             email = u.email ?: "",
-            fullName = u.userMetadata?.jsonObject?.get("full_name")?.jsonPrimitive?.contentOrNull,
-            avatarUrl = u.userMetadata?.jsonObject?.get("avatar_url")?.jsonPrimitive?.contentOrNull,
+            fullName = u.userMetadata?.jsonObject?.get("full_name")?.jsonPrimitive?.content,
+            avatarUrl = u.userMetadata?.jsonObject?.get("avatar_url")?.jsonPrimitive?.content,
             createdAt = u.createdAt?.toString() ?: "",
             updatedAt = u.updatedAt?.toString() ?: "",
         )
@@ -71,8 +71,8 @@ class AuthRepository(
                     User(
                         id = u.id,
                         email = u.email ?: "",
-                        fullName = u.userMetadata?.jsonObject?.get("full_name")?.jsonPrimitive?.contentOrNull ?: "",
-                        avatarUrl = u.userMetadata?.jsonObject?.get("avatar_url")?.jsonPrimitive?.contentOrNull,
+                        fullName = u.userMetadata?.jsonObject?.get("full_name")?.jsonPrimitive?.content ?: "",
+                        avatarUrl = u.userMetadata?.jsonObject?.get("avatar_url")?.jsonPrimitive?.content,
                         createdAt = u.createdAt?.toString() ?: "",
                         updatedAt = u.updatedAt?.toString() ?: "",
                     ),
@@ -117,8 +117,8 @@ class AuthRepository(
                     User(
                         id = u.id,
                         email = u.email ?: "",
-                        fullName = fullName ?: u.userMetadata?.jsonObject?.get("full_name")?.jsonPrimitive?.contentOrNull ?: "",
-                        avatarUrl = avatarUrl ?: u.userMetadata?.jsonObject?.get("avatar_url")?.jsonPrimitive?.contentOrNull,
+                        fullName = fullName ?: u.userMetadata?.jsonObject?.get("full_name")?.jsonPrimitive?.content ?: "",
+                        avatarUrl = avatarUrl ?: u.userMetadata?.jsonObject?.get("avatar_url")?.jsonPrimitive?.content,
                         createdAt = u.createdAt?.toString() ?: "",
                         updatedAt = u.updatedAt?.toString() ?: "",
                     ),

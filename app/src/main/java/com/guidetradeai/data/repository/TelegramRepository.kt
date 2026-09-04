@@ -6,6 +6,7 @@ import io.github.jan.supabase.SupabaseClient
 import io.github.jan.supabase.gotrue.auth
 import io.github.jan.supabase.functions.functions
 import io.github.jan.supabase.postgrest.postgrest
+import io.github.jan.supabase.postgrest.query.Order
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.buildJsonObject
@@ -24,11 +25,13 @@ class TelegramRepository(
     suspend fun getTelegramSettings(): Result<TelegramSettings> {
         return try {
             val result = supabase.postgrest.from("telegram_settings").select {
-                eq("user_id", currentUserId())
+                filter { eq("user_id", currentUserId()) }
+                order("created_at", Order.DESCENDING)
             }
-            val row = result.firstOrNull()
+            val rows = result.decodeList<JsonObject>()
+            val row = rows.firstOrNull()
             if (row != null) {
-                Result.success(mapToTelegramSettings(row.jsonObject))
+                Result.success(mapToTelegramSettings(row))
             } else {
                 Result.success(TelegramSettings(userId = currentUserId()))
             }
@@ -52,7 +55,7 @@ class TelegramRepository(
             }
             """.trimIndent()
             val resp = supabase.functions.invoke("telegram-test", body = body)
-            parseSuccessResponse(resp.data)
+            parseSuccessResponse(resp.bodyAsText())
         } catch (e: Exception) {
             Result.error("Failed to test Telegram connection: ${e.message}")
         }
@@ -66,16 +69,16 @@ class TelegramRepository(
         sendChatResults: Boolean,
     ): Result<Unit> {
         return try {
-            val updates = mapOf(
-                "bot_token" to botToken,
-                "chat_id" to chatId,
-                "enabled" to enabled,
-                "send_research" to sendResearch,
-                "send_chat_results" to sendChatResults,
-            )
+            val updates = buildJsonObject {
+                put("bot_token", botToken)
+                put("chat_id", chatId)
+                put("enabled", enabled)
+                put("send_research", sendResearch)
+                put("send_chat_results", sendChatResults)
+            }
             supabase.postgrest.from("telegram_settings")
                 .upsert(updates) {
-                    eq("user_id", currentUserId())
+                    filter { eq("user_id", currentUserId()) }
                 }
             Result.success(Unit)
         } catch (e: Exception) {
@@ -86,8 +89,10 @@ class TelegramRepository(
     suspend fun disableTelegram(): Result<Unit> {
         return try {
             supabase.postgrest.from("telegram_settings")
-                .update(mapOf("enabled" to false)) {
-                    eq("user_id", currentUserId())
+                .update(
+                    buildJsonObject { put("enabled", false) },
+                ) {
+                    filter { eq("user_id", currentUserId()) }
                 }
             Result.success(Unit)
         } catch (e: Exception) {
@@ -111,7 +116,7 @@ class TelegramRepository(
         return try {
             val body = buildTelegramSendBody(title, query, response, asset, researchId)
             val resp = supabase.functions.invoke("telegram-send", body = body)
-            parseSuccessResponse(resp.data)
+            parseSuccessResponse(resp.bodyAsText())
         } catch (e: Exception) {
             Result.error("Failed to send to Telegram: ${e.message}")
         }
@@ -122,7 +127,7 @@ class TelegramRepository(
             val jsonObj = json.decodeFromString<JsonObject>(data)
             val success = jsonObj.jsonObject["success"]?.jsonPrimitive?.content?.toBooleanStrictOrNull()
             val message = jsonObj.jsonObject["message"]?.jsonPrimitive?.content ?: ""
-            val error = jsonObj.jsonObject["error"]?.jsonPrimitive?.contentOrNull
+            val error = jsonObj.jsonObject["error"]?.jsonPrimitive?.content
             if (error != null && success != true) {
                 Result.error(error)
             } else {
@@ -164,8 +169,8 @@ class TelegramRepository(
     private fun mapToTelegramSettings(obj: JsonObject): TelegramSettings {
         return TelegramSettings(
             userId = obj["user_id"]?.jsonPrimitive?.content ?: "",
-            botTokenEncrypted = obj["bot_token_encrypted"]?.jsonPrimitive?.contentOrNull,
-            chatId = obj["chat_id"]?.jsonPrimitive?.contentOrNull,
+            botTokenEncrypted = obj["bot_token_encrypted"]?.jsonPrimitive?.content,
+            chatId = obj["chat_id"]?.jsonPrimitive?.content,
             enabled = obj["enabled"]?.jsonPrimitive?.content?.toBooleanStrictOrNull() ?: false,
             sendResearch = obj["send_research"]?.jsonPrimitive?.content?.toBooleanStrictOrNull() ?: true,
             sendChatResults = obj["send_chat_results"]?.jsonPrimitive?.content?.toBooleanStrictOrNull() ?: false,
