@@ -77,32 +77,17 @@ dependencies {
     // Pager
     implementation("androidx.compose.foundation:foundation")
 
-    // Supabase Kotlin SDK
-    // Use -android suffix (release-only AARs) to avoid KMP variant matching issues
-    // with available-at redirect that pulls both debug+release AARs.
-    // Exclude ALL base KMP modules from ALL transitive deps to prevent the
-    // available-at redirect (which pulls debug+release variants) from triggering.
-    val supabaseExcludes = listOf(
-        "supabase-kt", "gotrue-kt", "postgrest-kt", "functions-kt", "storage-kt", "realtime-kt"
-    )
-    implementation("io.github.jan-tennert.supabase:supabase-kt-android:2.6.1")
-    implementation("io.github.jan-tennert.supabase:gotrue-kt-android:2.6.1") {
-        supabaseExcludes.forEach { module -> exclude(group = "io.github.jan-tennert.supabase", module = module) }
-    }
-    implementation("io.github.jan-tennert.supabase:postgrest-kt-android:2.6.1") {
-        supabaseExcludes.forEach { module -> exclude(group = "io.github.jan-tennert.supabase", module = module) }
-    }
-    implementation("io.github.jan-tennert.supabase:functions-kt-android:2.6.1") {
-        supabaseExcludes.forEach { module -> exclude(group = "io.github.jan-tennert.supabase", module = module) }
-    }
-    implementation("io.github.jan-tennert.supabase:storage-kt-android:2.6.1") {
-        supabaseExcludes.forEach { module -> exclude(group = "io.github.jan-tennert.supabase", module = module) }
-    }
-    implementation("io.github.jan-tennert.supabase:realtime-kt-android:2.6.1") {
-        supabaseExcludes.forEach { module -> exclude(group = "io.github.jan-tennert.supabase", module = module) }
-    }
+    // Supabase Kotlin SDK - using local AAR files to bypass KMP variant matching issues
+    implementation(files(
+        "libs/supabase/supabase-kt-android-2.6.1.aar",
+        "libs/supabase/gotrue-kt-android-2.6.1.aar",
+        "libs/supabase/postgrest-kt-android-2.6.1.aar",
+        "libs/supabase/functions-kt-android-2.6.1.aar",
+        "libs/supabase/storage-kt-android-2.6.1.aar",
+        "libs/supabase/realtime-kt-android-2.6.1.aar"
+    ))
 
-    // Ktor (required by Supabase SDK for Android)
+    // Supabase transitive dependencies
     implementation("io.ktor:ktor-client-android:2.3.12")
 
     // Kotlin Serialization
