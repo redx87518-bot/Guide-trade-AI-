@@ -156,7 +156,7 @@ fun OnboardingPage(title: String, description: String) {
                     shape = CircleShape,
                 ),
             contentAlignment = Alignment.Center,
-        )
+        ) {}
 
         Spacer(modifier = Modifier.height(32.dp))
 

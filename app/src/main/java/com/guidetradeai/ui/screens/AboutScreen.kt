@@ -91,7 +91,7 @@ fun AboutScreen(navController: NavHostController) {
                         ),
                     ),
                 contentAlignment = Alignment.Center,
-            )
+            ) {}
 
             Spacer(modifier = Modifier.height(24.dp))
 
