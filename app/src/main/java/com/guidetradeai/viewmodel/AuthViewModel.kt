@@ -17,6 +17,8 @@ sealed class AuthUiState {
     data class Authenticated(val user: User) : AuthUiState()
     data class Error(val message: String) : AuthUiState()
     object ResetPasswordSent : AuthUiState()
+    data class VerificationSent(val email: String) : AuthUiState()
+    data class Unverified(val email: String, val message: String) : AuthUiState()
 }
 
 class AuthViewModel(
@@ -50,7 +52,7 @@ class AuthViewModel(
         viewModelScope.launch {
             _uiState.value = AuthUiState.Loading
             when (val result = authRepository.signUp(email, password, fullName)) {
-                is Result.Success -> _uiState.value = AuthUiState.Authenticated(result.data)
+                is Result.Success -> _uiState.value = AuthUiState.VerificationSent(email)
                 is Result.Error -> _uiState.value = AuthUiState.Error(result.message)
                 is Result.Loading -> _uiState.value = AuthUiState.Loading
             }
@@ -62,7 +64,14 @@ class AuthViewModel(
             _uiState.value = AuthUiState.Loading
             when (val result = authRepository.signIn(email, password)) {
                 is Result.Success -> _uiState.value = AuthUiState.Authenticated(result.data)
-                is Result.Error -> _uiState.value = AuthUiState.Error(result.message)
+                is Result.Error -> {
+                    val lower = result.message.lowercase()
+                    if (lower.contains("verify") || lower.contains("not confirmed") || lower.contains("email")) {
+                        _uiState.value = AuthUiState.Unverified(email, result.message)
+                    } else {
+                        _uiState.value = AuthUiState.Error(result.message)
+                    }
+                }
                 is Result.Loading -> _uiState.value = AuthUiState.Loading
             }
         }
@@ -86,6 +95,18 @@ class AuthViewModel(
                 is Result.Success -> _uiState.value = AuthUiState.ResetPasswordSent
                 is Result.Error -> _uiState.value = AuthUiState.Error(result.message)
                 is Result.Loading -> _uiState.value = AuthUiState.Loading
+            }
+        }
+    }
+
+    fun resendVerificationEmail(email: String) {
+        viewModelScope.launch {
+            _uiState.value = AuthUiState.Loading
+            try {
+                authRepository.resetPassword(email)
+                _uiState.value = AuthUiState.VerificationSent(email)
+            } catch (e: Exception) {
+                _uiState.value = AuthUiState.Error(e.message ?: "Failed to resend verification email")
             }
         }
     }
