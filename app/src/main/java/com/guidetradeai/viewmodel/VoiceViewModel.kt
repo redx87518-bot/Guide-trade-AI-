@@ -9,10 +9,14 @@ import com.guidetradeai.domain.Result
 import com.guidetradeai.voice.AudioPlayer
 import com.guidetradeai.voice.VoiceState
 import io.github.jan.supabase.functions.functions
+import io.ktor.client.statement.bodyAsText
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
+import kotlinx.serialization.json.Json
+import kotlinx.serialization.json.JsonObject
+import kotlinx.serialization.json.JsonPrimitive
 
 sealed class VoiceUiState {
     object Idle : VoiceUiState()
@@ -79,6 +83,7 @@ class VoiceViewModel(
             return
         }
 
+        val json = Json { ignoreUnknownKeys = true }
         viewModelScope.launch {
             _uiState.value = VoiceUiState.Processing("Generating voice...")
             try {
@@ -86,12 +91,12 @@ class VoiceViewModel(
                     "text-to-speech",
                     body = """
                     {
-                        "text": ${kotlinx.serialization.json.Json.encodeToString(kotlinx.serialization.json.JsonPrimitive(text))}
+                        "text": ${json.encodeToString(JsonPrimitive(text))}
                     """.trimIndent(),
                 )
                 val data = response.bodyAsText()
-                val json = kotlinx.serialization.json.Json.decodeFromString<kotlinx.serialization.json.JsonObject>(data)
-                val audioBase64 = json.jsonObject["audio"]?.jsonPrimitive?.content
+                val result = json.decodeFromString<JsonObject>(data)
+                val audioBase64 = result.jsonObject["audio"]?.jsonPrimitive?.content
                 if (audioBase64 != null) {
                     _uiState.value = VoiceUiState.Speaking()
                     audioPlayer.playBase64Audio(audioBase64) {

@@ -88,11 +88,15 @@ dependencies {
     // Ktor (required by Supabase SDK for Android)
     implementation("io.ktor:ktor-client-android:2.3.12")
 
-    // Kotlin Serialization
-    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.7.3")
+    // Kotlin Serialization - use -jvm variant directly for compile classpath
+    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json-jvm:1.7.3")
 
     // Coroutines
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.8.1")
+
+    // Ktor
+    implementation("io.ktor:ktor-client-android:2.3.12")
+    implementation("io.ktor:ktor-client-core-jvm:2.3.12")
 
     // Coil for image loading
     implementation("io.coil-kt:coil-compose:2.7.0")

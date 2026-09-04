@@ -8,8 +8,10 @@ import io.github.jan.supabase.gotrue.auth
 import io.github.jan.supabase.functions.functions
 import io.github.jan.supabase.postgrest.postgrest
 import io.github.jan.supabase.postgrest.query.Order
+import io.ktor.client.statement.bodyAsText
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonObject
+import kotlinx.serialization.json.JsonPrimitive
 import kotlinx.serialization.json.buildJsonObject
 import kotlinx.serialization.json.jsonObject
 import kotlinx.serialization.json.jsonPrimitive
@@ -28,7 +30,7 @@ class ResearchRepository(
             val body = """
             {
                 "session_id": "$sessionId",
-                "message": ${Json.encodeToString(message)}
+                "message": ${json.encodeToString(JsonPrimitive(message))}
             }
             """.trimIndent()
             val response = supabase.functions.invoke("ai-chat", body = body)
@@ -61,7 +63,7 @@ class ResearchRepository(
                 put("session_id", sessionId)
                 put("title", title)
                 put("query", query)
-                put("asset", asset ?: "null")
+                put("asset", asset ?: "")
                 put("response", response)
             }
             val result = supabase.postgrest.from("research_results").insert(data) {
@@ -127,14 +129,14 @@ class ResearchRepository(
         researchId: String?,
     ): Result<String> {
         return try {
-            val assetJson = if (asset != null) Json.encodeToString(asset) else "null"
-            val researchIdJson = if (researchId != null) Json.encodeToString(researchId) else "null"
+            val assetJson = if (asset != null) json.encodeToString(JsonPrimitive(asset)) else "null"
+            val researchIdJson = if (researchId != null) json.encodeToString(JsonPrimitive(researchId)) else "null"
             val body = """
             {
                 "research_id": $researchIdJson,
-                "title": ${Json.encodeToString(title)},
-                "query": ${Json.encodeToString(query)},
-                "response": ${Json.encodeToString(response)},
+                "title": ${json.encodeToString(JsonPrimitive(title))},
+                "query": ${json.encodeToString(JsonPrimitive(query))},
+                "response": ${json.encodeToString(JsonPrimitive(response))},
                 "asset": $assetJson
             }
             """.trimIndent()

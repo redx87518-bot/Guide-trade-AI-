@@ -7,8 +7,10 @@ import io.github.jan.supabase.gotrue.auth
 import io.github.jan.supabase.functions.functions
 import io.github.jan.supabase.postgrest.postgrest
 import io.github.jan.supabase.postgrest.query.Order
+import io.ktor.client.statement.bodyAsText
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonObject
+import kotlinx.serialization.json.JsonPrimitive
 import kotlinx.serialization.json.buildJsonObject
 import kotlinx.serialization.json.jsonObject
 import kotlinx.serialization.json.jsonPrimitive
@@ -50,8 +52,8 @@ class TelegramRepository(
             val body = """
             {
                 "action": "test",
-                "bot_token": ${Json.encodeToString(botToken)},
-                "chat_id": ${Json.encodeToString(chatId)}
+                "bot_token": ${json.encodeToString(JsonPrimitive(botToken))},
+                "chat_id": ${json.encodeToString(JsonPrimitive(chatId))}
             }
             """.trimIndent()
             val resp = supabase.functions.invoke("telegram-test", body = body)

@@ -8,6 +8,7 @@ import io.github.jan.supabase.gotrue.auth
 import io.github.jan.supabase.postgrest.postgrest
 import io.github.jan.supabase.postgrest.query.Order
 import kotlinx.serialization.json.JsonObject
+import kotlinx.serialization.json.buildJsonObject
 import kotlinx.serialization.json.jsonObject
 import kotlinx.serialization.json.jsonPrimitive
 
@@ -21,7 +22,10 @@ class ChatRepository(
     suspend fun createChatSession(title: String): Result<ChatSession> {
         return try {
             val result = supabase.postgrest.from("chat_sessions").insert(
-                JsonObject(mapOf("title" to title, "user_id" to currentUserId())),
+                buildJsonObject {
+                    put("title", title)
+                    put("user_id", currentUserId())
+                },
             ) {
                 select()
             }
@@ -69,12 +73,12 @@ class ChatRepository(
     ): Result<ChatMessage> {
         return try {
             val result = supabase.postgrest.from("chat_messages").insert(
-                JsonObject(mapOf(
-                    "session_id" to sessionId,
-                    "user_id" to currentUserId(),
-                    "role" to role,
-                    "content" to content,
-                )),
+                buildJsonObject {
+                    put("session_id", sessionId)
+                    put("user_id", currentUserId())
+                    put("role", role)
+                    put("content", content)
+                },
             ) {
                 select()
             }
@@ -93,7 +97,7 @@ class ChatRepository(
         return try {
             supabase.postgrest.from("chat_sessions")
                 .update(
-                    JsonObject(mapOf("title" to newTitle)),
+                    buildJsonObject { put("title", newTitle) },
                 ) {
                     filter { eq("id", sessionId) }
                 }
