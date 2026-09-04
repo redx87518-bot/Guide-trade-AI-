@@ -78,27 +78,25 @@ dependencies {
     implementation("androidx.compose.foundation:foundation")
 
     // Supabase Kotlin SDK
-    // Exclude the io.github.jan-tennert.supabase group from ALL transitive deps
-    // to prevent both debug+release AAR variants from being included via
-    // available-at redirect in Gradle module metadata. Each -android AAR is
-    // added directly below.
-    implementation("io.github.jan-tennert.supabase:supabase-kt-android:2.6.1") {
-        exclude(group = "io.github.jan-tennert.supabase")
-    }
+    // Use -android variants (release AARs) directly to avoid KMP variant matching issues.
+    // Exclude the base 'supabase-kt' module from sub-module transitive deps to prevent
+    // available-at redirect from including both debug+release AARs (duplicate classes).
+    // Core classes come from supabase-kt-android (included directly below).
+    implementation("io.github.jan-tennert.supabase:supabase-kt-android:2.6.1")
     implementation("io.github.jan-tennert.supabase:gotrue-kt-android:2.6.1") {
-        exclude(group = "io.github.jan-tennert.supabase")
+        exclude(group = "io.github.jan-tennert.supabase", module = "supabase-kt")
     }
     implementation("io.github.jan-tennert.supabase:postgrest-kt-android:2.6.1") {
-        exclude(group = "io.github.jan-tennert.supabase")
+        exclude(group = "io.github.jan-tennert.supabase", module = "supabase-kt")
     }
     implementation("io.github.jan-tennert.supabase:functions-kt-android:2.6.1") {
-        exclude(group = "io.github.jan-tennert.supabase")
+        exclude(group = "io.github.jan-tennert.supabase", module = "supabase-kt")
     }
     implementation("io.github.jan-tennert.supabase:storage-kt-android:2.6.1") {
-        exclude(group = "io.github.jan-tennert.supabase")
+        exclude(group = "io.github.jan-tennert.supabase", module = "supabase-kt")
     }
     implementation("io.github.jan-tennert.supabase:realtime-kt-android:2.6.1") {
-        exclude(group = "io.github.jan-tennert.supabase")
+        exclude(group = "io.github.jan-tennert.supabase", module = "supabase-kt")
     }
 
     // Ktor (required by Supabase SDK for Android)
