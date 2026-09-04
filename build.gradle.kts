@@ -4,6 +4,6 @@ plugins {
     id("org.jetbrains.kotlin.plugin.serialization") version "2.0.20" apply false
 }
 
-tasks.register("clean") {
+tasks.register<Delete>("clean") {
     delete(layout.buildDirectory)
 }
