@@ -66,5 +66,5 @@ data class TelegramSettings(
     @SerialName("send_chat_results") val sendChatResults: Boolean = false,
     val userId: String = "",
     val createdAt: String = "",
-    val updatedAt: String = "",,
+    val updatedAt: String = "",
 )
