@@ -50,6 +50,7 @@ data class ResearchResult(
 
 @Serializable
 data class UserSettings(
+    val userId: String = "",
     @SerialName("voice_enabled") val voiceEnabled: Boolean = true,
     @SerialName("auto_speak") val autoSpeak: Boolean = false,
     val theme: String = "dark",

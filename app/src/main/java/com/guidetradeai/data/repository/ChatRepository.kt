@@ -23,8 +23,8 @@ class ChatRepository(
         return try {
             val result = supabase.postgrest.from("chat_sessions").insert(
                 buildJsonObject {
-                    put("title", title)
-                    put("user_id", currentUserId())
+                    put("title", JsonPrimitive(title))
+                    put("user_id", JsonPrimitive(currentUserId()))
                 },
             ) {
                 select()
@@ -74,10 +74,10 @@ class ChatRepository(
         return try {
             val result = supabase.postgrest.from("chat_messages").insert(
                 buildJsonObject {
-                    put("session_id", sessionId)
-                    put("user_id", currentUserId())
-                    put("role", role)
-                    put("content", content)
+                    put("session_id", JsonPrimitive(sessionId))
+                    put("user_id", JsonPrimitive(currentUserId()))
+                    put("role", JsonPrimitive(role))
+                    put("content", JsonPrimitive(content))
                 },
             ) {
                 select()
@@ -97,7 +97,7 @@ class ChatRepository(
         return try {
             supabase.postgrest.from("chat_sessions")
                 .update(
-                    buildJsonObject { put("title", newTitle) },
+                     buildJsonObject { put("title", JsonPrimitive(newTitle)) },
                 ) {
                     filter { eq("id", sessionId) }
                 }
