@@ -23,8 +23,11 @@ jobs:
       - name: Print Supabase deps
         run: ./gradlew :app:dependencies --configuration debugCompileClasspath --no-daemon 2>&1 | grep -E "(supabase|gotrue|postgrest|kotlinx-datetime|auth)" | head -30
 
+      - name: Print compile classpath
+        run: ./gradlew :app:dependencies --configuration debugCompileClasspath --no-daemon 2>&1 | tail -100
+
       - name: Build Debug APK
-        run: ./gradlew assembleDebug --no-daemon -x lint --info 2>&1 | grep -E "(gotrue|supabase|AuthKt|compileDebugKotlin|kotlinCompiler|classpath)" | head -40
+        run: ./gradlew assembleDebug --no-daemon -x lint
 
       - name: Upload APK
         uses: actions/upload-artifact@v4
