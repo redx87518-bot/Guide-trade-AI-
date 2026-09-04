@@ -77,30 +77,18 @@ dependencies {
     // Pager
     implementation("androidx.compose.foundation:foundation")
 
-    // Supabase Kotlin SDK - using local Maven repo to avoid KMP variant matching issues
-    implementation("io.github.jan-tennert.supabase:supabase-kt-android:2.6.1")
-    implementation("io.github.jan-tennert.supabase:gotrue-kt-android:2.6.1")
-    implementation("io.github.jan-tennert.supabase:postgrest-kt-android:2.6.1")
-    implementation("io.github.jan-tennert.supabase:functions-kt-android:2.6.1")
-    implementation("io.github.jan-tennert.supabase:storage-kt-android:2.6.1")
-    implementation("io.github.jan-tennert.supabase:realtime-kt-android:2.6.1")
+    // Supabase Kotlin SDK - using extracted class JARs to bypass KMP variant matching
+    implementation(files(
+        "libs/jars/supabase-kt.jar",
+        "libs/jars/gotrue-kt.jar",
+        "libs/jars/postgrest-kt.jar",
+        "libs/jars/functions-kt.jar",
+        "libs/jars/storage-kt.jar",
+        "libs/jars/realtime-kt.jar"
+    ))
 
-    // Supabase transitive dependencies
+    // Ktor (required by Supabase SDK for Android)
     implementation("io.ktor:ktor-client-android:2.3.12")
-    implementation("androidx.lifecycle:lifecycle-process:2.8.0")
-    implementation("androidx.startup:startup-runtime:1.2.0")
-    implementation("androidx.browser:browser:1.8.0")
-    implementation("org.jetbrains.kotlinx:kotlinx-datetime:0.6.0")
-    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.8.1")
-    implementation("co.touchlab:kermit:2.0.4")
-    implementation("io.ktor:ktor-client-content-negotiation:2.3.12")
-    implementation("io.ktor:ktor-serialization-kotlinx-json:2.3.12")
-    implementation("io.ktor:ktor-client-websockets:2.3.12")
-    implementation("org.jetbrains.kotlinx:atomicfu:0.25.0")
-    implementation("com.russhwolf:multiplatform-settings-no-arg:1.1.1")
-    implementation("com.russhwolf:multiplatform-settings-coroutines:1.1.1")
-    implementation("com.soywiz.korlibs.krypto:krypto:4.0.10")
-    implementation("org.jetbrains.kotlin:kotlin-reflect:2.0.10")
 
     // Kotlin Serialization
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.7.3")
