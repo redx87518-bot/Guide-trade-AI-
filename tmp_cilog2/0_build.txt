@@ -1,4 +1,8 @@
+<<<<<<< ours
 ﻿2026-09-04T09:14:51.0789026Z Current runner version: '2.337.0'
+=======
+2026-09-04T09:14:51.0789026Z Current runner version: '2.337.0'
+>>>>>>> theirs
 2026-09-04T09:14:51.0814288Z ##[group]Runner Image Provisioner
 2026-09-04T09:14:51.0815140Z Hosted Compute Agent
 2026-09-04T09:14:51.0815802Z Version: 20260819.586

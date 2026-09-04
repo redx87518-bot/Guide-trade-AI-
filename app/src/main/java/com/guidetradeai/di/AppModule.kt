@@ -8,7 +8,7 @@ import com.guidetradeai.data.repository.SettingsRepository
 import com.guidetradeai.data.repository.TelegramRepository
 
 object AppModule {
-    val supabaseClient = SupabaseClient.client
+    val supabaseClient by lazy { SupabaseClient.client }
     val authRepository: AuthRepository by lazy { AuthRepository(supabaseClient) }
     val chatRepository: ChatRepository by lazy { ChatRepository(supabaseClient) }
     val researchRepository: ResearchRepository by lazy { ResearchRepository(supabaseClient) }

@@ -4,13 +4,20 @@ import app.cash.turbine.test
 import com.guidetradeai.domain.Result
 import com.guidetradeai.domain.model.ChatMessage
 import com.guidetradeai.domain.model.ChatSession
+import com.guidetradeai.data.repository.AuthRepository
 import com.guidetradeai.data.repository.ChatRepository
 import com.guidetradeai.data.repository.ResearchRepository
 import io.mockk.coEvery
 import io.mockk.mockk
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.test.StandardTestDispatcher
+import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
+import kotlinx.coroutines.test.setMain
+import org.junit.After
 import org.junit.Assert.assertTrue
+import org.junit.Before
 import org.junit.Test
 
 @OptIn(ExperimentalCoroutinesApi::class)
@@ -18,6 +25,17 @@ class ChatViewModelTest {
 
     private val mockChatRepository: ChatRepository = mockk(relaxed = true)
     private val mockResearchRepository: ResearchRepository = mockk(relaxed = true)
+    private val mockAuthRepository: AuthRepository = mockk(relaxed = true)
+
+    @Before
+    fun setUp() {
+        Dispatchers.setMain(StandardTestDispatcher())
+    }
+
+    @After
+    fun tearDown() {
+        Dispatchers.resetMain()
+    }
 
     @Test
     fun `createNewSession updates state to Ready`() = runTest {
@@ -30,7 +48,7 @@ class ChatViewModelTest {
         )
         coEvery { mockChatRepository.createChatSession(any()) } returns Result.success(session)
 
-        val viewModel = ChatViewModel(mockChatRepository, mockResearchRepository)
+        val viewModel = ChatViewModel(mockChatRepository, mockResearchRepository, mockAuthRepository)
         viewModel.createNewSession()
 
         viewModel.uiState.test {
@@ -64,7 +82,7 @@ class ChatViewModelTest {
         )
         coEvery { mockChatRepository.getChatMessages(any()) } returns Result.success(messages)
 
-        val viewModel = ChatViewModel(mockChatRepository, mockResearchRepository)
+        val viewModel = ChatViewModel(mockChatRepository, mockResearchRepository, mockAuthRepository)
         viewModel.loadSession("session1")
 
         viewModel.uiState.test {
