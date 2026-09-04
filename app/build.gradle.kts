@@ -68,7 +68,7 @@ dependencies {
     implementation("androidx.compose.material3:material3-android")
     implementation("androidx.compose.material:material-icons-extended-android")
     debugImplementation("androidx.compose.ui:ui-tooling-android")
-    debugImplementation("androidx.compose.ui:ui-test-manifest-android")
+    debugImplementation("androidx.compose.ui:ui-test-manifest")
     debugImplementation("androidx.compose.ui:ui-test-junit4-android")
 
     // Navigation
