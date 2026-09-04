@@ -47,7 +47,7 @@ port = 54324
 [storage]
 enabled = true
 file_size_limit = "50MiB"
-s3_protocol = enabled = true
+s3_protocol = true
 vector = { enabled = true, max_buckets = 10, max_indexes = 5 }
 
 [auth]
