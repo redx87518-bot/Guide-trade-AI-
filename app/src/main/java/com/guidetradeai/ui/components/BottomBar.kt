@@ -21,7 +21,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
-import androidx.navigation.findStartDestination
+import androidx.navigation.NavGraph.Companion.findStartDestination
 import com.guidetradeai.ui.navigation.NavRoutes
 
 data class BottomNavItem(

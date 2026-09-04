@@ -68,7 +68,6 @@ dependencies {
     implementation("androidx.compose.runtime:runtime-saveable-android")
     implementation("androidx.compose.ui:ui-android")
     implementation("androidx.compose.ui:ui-graphics-android")
-    implementation("androidx.compose.ui:ui-text-android")
     implementation("androidx.compose.ui:ui-tooling-preview-android")
     implementation("androidx.compose.material3:material3-android")
     implementation("androidx.compose.material:material-icons-core-android")
