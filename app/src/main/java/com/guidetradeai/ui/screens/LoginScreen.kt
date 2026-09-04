@@ -30,7 +30,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
@@ -138,6 +137,32 @@ fun LoginScreen(
                 text = "Forgot Password?",
                 color = MaterialTheme.colorScheme.primary,
                 fontSize = 14.sp,
+            )
+        }
+        if (authUiState is AuthUiState.Unverified) {
+            Text(
+                text = (authUiState as AuthUiState.Unverified).message,
+                color = MaterialTheme.colorScheme.error,
+                style = MaterialTheme.typography.bodySmall,
+                modifier = Modifier.padding(bottom = 8.dp),
+            )
+            TextButton(
+                onClick = { navController.navigate("${com.guidetradeai.ui.navigation.NavRoutes.VERIFICATION}/${email}") },
+                modifier = Modifier.align(Alignment.CenterHorizontally),
+            ) {
+                Text(
+                    text = "Verify your email",
+                    color = MaterialTheme.colorScheme.primary,
+                    fontWeight = androidx.compose.ui.text.font.FontWeight.SemiBold,
+                )
+            }
+        }
+        if (authUiState is AuthUiState.Error) {
+            Text(
+                text = (authUiState as AuthUiState.Error).message,
+                color = MaterialTheme.colorScheme.error,
+                style = MaterialTheme.typography.bodySmall,
+                modifier = Modifier.padding(bottom = 8.dp),
             )
         }
         Button(

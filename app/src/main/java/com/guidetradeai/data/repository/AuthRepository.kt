@@ -50,7 +50,7 @@ class AuthRepository(
                     ),
                 )
             } else {
-                Result.error("Sign up succeeded but no user returned")
+                Result.error("Sign up succeeded but no user returned. Please check your email to verify your account.")
             }
         } catch (e: Exception) {
             Result.error(mapAuthError(e.message ?: "Sign up failed"))
@@ -141,6 +141,9 @@ class AuthRepository(
             message.contains("already been registered", ignoreCase = true) -> "This email is already registered."
             message.contains("rate limit", ignoreCase = true) -> "Too many attempts. Please try again later."
             message.contains("weak password", ignoreCase = true) -> "Password is too weak. Use at least 8 characters."
+            message.contains("verify", ignoreCase = true) -> "Please verify your email before logging in."
+            message.contains("not confirmed", ignoreCase = true) -> "Please verify your email before logging in."
+            message.contains("email", ignoreCase = true) -> "Please verify your email before logging in."
             else -> message
         }
     }
