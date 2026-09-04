@@ -48,7 +48,6 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.animation.core.RepeatMode
-import androidx.compose.ui.Alignment.Horizontally
 import com.guidetradeai.utils.Constants
 
 @Composable

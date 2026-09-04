@@ -29,7 +29,7 @@ class SettingsRepository(
             if (row != null) {
                 Result.success(mapToSettings(row))
             } else {
-                Result.success(UserSettings(currentUserId()))
+                Result.success(UserSettings(userId = currentUserId()))
             }
         } catch (e: Exception) {
             Result.error("Failed to load settings: ${e.message}")

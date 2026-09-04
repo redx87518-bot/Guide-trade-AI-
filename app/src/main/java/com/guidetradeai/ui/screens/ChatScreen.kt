@@ -57,7 +57,6 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import com.guidetradeai.ui.components.BottomBar
 import com.guidetradeai.ui.components.MarkdownText
-import androidx.compose.ui.Alignment.Horizontally
 import com.guidetradeai.viewmodel.ChatUiState
 import com.guidetradeai.viewmodel.ChatViewModel
 
