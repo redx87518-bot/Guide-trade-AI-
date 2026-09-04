@@ -52,7 +52,7 @@
     <!-- Chat -->
     <string name="chat_new_chat">New Chat</string>
     <string name="chat_title">Chat</string>
-    <string name="chat_message_hint">Type a message..."</string>
+    <string name="chat_message_hint">Type a message...</string>
     <string name="chat_sending">Sending...</string>
     <string name="chat_researching">Guide Trade is researching...</string>
     <string name="chat_no_conversation">No conversation yet. Start by sending a message.</string>
@@ -128,7 +128,7 @@
     <string name="telegram_disable_button">DISABLE NOTIFICATIONS</string>
     <string name="telegram_connected">Connected</string>
     <string name="telegram_not_connected">Not Connected</string>
-    <string name="telegram_masked_token">••••••••••••</string>
+    <string name="telegram_masked_token">************</string>
     <string name="telegram_send_research">Send Research Results</string>
     <string name="telegram_send_chat">Send Chat Results</string>
     <string name="telegram_status_sending">Sending to Telegram...</string>
