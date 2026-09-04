@@ -66,6 +66,7 @@ dependencies {
     implementation("androidx.compose.ui:ui-graphics-android")
     implementation("androidx.compose.ui:ui-tooling-preview-android")
     implementation("androidx.compose.material3:material3-android")
+    implementation("androidx.compose.material:material-icons-core-android")
     implementation("androidx.compose.material:material-icons-extended-android")
     debugImplementation("androidx.compose.ui:ui-tooling-android")
     debugImplementation("androidx.compose.ui:ui-test-manifest")
