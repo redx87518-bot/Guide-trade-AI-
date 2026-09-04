@@ -93,7 +93,7 @@ class TelegramRepository(
         return try {
             supabase.postgrest.from("telegram_settings")
                 .update(
-                    buildJsonObject { put("enabled", false) },
+                    buildJsonObject { put("enabled", JsonPrimitive(false)) },
                 ) {
                     filter { eq("user_id", currentUserId()) }
                 }

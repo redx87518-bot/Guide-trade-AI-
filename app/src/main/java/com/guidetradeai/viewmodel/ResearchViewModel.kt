@@ -50,6 +50,6 @@ class ResearchViewModel(
     }
 
     fun refresh() {
-        loadHistory()
+        loadResearchHistory()
     }
 }
