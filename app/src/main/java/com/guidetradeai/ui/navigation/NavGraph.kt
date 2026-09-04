@@ -9,7 +9,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
-import androidx.navigation.navType
+import androidx.navigation.NavType
 import com.guidetradeai.viewmodel.AuthViewModel
 
 @Composable
@@ -65,7 +65,7 @@ fun NavGraph(
         }
         composable(
             route = NavRoutes.CHAT,
-            arguments = listOf(navArgument("sessionId") { type = navType.StringType }),
+            arguments = listOf(navArgument("sessionId") { type = NavType.StringType }),
         ) {
             com.guidetradeai.ui.screens.ChatScreen(
                 navController = navController,
@@ -80,7 +80,7 @@ fun NavGraph(
         }
         composable(
             route = NavRoutes.RESEARCH_DETAIL,
-            arguments = listOf(navArgument("researchId") { type = navType.StringType }),
+            arguments = listOf(navArgument("researchId") { type = NavType.StringType }),
         ) {
             com.guidetradeai.ui.screens.ResearchDetailScreen(
                 navController = navController,

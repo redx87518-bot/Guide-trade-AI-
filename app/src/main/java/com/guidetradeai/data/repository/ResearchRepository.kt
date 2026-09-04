@@ -10,6 +10,7 @@ import io.github.jan.supabase.postgrest.postgrest
 import io.github.jan.supabase.postgrest.query.Order
 import io.ktor.client.statement.bodyAsText
 import kotlinx.serialization.json.Json
+import kotlinx.serialization.json.JsonElement
 import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.JsonPrimitive
 import kotlinx.serialization.json.buildJsonObject
@@ -59,12 +60,12 @@ class ResearchRepository(
     ): Result<ResearchResult> {
         return try {
             val data = buildJsonObject {
-                put("user_id", userId)
-                put("session_id", sessionId)
-                put("title", title)
-                put("query", query)
-                put("asset", asset ?: "")
-                put("response", response)
+                put("user_id", JsonPrimitive(userId))
+                put("session_id", JsonPrimitive(sessionId))
+                put("title", JsonPrimitive(title))
+                put("query", JsonPrimitive(query))
+                put("asset", JsonPrimitive(asset ?: ""))
+                put("response", JsonPrimitive(response))
             }
             val result = supabase.postgrest.from("research_results").insert(data) {
                 select()
@@ -129,14 +130,14 @@ class ResearchRepository(
         researchId: String?,
     ): Result<String> {
         return try {
-            val assetJson = if (asset != null) json.encodeToString(JsonPrimitive(asset)) else "null"
-            val researchIdJson = if (researchId != null) json.encodeToString(JsonPrimitive(researchId)) else "null"
+            val assetJson = if (asset != null) json.encodeToString(JsonElement.serializer(), JsonPrimitive(asset)) else "null"
+            val researchIdJson = if (researchId != null) json.encodeToString(JsonElement.serializer(), JsonPrimitive(researchId)) else "null"
             val body = """
             {
                 "research_id": $researchIdJson,
-                "title": ${json.encodeToString(JsonPrimitive(title))},
-                "query": ${json.encodeToString(JsonPrimitive(query))},
-                "response": ${json.encodeToString(JsonPrimitive(response))},
+                "title": ${json.encodeToString(JsonElement.serializer(), JsonPrimitive(title))},
+                "query": ${json.encodeToString(JsonElement.serializer(), JsonPrimitive(query))},
+                "response": ${json.encodeToString(JsonElement.serializer(), JsonPrimitive(response))},
                 "asset": $assetJson
             }
             """.trimIndent()

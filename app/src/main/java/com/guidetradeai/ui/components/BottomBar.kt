@@ -12,8 +12,8 @@ import androidx.compose.material3.NavigationBarItemDefaults
 import androidx.compose.material3.Text
 import androidx.compose.material3.icons.Icons
 import androidx.compose.material3.icons.filled.Chat
-import androidx.compose.material3.icons.filled.Home
 import androidx.compose.material3.icons.filled.History
+import androidx.compose.material3.icons.filled.Home
 import androidx.compose.material3.icons.filled.Person
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -21,6 +21,8 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
+import androidx.navigation.compose.findStartDestination
+import androidx.compose.material3.navigationBarItemColors
 import com.guidetradeai.ui.navigation.NavRoutes
 
 data class BottomNavItem(

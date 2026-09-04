@@ -7,6 +7,7 @@ import io.github.jan.supabase.gotrue.auth
 import io.github.jan.supabase.postgrest.postgrest
 import io.github.jan.supabase.postgrest.query.Order
 import kotlinx.serialization.json.JsonObject
+import kotlinx.serialization.json.JsonPrimitive
 import kotlinx.serialization.json.buildJsonObject
 import kotlinx.serialization.json.jsonObject
 import kotlinx.serialization.json.jsonPrimitive
@@ -40,7 +41,7 @@ class SettingsRepository(
         return try {
             supabase.postgrest.from("user_settings")
                 .update(
-                    buildJsonObject { put("voice_enabled", enabled) },
+                    buildJsonObject { put("voice_enabled", JsonPrimitive(enabled)) },
                 ) {
                     filter { eq("user_id", currentUserId()) }
                 }
@@ -54,7 +55,7 @@ class SettingsRepository(
         return try {
             supabase.postgrest.from("user_settings")
                 .update(
-                    buildJsonObject { put("auto_speak", enabled) },
+                    buildJsonObject { put("auto_speak", JsonPrimitive(enabled)) },
                 ) {
                     filter { eq("user_id", currentUserId()) }
                 }
@@ -68,7 +69,7 @@ class SettingsRepository(
         return try {
             supabase.postgrest.from("user_settings")
                 .update(
-                    buildJsonObject { put("theme", theme) },
+                    buildJsonObject { put("theme", JsonPrimitive(theme)) },
                 ) {
                     filter { eq("user_id", currentUserId()) }
                 }

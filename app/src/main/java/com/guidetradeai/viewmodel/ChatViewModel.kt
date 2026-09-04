@@ -108,7 +108,7 @@ class ChatViewModel(
                         sessionId = sessionId,
                         userId = "",
                         role = "assistant",
-                        content = result.data.content,
+                        content = result.data.content ?: "",
                         createdAt = result.data.timestamp ?: java.time.Instant.now().toString(),
                     )
 

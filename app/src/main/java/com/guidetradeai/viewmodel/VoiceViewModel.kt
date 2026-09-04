@@ -15,8 +15,11 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import kotlinx.serialization.json.Json
+import kotlinx.serialization.json.JsonElement
 import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.JsonPrimitive
+import kotlinx.serialization.json.jsonObject
+import kotlinx.serialization.json.jsonPrimitive
 
 sealed class VoiceUiState {
     object Idle : VoiceUiState()
@@ -91,7 +94,7 @@ class VoiceViewModel(
                     "text-to-speech",
                     body = """
                     {
-                        "text": ${json.encodeToString(JsonPrimitive(text))}
+                        "text": ${json.encodeToString(JsonElement.serializer(), JsonPrimitive(text))}
                     """.trimIndent(),
                 )
                 val data = response.bodyAsText()

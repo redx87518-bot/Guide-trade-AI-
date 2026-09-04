@@ -34,7 +34,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.drawscope.StrokeCap
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -70,7 +69,7 @@ fun OnboardingScreen(navController: NavHostController) {
         HorizontalPager(
             state = pagerState,
             modifier = Modifier.weight(1f),
-            pageCount = { onboardingData.size },
+            pageCount = onboardingData.size,
         ) { page ->
             val data = onboardingData[page]
             OnboardingPage(

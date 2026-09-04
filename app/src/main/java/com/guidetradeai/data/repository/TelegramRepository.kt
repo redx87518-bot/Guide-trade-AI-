@@ -9,6 +9,7 @@ import io.github.jan.supabase.postgrest.postgrest
 import io.github.jan.supabase.postgrest.query.Order
 import io.ktor.client.statement.bodyAsText
 import kotlinx.serialization.json.Json
+import kotlinx.serialization.json.JsonElement
 import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.JsonPrimitive
 import kotlinx.serialization.json.buildJsonObject
@@ -52,8 +53,8 @@ class TelegramRepository(
             val body = """
             {
                 "action": "test",
-                "bot_token": ${json.encodeToString(JsonPrimitive(botToken))},
-                "chat_id": ${json.encodeToString(JsonPrimitive(chatId))}
+                "bot_token": ${json.encodeToString(JsonElement.serializer(), JsonPrimitive(botToken))},
+                "chat_id": ${json.encodeToString(JsonElement.serializer(), JsonPrimitive(chatId))}
             }
             """.trimIndent()
             val resp = supabase.functions.invoke("telegram-test", body = body)
@@ -72,11 +73,11 @@ class TelegramRepository(
     ): Result<Unit> {
         return try {
             val updates = buildJsonObject {
-                put("bot_token", botToken)
-                put("chat_id", chatId)
-                put("enabled", enabled)
-                put("send_research", sendResearch)
-                put("send_chat_results", sendChatResults)
+                put("bot_token", JsonPrimitive(botToken))
+                put("chat_id", JsonPrimitive(chatId))
+                put("enabled", JsonPrimitive(enabled))
+                put("send_research", JsonPrimitive(sendResearch))
+                put("send_chat_results", JsonPrimitive(sendChatResults))
             }
             supabase.postgrest.from("telegram_settings")
                 .upsert(updates) {

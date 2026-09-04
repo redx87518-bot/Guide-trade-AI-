@@ -16,6 +16,7 @@ sealed class AuthUiState {
     object Unauthenticated : AuthUiState()
     data class Authenticated(val user: User) : AuthUiState()
     data class Error(val message: String) : AuthUiState()
+    object ResetPasswordSent : AuthUiState()
 }
 
 class AuthViewModel(
@@ -80,10 +81,11 @@ class AuthViewModel(
 
     fun resetPassword(email: String) {
         viewModelScope.launch {
+            _uiState.value = AuthUiState.Loading
             when (val result = authRepository.resetPassword(email)) {
-                is Result.Success -> {}
-                is Result.Error -> {}
-                is Result.Loading -> {}
+                is Result.Success -> _uiState.value = AuthUiState.ResetPasswordSent
+                is Result.Error -> _uiState.value = AuthUiState.Error(result.message)
+                is Result.Loading -> _uiState.value = AuthUiState.Loading
             }
         }
     }
