@@ -45,7 +45,7 @@ class AuthRepository(
                 Result.success(
                     User(
                         id = u.id,
-                        email = u.email ?: "",
+                        email = u.email ?: email,
                         fullName = fullName,
                     ),
                 )
@@ -109,6 +109,15 @@ class AuthRepository(
         }
     }
 
+    suspend fun resendVerificationEmail(email: String): Result<Unit> {
+        return try {
+            supabase.auth.resetPasswordForEmail(email)
+            Result.success(Unit)
+        } catch (e: Exception) {
+            Result.error(mapAuthError(e.message ?: "Failed to resend verification email"))
+        }
+    }
+
     suspend fun updateProfile(fullName: String?, avatarUrl: String?): Result<User> {
         return try {
             supabase.auth.updateUser {
@@ -133,7 +142,7 @@ class AuthRepository(
                 Result.error("No user found after update")
             }
         } catch (e: Exception) {
-            Result.error(e.message ?: "Failed to update profile")
+            Result.error(mapAuthError(e.message ?: "Failed to update profile"))
         }
     }
 

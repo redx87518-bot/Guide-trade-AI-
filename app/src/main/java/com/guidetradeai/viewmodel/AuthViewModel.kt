@@ -103,7 +103,7 @@ class AuthViewModel(
         viewModelScope.launch {
             _uiState.value = AuthUiState.Loading
             try {
-                authRepository.resetPassword(email)
+                authRepository.resendVerificationEmail(email)
                 _uiState.value = AuthUiState.VerificationSent(email)
             } catch (e: Exception) {
                 _uiState.value = AuthUiState.Error(e.message ?: "Failed to resend verification email")

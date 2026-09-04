@@ -30,7 +30,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
@@ -140,6 +139,32 @@ fun LoginScreen(
                 fontSize = 14.sp,
             )
         }
+        if (authUiState is AuthUiState.Unverified) {
+            Text(
+                text = (authUiState as AuthUiState.Unverified).message,
+                color = MaterialTheme.colorScheme.error,
+                style = MaterialTheme.typography.bodySmall,
+                modifier = Modifier.padding(bottom = 8.dp),
+            )
+            TextButton(
+                onClick = { navController.navigate("${com.guidetradeai.ui.navigation.NavRoutes.VERIFICATION}/$email") },
+                modifier = Modifier.align(Alignment.CenterHorizontally),
+            ) {
+                Text(
+                    text = "Verify your email",
+                    color = MaterialTheme.colorScheme.primary,
+                    fontWeight = androidx.compose.ui.text.font.FontWeight.SemiBold,
+                )
+            }
+        }
+        if (authUiState is AuthUiState.Error) {
+            Text(
+                text = (authUiState as AuthUiState.Error).message,
+                color = MaterialTheme.colorScheme.error,
+                style = MaterialTheme.typography.bodySmall,
+                modifier = Modifier.padding(bottom = 8.dp),
+            )
+        }
         Button(
             onClick = {
                 var valid = true
@@ -159,10 +184,10 @@ fun LoginScreen(
                 .fillMaxWidth()
                 .height(56.dp),
             shape = RoundedCornerShape(16.dp),
-            enabled = email.isNotBlank() && password.isNotBlank(),
+            enabled = email.isNotBlank() && password.isNotBlank() && authUiState !is AuthUiState.Loading,
         ) {
             Text(
-                text = "LOGIN",
+                text = if (authUiState is AuthUiState.Loading) "LOGGING IN..." else "LOGIN",
                 fontSize = 16.sp,
                 fontWeight = androidx.compose.ui.text.font.FontWeight.SemiBold,
             )
@@ -170,6 +195,7 @@ fun LoginScreen(
         Spacer(modifier = Modifier.height(16.dp))
         TextButton(
             onClick = { navController.navigate(com.guidetradeai.ui.navigation.NavRoutes.SIGNUP) },
+            enabled = authUiState !is AuthUiState.Loading,
         ) {
             Text(
                 text = "Don't have an account? Sign Up",
