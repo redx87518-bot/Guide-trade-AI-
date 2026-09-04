@@ -4,6 +4,7 @@ import app.cash.turbine.test
 import com.guidetradeai.domain.Result
 import com.guidetradeai.domain.model.ChatMessage
 import com.guidetradeai.domain.model.ChatSession
+import com.guidetradeai.data.repository.AuthRepository
 import com.guidetradeai.data.repository.ChatRepository
 import com.guidetradeai.data.repository.ResearchRepository
 import io.mockk.coEvery
@@ -18,6 +19,7 @@ class ChatViewModelTest {
 
     private val mockChatRepository: ChatRepository = mockk(relaxed = true)
     private val mockResearchRepository: ResearchRepository = mockk(relaxed = true)
+    private val mockAuthRepository: AuthRepository = mockk(relaxed = true)
 
     @Test
     fun `createNewSession updates state to Ready`() = runTest {
@@ -30,7 +32,7 @@ class ChatViewModelTest {
         )
         coEvery { mockChatRepository.createChatSession(any()) } returns Result.success(session)
 
-        val viewModel = ChatViewModel(mockChatRepository, mockResearchRepository)
+        val viewModel = ChatViewModel(mockChatRepository, mockResearchRepository, mockAuthRepository)
         viewModel.createNewSession()
 
         viewModel.uiState.test {
@@ -64,7 +66,7 @@ class ChatViewModelTest {
         )
         coEvery { mockChatRepository.getChatMessages(any()) } returns Result.success(messages)
 
-        val viewModel = ChatViewModel(mockChatRepository, mockResearchRepository)
+        val viewModel = ChatViewModel(mockChatRepository, mockResearchRepository, mockAuthRepository)
         viewModel.loadSession("session1")
 
         viewModel.uiState.test {
