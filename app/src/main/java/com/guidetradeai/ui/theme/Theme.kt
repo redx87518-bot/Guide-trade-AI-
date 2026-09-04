@@ -1,7 +1,11 @@
 package com.guidetradeai.ui.theme
 
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ColorScheme
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Typography
 import androidx.compose.material3.darkColorScheme
 import androidx.compose.material3.lightColorScheme
@@ -9,6 +13,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
 val DarkColorScheme = darkColorScheme(
@@ -43,6 +48,14 @@ val LightColorScheme = lightColorScheme(
     surfaceVariant = Color(0xFFE5E7EB),
     onSurfaceVariant = Color(0xFF6B7280),
     outline = Color(0xFFD1D5DB),
+)
+
+val AppShapes = androidx.compose.foundation.shape.Shapes(
+    extraSmall = RoundedCornerShape(8.dp),
+    small = RoundedCornerShape(12.dp),
+    medium = RoundedCornerShape(16.dp),
+    large = RoundedCornerShape(24.dp),
+    extraLarge = RoundedCornerShape(32.dp),
 )
 
 val AppTypography = Typography(
@@ -107,5 +120,6 @@ fun GuideTradeTheme(
         colorScheme = colorScheme,
         typography = AppTypography,
         content = content,
+        shapes = AppShapes,
     )
 }

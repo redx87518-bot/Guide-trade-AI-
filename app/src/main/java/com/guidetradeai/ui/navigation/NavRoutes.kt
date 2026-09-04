@@ -6,6 +6,7 @@ object NavRoutes {
     const val LOGIN = "login"
     const val SIGNUP = "signup"
     const val FORGOT_PASSWORD = "forgot_password"
+    const val VERIFICATION = "verification"
     const val HOME = "home"
     const val CHAT = "chat/{sessionId}"
     const val CHAT_NEW = "chat_new"

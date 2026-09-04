@@ -1,11 +1,11 @@
 package com.guidetradeai.ui.screens
 
+import androidx.compose.animation.core.LinearOutSlowInEasing
 import androidx.compose.animation.core.RepeatMode
 import androidx.compose.animation.core.animateFloat
 import androidx.compose.animation.core.infiniteRepeatable
 import androidx.compose.animation.core.tween
-import androidx.compose.animation.core.updateTransition
-import androidx.compose.foundation.Canvas
+import androidx.compose.animation.core.rememberInfiniteTransition
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -15,7 +15,6 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
@@ -23,6 +22,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -31,7 +31,9 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.scale
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
@@ -51,14 +53,17 @@ fun OnboardingScreen(navController: NavHostController) {
         OnboardingPageData(
             title = "AI Trading Research",
             description = "Ask the AI to research markets and explain trading concepts.",
+            gradientColors = listOf(Color(0xFF6366F1), Color(0xFF8B5CF6)),
         ),
         OnboardingPageData(
             title = "Talk Naturally",
             description = "Use your voice to interact with the AI and get spoken responses.",
+            gradientColors = listOf(Color(0xFF10B981), Color(0xFF059669)),
         ),
         OnboardingPageData(
             title = "Your Research, Organized",
             description = "Chat sessions, research history, and Telegram notifications keep everything in order.",
+            gradientColors = listOf(Color(0xFFF59E0B), Color(0xFFD97706)),
         ),
     )
     Column(
@@ -69,17 +74,37 @@ fun OnboardingScreen(navController: NavHostController) {
         HorizontalPager(
             state = pagerState,
             modifier = Modifier.weight(1f),
-            pageCount = onboardingData.size,
         ) { page ->
             val data = onboardingData[page]
             OnboardingPage(
                 title = data.title,
                 description = data.description,
+                gradientColors = data.gradientColors,
             )
         }
         Column(
             modifier = Modifier.padding(horizontal = 24.dp, vertical = 24.dp),
         ) {
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(bottom = 24.dp),
+                horizontalArrangement = Arrangement.Center,
+            ) {
+                repeat(3) { index ->
+                    val selected = pagerState.currentPage == index
+                    Box(
+                        modifier = Modifier
+                            .padding(horizontal = 4.dp)
+                            .size(if (selected) 24.dp else 10.dp)
+                            .shadow(if (selected) 8.dp else 0.dp, CircleShape, spotColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.4f))
+                            .clip(CircleShape)
+                            .background(
+                                if (selected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.surfaceVariant,
+                            ),
+                    )
+                }
+            }
             TextButton(
                 onClick = {
                     val app = context.applicationContext as com.guidetradeai.GuideTradeApp
@@ -120,6 +145,9 @@ fun OnboardingScreen(navController: NavHostController) {
                     .fillMaxWidth()
                     .height(56.dp),
                 shape = RoundedCornerShape(16.dp),
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = MaterialTheme.colorScheme.primary,
+                ),
             ) {
                 Text(
                     text = if (pagerState.currentPage < onboardingData.size - 1) "NEXT" else "GET STARTED",
@@ -132,7 +160,7 @@ fun OnboardingScreen(navController: NavHostController) {
 }
 
 @Composable
-fun OnboardingPage(title: String, description: String) {
+fun OnboardingPage(title: String, description: String, gradientColors: List<Color>) {
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -140,32 +168,39 @@ fun OnboardingPage(title: String, description: String) {
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center,
     ) {
+        val infiniteTransition = rememberInfiniteTransition(label = "orb_pulse")
+        val scale by infiniteTransition.animateFloat(
+            initialValue = 0.9f,
+            targetValue = 1.1f,
+            animationSpec = infiniteRepeatable(
+                animation = tween(2000, easing = LinearOutSlowInEasing),
+                repeatMode = RepeatMode.Reverse,
+            ),
+            label = "orb_scale",
+        )
+
         Box(
             modifier = Modifier
-                .size(120.dp)
+                .size(140.dp)
+                .scale(scale)
+                .shadow(24.dp, CircleShape, spotColor = gradientColors.first().copy(alpha = 0.4f))
+                .clip(CircleShape)
                 .background(
-                    brush = Brush.radialGradient(
-                        colors = listOf(
-                            Color(0xFF6366F1),
-                            Color(0xFF4345D8),
-                            Color(0xFF10B981),
-                        ),
-                        center = Offset(60f, 60f),
-                        radius = 60f,
+                    Brush.radialGradient(
+                        colors = gradientColors,
                     ),
-                    shape = CircleShape,
                 ),
             contentAlignment = Alignment.Center,
         )
 
-        Spacer(modifier = Modifier.height(32.dp))
+        Spacer(modifier = Modifier.height(48.dp))
 
         Text(
             text = title,
             style = MaterialTheme.typography.headlineMedium,
             color = MaterialTheme.colorScheme.onBackground,
             textAlign = TextAlign.Center,
-            fontWeight = FontWeight.W600,
+            fontWeight = FontWeight.W700,
         )
 
         Spacer(modifier = Modifier.height(16.dp))
@@ -183,4 +218,5 @@ fun OnboardingPage(title: String, description: String) {
 data class OnboardingPageData(
     val title: String,
     val description: String,
+    val gradientColors: List<Color> = listOf(Color(0xFF6366F1), Color(0xFF8B5CF6)),
 )

@@ -1,6 +1,5 @@
 package com.guidetradeai.ui.screens
 
-import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -19,6 +18,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
@@ -35,7 +35,6 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
@@ -46,6 +45,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
+import coil.compose.AsyncImage
 import com.guidetradeai.domain.model.ResearchResult
 import com.guidetradeai.ui.components.AIOrb
 import com.guidetradeai.ui.components.BottomBar
@@ -58,7 +58,6 @@ import com.guidetradeai.viewmodel.HomeViewModel
 import com.guidetradeai.voice.VoiceState
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
-import androidx.compose.runtime.setValue
 
 @Composable
 fun HomeScreen(
@@ -69,7 +68,7 @@ fun HomeScreen(
     val homeUiState by homeViewModel.uiState.collectAsState()
     val authState by authViewModel.uiState.collectAsState()
 
-    androidx.compose.runtime.LaunchedEffect(authState) {
+    LaunchedEffect(authState) {
         if (authState is AuthUiState.Authenticated) {
             homeViewModel.loadHome()
         }
@@ -83,9 +82,8 @@ fun HomeScreen(
                 .fillMaxSize()
                 .verticalScroll(rememberScrollState())
                 .padding(padding)
-                .padding(24.dp),
+                .padding(horizontal = 20.dp, vertical = 16.dp),
         ) {
-            // Top: Greeting
             val greeting = when (authState) {
                 is AuthUiState.Authenticated -> {
                     val name = (authState as? AuthUiState.Authenticated)?.user?.fullName
@@ -101,19 +99,26 @@ fun HomeScreen(
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically,
             ) {
-                Text(
-                    text = greeting,
-                    style = MaterialTheme.typography.headlineMedium,
-                    color = MaterialTheme.colorScheme.onBackground,
-                    fontWeight = FontWeight.W600,
-                )
+                Column {
+                    Text(
+                        text = greeting,
+                        style = MaterialTheme.typography.headlineSmall,
+                        color = MaterialTheme.colorScheme.onBackground,
+                        fontWeight = FontWeight.W700,
+                    )
+                    Text(
+                        text = "Ready to explore the markets?",
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    )
+                }
                 val avatarUrl = (authState as? AuthUiState.Authenticated)?.user?.avatarUrl
                 if (!avatarUrl.isNullOrEmpty()) {
-                    coil.compose.AsyncImage(
+                    AsyncImage(
                         model = avatarUrl,
                         contentDescription = "Profile",
                         modifier = Modifier
-                            .size(40.dp)
+                            .size(44.dp)
                             .clip(CircleShape)
                             .clickable { navController.navigate(com.guidetradeai.ui.navigation.NavRoutes.PROFILE) },
                         contentScale = androidx.compose.ui.layout.ContentScale.Crop,
@@ -121,18 +126,17 @@ fun HomeScreen(
                 }
             }
 
-            Spacer(modifier = Modifier.height(32.dp))
+            Spacer(modifier = Modifier.height(28.dp))
 
-            // AI Orb
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(240.dp),
+                    .height(220.dp),
                 contentAlignment = Alignment.Center,
             ) {
                 AIOrb(
                     state = VoiceState.IDLE,
-                    modifier = Modifier.size(180.dp),
+                    modifier = Modifier.size(160.dp),
                     onClick = { navController.navigate(com.guidetradeai.ui.navigation.NavRoutes.CHAT_NEW) },
                 )
             }
@@ -141,10 +145,10 @@ fun HomeScreen(
 
             Text(
                 text = "Ask Guide Trade",
-                style = MaterialTheme.typography.headlineMedium,
+                style = MaterialTheme.typography.headlineSmall,
                 color = MaterialTheme.colorScheme.onBackground,
                 textAlign = TextAlign.Center,
-                fontWeight = FontWeight.W600,
+                fontWeight = FontWeight.W700,
             )
 
             Text(
@@ -156,12 +160,11 @@ fun HomeScreen(
 
             Spacer(modifier = Modifier.height(24.dp))
 
-            // Quick Actions
             Text(
                 text = "Quick Actions",
                 style = MaterialTheme.typography.titleLarge,
                 color = MaterialTheme.colorScheme.onBackground,
-                fontWeight = FontWeight.W600,
+                fontWeight = FontWeight.W700,
                 modifier = Modifier.padding(bottom = 12.dp),
             )
 
@@ -171,25 +174,26 @@ fun HomeScreen(
 
             quickActions.chunked(2).forEach { rowActions ->
                 Row(
-                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+                    horizontalArrangement = Arrangement.spacedBy(10.dp),
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(bottom = 8.dp),
+                        .padding(bottom = 10.dp),
                 ) {
                     rowActions.forEach { action ->
                         Button(
                             onClick = { navController.navigate(com.guidetradeai.ui.navigation.NavRoutes.CHAT_NEW) },
                             modifier = Modifier
                                 .weight(1f)
-                                .height(48.dp),
-                            shape = RoundedCornerShape(12.dp),
-                            colors = androidx.compose.material3.ButtonDefaults.buttonColors(
+                                .height(50.dp),
+                            shape = RoundedCornerShape(14.dp),
+                            colors = ButtonDefaults.buttonColors(
                                 containerColor = MaterialTheme.colorScheme.surface,
+                                contentColor = MaterialTheme.colorScheme.onSurface,
                             ),
+                            elevation = ButtonDefaults.buttonElevation(defaultElevation = 0.dp, pressedElevation = 2.dp),
                         ) {
                             Text(
                                 text = action,
-                                color = MaterialTheme.colorScheme.onSurface,
                                 fontSize = 13.sp,
                                 fontWeight = FontWeight.Medium,
                                 textAlign = TextAlign.Center,
@@ -201,20 +205,26 @@ fun HomeScreen(
 
             Spacer(modifier = Modifier.height(24.dp))
 
-            // Recent Research
-            Text(
-                text = "Recent Research",
-                style = MaterialTheme.typography.titleLarge,
-                color = MaterialTheme.colorScheme.onBackground,
-                fontWeight = FontWeight.W600,
-                modifier = Modifier.padding(bottom = 12.dp),
-            )
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(bottom = 12.dp),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
+                Text(
+                    text = "Recent Research",
+                    style = MaterialTheme.typography.titleLarge,
+                    color = MaterialTheme.colorScheme.onBackground,
+                    fontWeight = FontWeight.W700,
+                )
+            }
 
             when (val state = homeUiState) {
                 is HomeUiState.Success -> {
                     if (state.recentResearch.isNotEmpty()) {
                         Column(
-                            verticalArrangement = Arrangement.spacedBy(8.dp),
+                            verticalArrangement = Arrangement.spacedBy(10.dp),
                             modifier = Modifier.fillMaxWidth(),
                         ) {
                             state.recentResearch.take(5).forEach { research ->
@@ -229,11 +239,30 @@ fun HomeScreen(
                             }
                         }
                     } else {
-                        Text(
-                            text = "No research results yet. Ask the AI a question to get started.",
-                            color = MaterialTheme.colorScheme.onSurfaceVariant,
-                            style = MaterialTheme.typography.bodyMedium,
-                        )
+                        Card(
+                            modifier = Modifier.fillMaxWidth(),
+                            shape = RoundedCornerShape(16.dp),
+                            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
+                        ) {
+                            Column(
+                                modifier = Modifier.padding(20.dp),
+                                horizontalAlignment = Alignment.CenterHorizontally,
+                            ) {
+                                Text(
+                                    text = "No research yet",
+                                    style = MaterialTheme.typography.titleMedium,
+                                    color = MaterialTheme.colorScheme.onSurface,
+                                    fontWeight = FontWeight.W600,
+                                )
+                                Spacer(modifier = Modifier.height(8.dp))
+                                Text(
+                                    text = "Ask the AI a question to get started.",
+                                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                    style = MaterialTheme.typography.bodyMedium,
+                                    textAlign = TextAlign.Center,
+                                )
+                            }
+                        }
                     }
                 }
                 is HomeUiState.Loading -> {
@@ -263,32 +292,41 @@ fun ResearchCard(
             .clickable(onClick = onOpen),
         shape = RoundedCornerShape(16.dp),
         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
-        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
+        elevation = CardDefaults.cardElevation(defaultElevation = 1.dp),
     ) {
         Column(modifier = Modifier.padding(16.dp)) {
-            Text(
-                text = research.title,
-                style = MaterialTheme.typography.titleMedium,
-                color = MaterialTheme.colorScheme.onSurface,
-                maxLines = 2,
-            )
-            Spacer(modifier = Modifier.height(4.dp))
-            if (!research.asset.isNullOrEmpty()) {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
                 Text(
-                    text = research.asset,
-                    style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.primary,
+                    text = research.title,
+                    style = MaterialTheme.typography.titleMedium,
+                    color = MaterialTheme.colorScheme.onSurface,
+                    fontWeight = FontWeight.W600,
+                    modifier = Modifier.weight(1f),
                 )
+                if (!research.asset.isNullOrEmpty()) {
+                    Text(
+                        text = research.asset,
+                        style = MaterialTheme.typography.labelSmall,
+                        color = MaterialTheme.colorScheme.primary,
+                        modifier = Modifier.padding(start = 8.dp),
+                    )
+                }
             }
+            Spacer(modifier = Modifier.height(6.dp))
             Text(
                 text = research.response,
                 style = MaterialTheme.typography.bodySmall,
-                maxLines = 3,
+                maxLines = 2,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
-            Spacer(modifier = Modifier.height(8.dp))
+            Spacer(modifier = Modifier.height(10.dp))
             Text(
                 text = research.createdAt.formatDate("MMM dd, yyyy"),
-                style = MaterialTheme.typography.bodySmall,
+                style = MaterialTheme.typography.labelSmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
         }

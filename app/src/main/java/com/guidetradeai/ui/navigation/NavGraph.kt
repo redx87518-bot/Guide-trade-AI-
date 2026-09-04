@@ -3,13 +3,9 @@ package com.guidetradeai.ui.navigation
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
-import androidx.navigation.NavOptionsBuilder
-import androidx.navigation.NavBackStackEntry
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import androidx.navigation.navArgument
-import androidx.navigation.NavType
 import com.guidetradeai.viewmodel.AuthViewModel
 
 @Composable
@@ -45,6 +41,13 @@ fun NavGraph(
                 authViewModel = authViewModel,
             )
         }
+        composable(NavRoutes.VERIFICATION) {
+            com.guidetradeai.ui.screens.EmailVerificationScreen(
+                navController = navController,
+                authViewModel = authViewModel,
+                email = it.arguments?.getString("email") ?: "",
+            )
+        }
         composable(NavRoutes.FORGOT_PASSWORD) {
             com.guidetradeai.ui.screens.ForgotPasswordScreen(
                 navController = navController,
@@ -65,7 +68,7 @@ fun NavGraph(
         }
         composable(
             route = NavRoutes.CHAT,
-            arguments = listOf(navArgument("sessionId") { type = NavType.StringType }),
+            arguments = listOf(androidx.navigation.navArgument("sessionId") { type = androidx.navigation.NavType.StringType }),
         ) {
             com.guidetradeai.ui.screens.ChatScreen(
                 navController = navController,
@@ -80,7 +83,7 @@ fun NavGraph(
         }
         composable(
             route = NavRoutes.RESEARCH_DETAIL,
-            arguments = listOf(navArgument("researchId") { type = NavType.StringType }),
+            arguments = listOf(androidx.navigation.navArgument("researchId") { type = androidx.navigation.NavType.StringType }),
         ) {
             com.guidetradeai.ui.screens.ResearchDetailScreen(
                 navController = navController,
