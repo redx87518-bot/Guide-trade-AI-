@@ -1,5 +1,7 @@
 package com.guidetradeai.ui.screens
 
+import android.content.Intent
+import android.net.Uri
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -24,11 +26,12 @@ import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.icons.Icons
 import androidx.compose.material3.icons.automirrored.filled.ArrowBack
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.Offset
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -55,10 +58,12 @@ fun AboutScreen(navController: NavHostController) {
                         )
                     }
                 },
-                colors = TopAppBarDefaults.topAppBarColors(containerColor = Color.Transparent),
+                colors = TopAppBarDefaults.topAppBarColors(
+                    containerColor = Color.Transparent,
+                    titleContentColor = MaterialTheme.colorScheme.onBackground,
+                ),
             )
         },
-        bottomBar = { BottomBar(navController = navController) },
     ) { padding ->
         Column(
             modifier = Modifier
@@ -94,6 +99,8 @@ fun AboutScreen(navController: NavHostController) {
                 fontWeight = FontWeight.W700,
             )
 
+            Spacer(modifier = Modifier.height(8.dp))
+
             Text(
                 text = "Version 1.0.0",
                 style = MaterialTheme.typography.bodySmall,
@@ -112,8 +119,6 @@ fun AboutScreen(navController: NavHostController) {
 
             Text(
                 text = "Disclaimer",
-                style = MaterialTheme.typography.titleMedium,
-                color = MaterialTheme.colorScheme.onBackground,
                 fontWeight = FontWeight.W600,
                 modifier = Modifier.align(Alignment.Start),
             )
@@ -122,7 +127,6 @@ fun AboutScreen(navController: NavHostController) {
 
             Text(
                 text = Constants.DISCLAIMER_TEXT,
-                style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                 textAlign = TextAlign.Start,
                 lineHeight = 20.sp,
@@ -132,10 +136,10 @@ fun AboutScreen(navController: NavHostController) {
 
             TextButton(
                 onClick = {
-                    val intent = android.content.Intent(android.content.Intent.ACTION_VIEW,
-                        android.net.Uri.parse("https://guidetrade.ai/privacy"))
+                    val intent = Intent(Intent.ACTION_VIEW,
+                        Uri.parse("https://guidetrade.ai/privacy"))
                     context.startActivity(intent)
-                },
+                }
             ) {
                 Text(
                     text = "Privacy Policy",
@@ -146,4 +150,6 @@ fun AboutScreen(navController: NavHostController) {
             }
         }
     }
+
+    BottomBar(navController = navController)
 }

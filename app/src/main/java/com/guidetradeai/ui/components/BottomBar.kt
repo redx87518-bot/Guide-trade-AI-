@@ -40,19 +40,17 @@ fun BottomBar(
         BottomNavItem("History", Icons.Default.History, NavRoutes.CHAT_HISTORY),
         BottomNavItem("Profile", Icons.Default.Person, NavRoutes.PROFILE),
     )
-
     val currentRoute = navController.currentDestination?.route
-
     val hideRoutes = setOf(
         NavRoutes.SPLASH, NavRoutes.ONBOARDING, NavRoutes.LOGIN,
         NavRoutes.SIGNUP, NavRoutes.FORGOT_PASSWORD, NavRoutes.ABOUT,
         NavRoutes.SETTINGS, NavRoutes.TELEGRAM_SETTINGS, NavRoutes.VOICE_SETTINGS,
+        NavRoutes.RESEARCH_DETAIL,
     )
-
     val showBottomBar = currentRoute != null &&
         !hideRoutes.contains(currentRoute) &&
         !currentRoute.startsWith("chat/") &&
-        currentRoute != NavRoutes.RESEARCH_DETAIL
+        !currentRoute.startsWith("research_detail/")
 
     if (showBottomBar) {
         NavigationBar(

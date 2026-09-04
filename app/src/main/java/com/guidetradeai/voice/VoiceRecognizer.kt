@@ -12,7 +12,6 @@ class VoiceRecognizer private constructor(
     private val onResults: (String) -> Unit,
     private val onError: (String) -> Unit,
 ) {
-
     private val speechRecognizer: SpeechRecognizer? = try {
         if (SpeechRecognizer.isRecognitionAvailable(context)) {
             SpeechRecognizer.createSpeechRecognizer(context)
@@ -64,7 +63,6 @@ class VoiceRecognizer private constructor(
             onError("Voice recognition is not available on this device. You can continue using text chat.")
             return
         }
-
         val intent = Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH).apply {
             putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL, RecognizerIntent.LANGUAGE_MODEL_FREE_FORM)
             putExtra(RecognizerIntent.EXTRA_CALLING_PACKAGE, context.packageName)

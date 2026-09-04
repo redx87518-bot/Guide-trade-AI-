@@ -15,9 +15,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -25,7 +23,6 @@ import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Scaffold
@@ -38,6 +35,7 @@ import androidx.compose.material3.icons.filled.Edit
 import androidx.compose.material3.icons.filled.MoreVert
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -45,7 +43,6 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -57,6 +54,7 @@ import com.guidetradeai.viewmodel.ChatHistoryUiState
 import com.guidetradeai.viewmodel.ChatHistoryViewModel
 import java.time.Instant
 import java.time.ZoneId
+import java.time.format.DateTimeFormatter
 
 @Composable
 fun ChatHistoryScreen(
@@ -100,7 +98,7 @@ fun ChatHistoryScreen(
                 style = MaterialTheme.typography.headlineMedium,
                 color = MaterialTheme.colorScheme.onBackground,
                 modifier = Modifier.padding(24.dp, 24.dp, 24.dp, 8.dp),
-                fontWeight = FontWeight.W600,
+                fontWeight = androidx.compose.ui.text.font.FontWeight.W600,
             )
 
             if (sessions.isEmpty()) {
@@ -119,7 +117,6 @@ fun ChatHistoryScreen(
                 }
             } else {
                 val grouped = groupSessionsByDate(sessions)
-
                 LazyColumn(
                     modifier = Modifier.fillMaxSize(),
                     contentPadding = PaddingValues(vertical = 8.dp),
@@ -133,7 +130,7 @@ fun ChatHistoryScreen(
                                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                                 modifier = Modifier.padding(horizontal = 24.dp, vertical = 8.dp),
                                 fontSize = 13.sp,
-                                fontWeight = FontWeight.W600,
+                                fontWeight = androidx.compose.ui.text.font.FontWeight.W600,
                                 letterSpacing = 0.5.sp,
                             )
                         }
@@ -142,6 +139,12 @@ fun ChatHistoryScreen(
                                 session = session,
                                 onOpen = {
                                     navController.navigate(com.guidetradeai.ui.navigation.NavRoutes.chatRoute(session.id))
+                                },
+                                onDelete = {
+                                    chatHistoryViewModel.deleteSession(session.id)
+                                },
+                                onRename = { newTitle ->
+                                    chatHistoryViewModel.renameSession(session.id, newTitle)
                                 },
                             )
                         }
@@ -156,11 +159,13 @@ fun ChatHistoryScreen(
 fun SessionItem(
     session: ChatSession,
     onOpen: () -> Unit,
+    onDelete: () -> Unit,
+    onRename: (String) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     var showMenu by remember { mutableStateOf(false) }
-    var showRenameDialog by remember { mutableStateOf(false) }
     var showDeleteDialog by remember { mutableStateOf(false) }
+    var showRenameDialog by remember { mutableStateOf(false) }
     var renameText by rememberSaveable { mutableStateOf(session.title) }
 
     Card(
@@ -192,7 +197,6 @@ fun SessionItem(
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
             }
-
             IconButton(onClick = { showMenu = true }) {
                 Icon(
                     imageVector = Icons.Default.MoreVert,
@@ -201,23 +205,24 @@ fun SessionItem(
                 )
             }
         }
+    }
 
-        DropdownMenu(expanded = showMenu, onDismissRequest = { showMenu = false }) {
-            androidx.compose.material3.DropdownMenuItem(
-                text = { Text("Rename") },
-                onClick = {
-                    showMenu = false
-                    showRenameDialog = true
-                },
-            )
-            androidx.compose.material3.DropdownMenuItem(
-                text = { Text("Delete", color = MaterialTheme.colorScheme.error) },
-                onClick = {
-                    showMenu = false
-                    showDeleteDialog = true
-                },
-            )
-        }
+    androidx.compose.material3.DropdownMenu(expanded = showMenu, onDismissRequest = { showMenu = false }) {
+        androidx.compose.material3.DropdownMenuItem(
+            text = { Text("Rename") },
+            onClick = {
+                showMenu = false
+                renameText = session.title
+                showRenameDialog = true
+            },
+        )
+        androidx.compose.material3.DropdownMenuItem(
+            text = { Text("Delete", color = MaterialTheme.colorScheme.error) },
+            onClick = {
+                showMenu = false
+                showDeleteDialog = true
+            },
+        )
     }
 
     if (showRenameDialog) {
@@ -236,6 +241,7 @@ fun SessionItem(
             },
             confirmButton = {
                 TextButton(onClick = {
+                    onRename(renameText)
                     showRenameDialog = false
                 }) { Text("OK") }
             },
@@ -253,6 +259,7 @@ fun SessionItem(
             confirmButton = {
                 TextButton(
                     onClick = {
+                        onDelete()
                         showDeleteDialog = false
                     },
                     colors = androidx.compose.material3.TextButtonDefaults.textButtonColors(
@@ -271,25 +278,20 @@ private fun groupSessionsByDate(sessions: List<ChatSession>): List<Pair<String, 
     val today = java.time.LocalDate.now()
     val yesterday = today.minusDays(1)
     val startOfWeek = today.with(java.time.DayOfWeek.MONDAY)
-
     val groups = LinkedHashMap<String, MutableList<ChatSession>>()
-
     sessions.forEach { session ->
         val date = try {
             Instant.parse(session.createdAt).atZone(ZoneId.systemDefault()).toLocalDate()
         } catch (e: Exception) {
             today
         }
-
         val header = when {
             date == today -> "TODAY"
             date == yesterday -> "YESTERDAY"
             date >= startOfWeek -> "THIS WEEK"
             else -> "OLDER"
         }
-
         groups.getOrPut(header) { mutableListOf() }.add(session)
     }
-
-    return groups.entries.map { it.key to it.value }.toList()
+    return groups.entries.map { it.key to it.value.toList() }.toList()
 }

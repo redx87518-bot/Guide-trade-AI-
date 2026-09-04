@@ -6,11 +6,9 @@ import android.content.Intent
 import android.content.pm.PackageManager
 import android.net.Uri
 import android.provider.Settings
-import androidx.activity.result.contract.ActivityResultContract
 import androidx.core.content.ContextCompat
 
 class PermissionHandler {
-
     fun isPermissionGranted(context: Context, permission: String): Boolean {
         return ContextCompat.checkSelfPermission(context, permission) == PackageManager.PERMISSION_GRANTED
     }
@@ -34,9 +32,7 @@ class PermissionHandler {
         const val PERMISSION_RECORD_AUDIO = android.Manifest.permission.RECORD_AUDIO
         const val PERMISSION_POST_NOTIFICATIONS = android.Manifest.permission.POST_NOTIFICATIONS
         const val PERMISSION_INTERNET = android.Manifest.permission.INTERNET
-
         val VOICE_PERMISSIONS = arrayOf(PERMISSION_RECORD_AUDIO)
-
         val NOTIFICATION_PERMISSIONS = arrayOf(PERMISSION_POST_NOTIFICATIONS)
     }
 }

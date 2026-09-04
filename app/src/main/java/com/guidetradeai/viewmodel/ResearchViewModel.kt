@@ -43,7 +43,7 @@ class ResearchViewModel(
                         ?.filterNot { it.id == id } ?: emptyList()
                     _uiState.value = ResearchHistoryUiState.Success(current)
                 }
-                is Result.Error -> _uiState.value = ResearchHistoryUiState.Error(result.message)
+                is Result.Error -> {}
                 is Result.Loading -> {}
             }
         }

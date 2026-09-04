@@ -1,7 +1,6 @@
 package com.guidetradeai.ui.screens
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -22,28 +21,34 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.OutlinedTextFieldDefaults
+import androidx.compose.material3.Divider
 import androidx.compose.material3.icons.Icons
 import androidx.compose.material3.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.icons.filled.Delete
 import androidx.compose.material3.icons.filled.MoreVert
-import androidx.compose.material3.icons.filled.Search
 import androidx.compose.material3.icons.filled.Send
-import androidx.compose.material3.icons.filled.Share
 import androidx.compose.material3.icons.filled.Speaker
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -52,17 +57,14 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import com.guidetradeai.ui.components.BottomBar
 import com.guidetradeai.ui.components.MarkdownText
-import com.guidetradeai.ui.navigation.NavRoutes
-import com.guidetradeai.utils.formatDate
+import androidx.compose.ui.Alignment.Horizontally
 import com.guidetradeai.viewmodel.ChatUiState
 import com.guidetradeai.viewmodel.ChatViewModel
-import com.guidetradeai.viewmodel.ResearchDetailViewModel
-import androidx.compose.material3.Divider
 
 @Composable
 fun ChatScreen(
     navController: NavHostController,
-    sessionId: String?,
+    sessionId: String? = null,
 ) {
     val chatViewModel: ChatViewModel = viewModel()
     val uiState by chatViewModel.uiState.collectAsState()
@@ -80,13 +82,13 @@ fun ChatScreen(
     val isTyping = readyState?.isTyping ?: false
     val currentTitle = readyState?.sessionTitle ?: "New Chat"
     val errorMessage = readyState?.error
+    val currentSessionId = readyState?.sessionId
 
     var messageText by remember { mutableStateOf("") }
     var showMenu by remember { mutableStateOf(false) }
     var showRenameDialog by remember { mutableStateOf(false) }
     var showDeleteDialog by remember { mutableStateOf(false) }
-    var renameText by remember { mutableStateOf(currentTitle) }
-    val currentSessionId = readyState?.sessionId
+    var renameText by rememberSaveable { mutableStateOf(currentTitle) }
 
     Column(
         modifier = Modifier
@@ -125,7 +127,6 @@ fun ChatScreen(
                 titleContentColor = MaterialTheme.colorScheme.onBackground,
             ),
         )
-
         androidx.compose.material3.DropdownMenu(expanded = showMenu, onDismissRequest = { showMenu = false }) {
             androidx.compose.material3.DropdownMenuItem(
                 text = { Text("Rename") },
@@ -143,7 +144,6 @@ fun ChatScreen(
                 },
             )
         }
-
         Box(modifier = Modifier.weight(1f)) {
             if (messages.isEmpty() && !isTyping) {
                 Box(
@@ -192,7 +192,6 @@ fun ChatScreen(
                             )
                         }
                     }
-
                     if (isTyping) {
                         Box(
                             modifier = Modifier
@@ -200,13 +199,12 @@ fun ChatScreen(
                                 .padding(vertical = 8.dp),
                             contentAlignment = Alignment.CenterStart,
                         ) {
-                            ChatTypingIndicator()
+                            com.guidetradeai.ui.components.ChatTypingIndicator()
                         }
                     }
                 }
             }
         }
-
         if (errorMessage != null) {
             Text(
                 text = errorMessage,
@@ -215,7 +213,6 @@ fun ChatScreen(
                 modifier = Modifier.padding(horizontal = 16.dp, vertical = 4.dp),
             )
         }
-
         Row(
             modifier = Modifier
                 .fillMaxWidth()
@@ -223,37 +220,25 @@ fun ChatScreen(
                 .imePadding(),
             verticalAlignment = Alignment.CenterVertically,
         ) {
-            androidx.compose.material3.OutlinedTextField(
+            OutlinedTextField(
                 value = messageText,
                 onValueChange = { messageText = it },
                 placeholder = { Text("Type a message...") },
                 modifier = Modifier.weight(1f),
                 maxLines = 4,
                 shape = RoundedCornerShape(20.dp),
-                colors = androidx.compose.material3.OutlinedTextFieldDefaults.colors(
+                colors = OutlinedTextFieldDefaults.colors(
                     focusedBorderColor = Color.Transparent,
                     unfocusedBorderColor = Color.Transparent,
                     cursorColor = MaterialTheme.colorScheme.primary,
                     focusedContainerColor = MaterialTheme.colorScheme.surface,
                     unfocusedContainerColor = MaterialTheme.colorScheme.surface,
                 ),
-                textStyle = androidx.compose.ui.text.TextStyle(
-                    color = MaterialTheme.colorScheme.onSurface,
+                textStyle = TextStyle(
                     fontSize = 16.sp,
                 ),
             )
-
-            IconButton(
-                onClick = { /* Voice input */ },
-                enabled = !isTyping,
-            ) {
-                Icon(
-                    imageVector = Icons.Default.Send,
-                    contentDescription = "Voice input",
-                    tint = if (!isTyping) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.5f),
-                )
-            }
-
+            Spacer(modifier = Modifier.width(8.dp))
             IconButton(
                 onClick = {
                     if (messageText.isNotBlank() && !isTyping) {
@@ -262,7 +247,7 @@ fun ChatScreen(
                     }
                 },
                 enabled = messageText.isNotBlank() && !isTyping,
-                colors = androidx.compose.material3.IconButtonDefaults.iconButtonColors(
+                colors = IconButtonDefaults.iconButtonColors(
                     containerColor = if (messageText.isNotBlank() && !isTyping) {
                         MaterialTheme.colorScheme.primary
                     } else {
@@ -278,24 +263,23 @@ fun ChatScreen(
                     } else {
                         MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.5f)
                     },
+                    modifier = Modifier.size(24.dp),
                 )
             }
         }
     }
-
     BottomBar(navController = navController)
 
     if (showRenameDialog && currentSessionId != null) {
-        var newTitle by remember { mutableStateOf(currentTitle) }
-        androidx.compose.material3.AlertDialog(
+        AlertDialog(
             onDismissRequest = { showRenameDialog = false },
             title = { Text("Rename Chat") },
             text = {
-                androidx.compose.material3.OutlinedTextField(
-                    value = newTitle,
-                    onValueChange = { newTitle = it },
+                OutlinedTextField(
+                    value = renameText,
+                    onValueChange = { renameText = it },
                     singleLine = true,
-                    colors = androidx.compose.material3.OutlinedTextFieldDefaults.colors(
+                    colors = OutlinedTextFieldDefaults.colors(
                         focusedBorderColor = MaterialTheme.colorScheme.primary,
                     ),
                     modifier = Modifier.fillMaxWidth(),
@@ -304,7 +288,7 @@ fun ChatScreen(
             confirmButton = {
                 TextButton(onClick = {
                     chatViewModel.saveResearch(
-                        title = newTitle,
+                        title = renameText,
                         response = "",
                         asset = null,
                     )
@@ -342,6 +326,14 @@ fun UserMessageBubble(content: String, timestamp: String?, modifier: Modifier = 
                     color = MaterialTheme.colorScheme.onPrimary,
                     lineHeight = 22.sp,
                 )
+                timestamp?.let { ts ->
+                    Text(
+                        text = ts,
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.7f),
+                        modifier = Modifier.padding(top = 4.dp),
+                    )
+                }
             }
         }
     }
@@ -377,7 +369,6 @@ fun AiMessageBubble(
                 modifier = Modifier.size(18.dp),
             )
         }
-
         Card(
             shape = RoundedCornerShape(
                 topStart = 4.dp,
@@ -390,16 +381,13 @@ fun AiMessageBubble(
         ) {
             Column(modifier = Modifier.padding(12.dp, 8.dp, 12.dp, 8.dp)) {
                 MarkdownText(text = content)
-
                 Spacer(modifier = Modifier.height(8.dp))
-
                 Text(
                     text = "Disclaimer: This content is AI-generated and not financial advice. Always verify before trading.",
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                     lineHeight = 14.sp,
                 )
-
                 if (timestamp != null) {
                     Text(
                         text = timestamp,

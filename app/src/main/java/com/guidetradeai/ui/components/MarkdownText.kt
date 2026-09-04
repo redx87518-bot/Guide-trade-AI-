@@ -15,6 +15,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.AnnotatedString
@@ -40,49 +41,33 @@ fun MarkdownText(
     )
 }
 
-fun buildMarkdownAnnotatedString(text: String, color: Color): AnnotatedString {
-    val builder = AnnotatedString.Builder(text)
+fun buildMarkdownAnnotatedString(text: String, color: Color = Color.Unspecified): AnnotatedString {
+    val builder = AnnotatedString.Builder()
     val paragraphs = text.split("\n\n").filter { it.isNotBlank() }
-
-    builder.clearLength()
 
     for (paragraph in paragraphs) {
         val lines = paragraph.split("\n")
-
         for (line in lines) {
             val trimmed = line.trim()
-
             when {
                 trimmed.startsWith("### ") -> {
                     builder.pushStyle(SpanStyle(fontSize = 18.sp, fontWeight = FontWeight.W600, color = color))
                     builder.append(trimmed.substring(4))
-                    builder.pop()
-                    builder.pushStyle(SpanStyle(color = Color.Transparent))
-                    builder.append("\n")
                     builder.pop()
                 }
                 trimmed.startsWith("## ") -> {
                     builder.pushStyle(SpanStyle(fontSize = 22.sp, fontWeight = FontWeight.W700, color = color))
                     builder.append(trimmed.substring(3))
                     builder.pop()
-                    builder.pushStyle(SpanStyle(color = Color.Transparent))
-                    builder.append("\n")
-                    builder.pop()
                 }
                 trimmed.startsWith("# ") -> {
                     builder.pushStyle(SpanStyle(fontSize = 26.sp, fontWeight = FontWeight.W700, color = color))
                     builder.append(trimmed.substring(2))
                     builder.pop()
-                    builder.pushStyle(SpanStyle(color = Color.Transparent))
-                    builder.append("\n")
-                    builder.pop()
                 }
                 trimmed.startsWith("- ") || trimmed.startsWith("* ") -> {
                     builder.pushStyle(SpanStyle(color = color))
-                    builder.append("• ${trimmed.substring(2)}")
-                    builder.pop()
-                    builder.pushStyle(SpanStyle(color = Color.Transparent))
-                    builder.append("\n")
+                    builder.append("\u2022 ${trimmed.substring(2)}")
                     builder.pop()
                 }
                 trimmed.matches(Regex("^[0-9]+\\. .*")) -> {
@@ -91,35 +76,30 @@ fun buildMarkdownAnnotatedString(text: String, color: Color): AnnotatedString {
                     builder.pushStyle(SpanStyle(color = color))
                     builder.append("$num. $content")
                     builder.pop()
-                    builder.pushStyle(SpanStyle(color = Color.Transparent))
-                    builder.append("\n")
-                    builder.pop()
                 }
                 else -> {
                     builder.pushStyle(SpanStyle(color = color))
                     builder.append(trimmed)
                     builder.pop()
-                    builder.pushStyle(SpanStyle(color = Color.Transparent))
-                    builder.append("\n")
-                    builder.pop()
                 }
             }
+            builder.pushStyle(SpanStyle(color = Color.Transparent))
+            builder.append("\n")
+            builder.pop()
         }
         builder.pushStyle(SpanStyle(color = Color.Transparent))
         builder.append("\n")
         builder.pop()
     }
-
     return builder.toAnnotatedString()
 }
 
 @Composable
 fun ChatTypingIndicator() {
     val infiniteTransition = rememberInfiniteTransition(label = "typing_dots")
-
     Row(
         horizontalArrangement = Arrangement.spacedBy(4.dp),
-        verticalAlignment = androidx.compose.ui.Alignment.CenterVertically,
+        verticalAlignment = Alignment.CenterVertically,
     ) {
         repeat(3) { index ->
             val alpha by infiniteTransition.animateFloat(

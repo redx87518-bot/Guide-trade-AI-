@@ -13,9 +13,7 @@ class AudioPlayer {
             val audioBytes = Base64.decode(base64Audio, Base64.DEFAULT)
             val tempFile = File.createTempFile("audio_", ".mp3", null)
             tempFile.writeBytes(audioBytes)
-
             release()
-
             mediaPlayer = MediaPlayer().apply {
                 setDataSource(tempFile.absolutePath)
                 prepareAsync()
@@ -32,30 +30,25 @@ class AudioPlayer {
     }
 
     fun pause() {
-        try {
-            mediaPlayer?.pause()
-        } catch (e: Exception) {
-        }
+        mediaPlayer?.pause()
     }
 
     fun resume() {
-        try {
-            mediaPlayer?.start()
-        } catch (e: Exception) {
-        }
+        mediaPlayer?.start()
     }
 
     fun stop() {
         try {
             mediaPlayer?.stop()
         } catch (e: Exception) {
-        } finally {
-            release()
         }
     }
 
     fun release() {
-        mediaPlayer?.release()
+        try {
+            mediaPlayer?.release()
+        } catch (e: Exception) {
+        }
         mediaPlayer = null
         currentFile?.delete()
         currentFile = null

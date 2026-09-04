@@ -5,7 +5,6 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -14,32 +13,27 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.Divider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Switch
-import androidx.compose.material3.SwitchDefaults
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.OutlinedTextFieldDefaults
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.icons.Icons
 import androidx.compose.material3.icons.automirrored.filled.ArrowBack
-import androidx.compose.material3.icons.filled.ContentCopy
 import androidx.compose.material3.icons.filled.Edit
 import androidx.compose.material3.icons.filled.ExitToApp
-import androidx.compose.material3.icons.filled.Lock
 import androidx.compose.material3.icons.filled.ManageAccounts
-import androidx.compose.material3.icons.filled.Settings
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -48,6 +42,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -70,17 +65,14 @@ fun ProfileScreen(
 ) {
     val profileViewModel: ProfileViewModel = viewModel()
     val profileUiState by profileViewModel.uiState.collectAsState()
-
     LaunchedEffect(Unit) {
         profileViewModel.loadProfile()
     }
-
     val user = (profileUiState as? ProfileUiState.Success)?.user
-
     var showEditDialog by remember { mutableStateOf(false) }
     var editName by rememberSaveable { mutableStateOf("") }
 
-    androidx.compose.material3.Scaffold(
+    Scaffold(
         topBar = {
             TopAppBar(
                 title = { Text("Profile") },
@@ -144,9 +136,7 @@ fun ProfileScreen(
                             )
                         }
                     }
-
                     Spacer(modifier = Modifier.height(16.dp))
-
                     Text(
                         text = user.fullName ?: "Name not set",
                         style = MaterialTheme.typography.headlineSmall,
@@ -154,7 +144,6 @@ fun ProfileScreen(
                         textAlign = TextAlign.Center,
                         modifier = Modifier.fillMaxWidth(),
                     )
-
                     Text(
                         text = user.email,
                         style = MaterialTheme.typography.bodyMedium,
@@ -162,7 +151,6 @@ fun ProfileScreen(
                         textAlign = TextAlign.Center,
                         modifier = Modifier.fillMaxWidth(),
                     )
-
                     Text(
                         text = "Member since ${user.createdAt.formatDate("MMM dd, yyyy")}",
                         style = MaterialTheme.typography.bodySmall,
@@ -170,14 +158,13 @@ fun ProfileScreen(
                         textAlign = TextAlign.Center,
                         modifier = Modifier.fillMaxWidth(),
                     )
-
                     Spacer(modifier = Modifier.height(24.dp))
-
                     Row(
                         horizontalArrangement = Arrangement.spacedBy(12.dp),
+                        verticalAlignment = Alignment.CenterVertically,
                         modifier = Modifier.fillMaxWidth(),
                     ) {
-                        TextButton(
+                        androidx.compose.material3.TextButton(
                             onClick = { showEditDialog = true },
                             modifier = Modifier.weight(1f),
                             colors = androidx.compose.material3.ButtonDefaults.textButtonColors(
@@ -192,9 +179,8 @@ fun ProfileScreen(
                             Spacer(modifier = Modifier.width(4.dp))
                             Text("Edit Profile", color = MaterialTheme.colorScheme.primary)
                         }
-
-                        TextButton(
-                            onClick = { navController.navigate(NavRoutes.SETTINGS) },
+                        androidx.compose.material3.TextButton(
+                            onClick = { navController.navigate(com.guidetradeai.ui.navigation.NavRoutes.SETTINGS) },
                             modifier = Modifier.weight(1f),
                             colors = androidx.compose.material3.ButtonDefaults.textButtonColors(
                                 containerColor = MaterialTheme.colorScheme.surface,
@@ -209,53 +195,45 @@ fun ProfileScreen(
                             Text("Settings", color = MaterialTheme.colorScheme.primary)
                         }
                     }
-
-                    Spacer(modifier = Modifier.height(24.dp))
-
+                    Spacer(modifier = Modifier.height(16.dp))
                     Divider(modifier = Modifier.fillMaxWidth())
-
                     Spacer(modifier = Modifier.height(8.dp))
-
                     SettingRow(
                         icon = Icons.Default.ExitToApp,
                         title = "Logout",
                         subtitle = null,
                         tint = MaterialTheme.colorScheme.error,
-                    ) {
-                        authViewModel.signOut()
-                    }
-
-                    SettingRow(
-                        icon = Icons.Default.Edit,
-                        title = "Change Password",
-                        subtitle = null,
-                    ) {
-                        // Navigate to change password
-                    }
+                        onClick = {
+                            authViewModel.signOut()
+                            navController.navigate(com.guidetradeai.ui.navigation.NavRoutes.LOGIN) {
+                                popUpTo(0) { inclusive = true }
+                            }
+                        },
+                    )
                 }
             }
         }
     }
 
     if (showEditDialog && user != null) {
-        androidx.compose.material3.AlertDialog(
+        AlertDialog(
             onDismissRequest = { showEditDialog = false },
             title = { Text("Edit Profile") },
             text = {
-                androidx.compose.material3.OutlinedTextField(
+                OutlinedTextField(
                     value = editName,
                     onValueChange = { editName = it },
                     label = { Text("Full Name") },
                     singleLine = true,
                     modifier = Modifier.fillMaxWidth(),
-                    colors = androidx.compose.material3.OutlinedTextFieldDefaults.colors(
+                    colors = OutlinedTextFieldDefaults.colors(
                         focusedBorderColor = MaterialTheme.colorScheme.primary,
                     ),
                 )
             },
             confirmButton = {
                 TextButton(onClick = {
-                    profileViewModel.updateProfile(editName, null)
+                    profileViewModel.updateProfile(editName.ifBlank { null }, null)
                     showEditDialog = false
                 }) { Text("Save") }
             },
@@ -268,7 +246,7 @@ fun ProfileScreen(
 
 @Composable
 fun SettingRow(
-    icon: androidx.compose.ui.graphics.vector.ImageVector,
+    icon: ImageVector,
     title: String,
     subtitle: String?,
     tint: Color = MaterialTheme.colorScheme.onSurface,
@@ -296,29 +274,20 @@ fun SettingRow(
                     style = MaterialTheme.typography.bodyLarge,
                     color = tint,
                 )
-                subtitle?.let {
+                subtitle?.let { sub ->
                     Text(
-                        text = it,
+                        text = sub,
                         style = MaterialTheme.typography.bodySmall,
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
                     )
                 }
             }
         }
-        androidx.compose.material3.Icon(
+        Icon(
             imageVector = Icons.AutoMirrored.Filled.ArrowBack,
             contentDescription = null,
             tint = MaterialTheme.colorScheme.onSurfaceVariant,
             modifier = Modifier.size(20.dp),
         )
     }
-}
-
-@Composable
-fun Divider(modifier: Modifier = Modifier) {
-    androidx.compose.material3.Divider(
-        modifier = modifier,
-        thickness = 1.dp,
-        color = MaterialTheme.colorScheme.outline,
-    )
 }

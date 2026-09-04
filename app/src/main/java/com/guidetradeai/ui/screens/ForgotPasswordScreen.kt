@@ -2,7 +2,6 @@ package com.guidetradeai.ui.screens
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -21,7 +20,6 @@ import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.livedata
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -43,6 +41,13 @@ fun ForgotPasswordScreen(
     var email by rememberSaveable { mutableStateOf("") }
     var emailError by remember { mutableStateOf<String?>(null) }
     var showSuccessDialog by remember { mutableStateOf(false) }
+    val authUiState by authViewModel.uiState.collectAsState()
+
+    LaunchedEffect(authUiState) {
+        if (authUiState is com.guidetradeai.viewmodel.AuthUiState.ResetPasswordSent) {
+            showSuccessDialog = true
+        }
+    }
 
     Column(
         modifier = Modifier
@@ -56,16 +61,13 @@ fun ForgotPasswordScreen(
             style = MaterialTheme.typography.headlineLarge,
             color = MaterialTheme.colorScheme.onBackground,
         )
-
         Text(
             text = "Enter your email to receive a password reset link.",
             style = MaterialTheme.typography.bodyMedium,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
             modifier = Modifier.padding(top = 8.dp),
         )
-
         Spacer(modifier = Modifier.height(32.dp))
-
         OutlinedTextField(
             value = email,
             onValueChange = {
@@ -83,14 +85,11 @@ fun ForgotPasswordScreen(
             ),
             modifier = Modifier.fillMaxWidth(),
         )
-
         Spacer(modifier = Modifier.height(24.dp))
-
         Button(
             onClick = {
                 if (email.isEmailValid()) {
                     authViewModel.resetPassword(email)
-                    showSuccessDialog = true
                 } else {
                     emailError = "Please enter a valid email"
                 }
@@ -107,9 +106,7 @@ fun ForgotPasswordScreen(
                 fontWeight = androidx.compose.ui.text.font.FontWeight.SemiBold,
             )
         }
-
         Spacer(modifier = Modifier.height(16.dp))
-
         TextButton(
             onClick = { navController.popBackStack() },
         ) {
@@ -132,6 +129,9 @@ fun ForgotPasswordScreen(
                 }) {
                     Text("OK")
                 }
+            },
+            dismissButton = {
+                TextButton(onClick = { showSuccessDialog = false }) { Text("Cancel") }
             },
         )
     }

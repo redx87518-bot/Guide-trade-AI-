@@ -15,7 +15,6 @@ import kotlinx.serialization.json.jsonPrimitive
 class ResearchRepository(
     private val supabase: SupabaseClient,
 ) {
-
     private fun currentUserId(): String {
         return supabase.auth.currentUserOrNull()?.id ?: ""
     }
@@ -30,20 +29,16 @@ class ResearchRepository(
                 "message": ${Json.encodeToString(message)}
             }
             """.trimIndent()
-
             val response = supabase.functions.invoke("ai-chat", body = body)
             val data = response.data
-
             val jsonObject = json.decodeFromString<JsonObject>(data)
             val error = jsonObject.jsonObject["error"]?.jsonPrimitive?.contentOrNull
             if (error != null) {
                 return Result.error(mapFunctionError(error))
             }
-
             val content = jsonObject.jsonObject["content"]?.jsonPrimitive?.contentOrNull ?: ""
             val role = jsonObject.jsonObject["role"]?.jsonPrimitive?.contentOrNull ?: "assistant"
             val timestamp = jsonObject.jsonObject["timestamp"]?.jsonPrimitive?.contentOrNull
-
             Result.success(AiChatResponse(role = role, content = content, timestamp = timestamp))
         } catch (e: Exception) {
             Result.error("Failed to get AI response: ${e.message}")
@@ -98,7 +93,6 @@ class ResearchRepository(
         return try {
             val result = supabase.postgrest.from("research_results").select {
                 eq("id", id)
-                eq("user_id", currentUserId())
             }
             val row = result.firstOrNull()
             if (row != null) {
@@ -133,7 +127,6 @@ class ResearchRepository(
         return try {
             val assetJson = if (asset != null) Json.encodeToString(asset) else "null"
             val researchIdJson = if (researchId != null) Json.encodeToString(researchId) else "null"
-
             val body = """
             {
                 "research_id": $researchIdJson,
@@ -143,15 +136,13 @@ class ResearchRepository(
                 "asset": $assetJson
             }
             """.trimIndent()
-
             val resp = supabase.functions.invoke("telegram-send", body = body)
             val data = resp.data
-
             val jsonObj = json.decodeFromString<JsonObject>(data)
             val success = jsonObj.jsonObject["success"]?.jsonPrimitive?.content?.toBooleanStrictOrNull()
             val message = jsonObj.jsonObject["message"]?.jsonPrimitive?.content ?: ""
             val error = jsonObj.jsonObject["error"]?.jsonPrimitive?.contentOrNull
-            if (error != null) {
+            if (error != null && success != true) {
                 Result.error(error)
             } else {
                 Result.success(message)
@@ -165,10 +156,10 @@ class ResearchRepository(
         return ResearchResult(
             id = obj["id"]?.jsonPrimitive?.content ?: "",
             userId = obj["user_id"]?.jsonPrimitive?.content ?: "",
-            sessionId = obj["session_id"]?.jsonPrimitive?.contentOrNull?.content,
+            sessionId = obj["session_id"]?.jsonPrimitive?.contentOrNull,
             title = obj["title"]?.jsonPrimitive?.content ?: "",
             query = obj["query"]?.jsonPrimitive?.content ?: "",
-            asset = obj["asset"]?.jsonPrimitive?.contentOrNull?.content,
+            asset = obj["asset"]?.jsonPrimitive?.contentOrNull,
             response = obj["response"]?.jsonPrimitive?.content ?: "",
             createdAt = obj["created_at"]?.jsonPrimitive?.content ?: "",
         )

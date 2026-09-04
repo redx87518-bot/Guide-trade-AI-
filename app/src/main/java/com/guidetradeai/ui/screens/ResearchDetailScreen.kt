@@ -5,7 +5,6 @@ import android.content.ClipboardManager
 import android.content.Context
 import android.content.Intent
 import android.widget.Toast
-import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -16,12 +15,15 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
@@ -34,6 +36,7 @@ import androidx.compose.material3.icons.filled.Share
 import androidx.compose.material3.icons.filled.Speaker
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -70,7 +73,7 @@ fun ResearchDetailScreen(
     val result = (uiState as? ResearchDetailUiState.Success)?.result
     var showDeleteDialog by remember { mutableStateOf(false) }
 
-    androidx.compose.material3.Scaffold(
+    Scaffold(
         topBar = {
             TopAppBar(
                 title = {
@@ -118,7 +121,6 @@ fun ResearchDetailScreen(
             val scrollState = rememberScrollState()
             Column(
                 modifier = Modifier
-                    .fillMaxSize()
                     .verticalScroll(scrollState)
                     .padding(padding)
                     .padding(24.dp),
@@ -129,7 +131,6 @@ fun ResearchDetailScreen(
                     color = MaterialTheme.colorScheme.onBackground,
                     fontWeight = FontWeight.W700,
                 )
-
                 if (result.asset != null && result.asset.isNotEmpty()) {
                     Text(
                         text = result.asset,
@@ -138,42 +139,32 @@ fun ResearchDetailScreen(
                         modifier = Modifier.padding(top = 8.dp),
                     )
                 }
-
                 Text(
                     text = result.createdAt.formatDate("MMMM dd, yyyy 'at' h:mm a"),
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                     modifier = Modifier.padding(top = 8.dp),
                 )
-
                 Spacer(modifier = Modifier.height(24.dp))
-
                 Text(
                     text = "Question",
                     style = MaterialTheme.typography.titleMedium,
-                    color = MaterialTheme.colorScheme.onBackground,
                     fontWeight = FontWeight.W600,
                 )
                 Spacer(modifier = Modifier.height(8.dp))
                 Text(
                     text = result.query,
                     style = MaterialTheme.typography.bodyLarge,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
-
-                Spacer(modifier = Modifier.height(24.dp))
-
+                Spacer(modifier = Modifier.height(16.dp))
                 Text(
                     text = "Response",
                     style = MaterialTheme.typography.titleMedium,
-                    color = MaterialTheme.colorScheme.onBackground,
                     fontWeight = FontWeight.W600,
                 )
                 Spacer(modifier = Modifier.height(12.dp))
                 MarkdownText(text = result.response)
-
-                Spacer(modifier = Modifier.height(24.dp))
-
+                Spacer(modifier = Modifier.height(16.dp))
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.spacedBy(12.dp),
@@ -192,7 +183,6 @@ fun ResearchDetailScreen(
                             modifier = Modifier.size(24.dp),
                         )
                     }
-
                     TextButton(onClick = {
                         val intent = Intent(Intent.ACTION_SEND).apply {
                             type = "text/plain"
@@ -208,7 +198,6 @@ fun ResearchDetailScreen(
                         Spacer(modifier = Modifier.width(4.dp))
                         Text("Share", color = MaterialTheme.colorScheme.onSurfaceVariant)
                     }
-
                     TextButton(onClick = {
                         val clipboard = context.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
                         val clip = ClipData.newPlainText("Response", result.response)
@@ -226,24 +215,26 @@ fun ResearchDetailScreen(
                 }
             }
         }
+    }
 
-        if (showDeleteDialog) {
-            androidx.compose.material3.AlertDialog(
-                onDismissRequest = { showDeleteDialog = false },
-                title = { Text("Delete Research?") },
-                text = { Text("Are you sure you want to delete \"${result?.title ?: ""}\"? This action cannot be undone.") },
-                confirmButton = {
-                    TextButton(onClick = {
-                        researchViewModel.deleteResearch(researchId) {
-                            showDeleteDialog = false
-                            navController.popBackStack()
-                        }
-                    }) { Text("Delete", color = MaterialTheme.colorScheme.error) }
-                },
-                dismissButton = {
-                    TextButton(onClick = { showDeleteDialog = false }) { Text("Cancel") }
-                },
-            )
-        }
+    if (showDeleteDialog && result != null) {
+        AlertDialog(
+            onDismissRequest = { showDeleteDialog = false },
+            title = { Text("Delete Research?") },
+            text = { Text("Are you sure you want to delete \"${result.title}\"? This action cannot be undone.") },
+            confirmButton = {
+                TextButton(onClick = {
+                    researchViewModel.deleteResearch(researchId) {
+                        showDeleteDialog = false
+                        navController.popBackStack()
+                    }
+                }) {
+                    Text("Delete", color = MaterialTheme.colorScheme.error)
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = { showDeleteDialog = false }) { Text("Cancel") }
+            },
+        )
     }
 }

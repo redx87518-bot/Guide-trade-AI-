@@ -55,13 +55,11 @@ val AppTypography = Typography(
     bodyMedium = TextStyle(
         fontSize = 15.sp,
         lineHeight = 20.sp,
-        fontWeight = FontWeight.W400,
         letterSpacing = 0.15.sp,
     ),
     bodySmall = TextStyle(
         fontSize = 13.sp,
         lineHeight = 16.sp,
-        fontWeight = FontWeight.W400,
         letterSpacing = 0.4.sp,
     ),
     titleLarge = TextStyle(
@@ -71,7 +69,6 @@ val AppTypography = Typography(
     ),
     titleMedium = TextStyle(
         fontSize = 18.sp,
-        lineHeight = 24.sp,
         fontWeight = FontWeight.W500,
     ),
     headlineLarge = TextStyle(
@@ -83,6 +80,11 @@ val AppTypography = Typography(
         fontSize = 28.sp,
         lineHeight = 36.sp,
         fontWeight = FontWeight.W700,
+    ),
+    headlineSmall = TextStyle(
+        fontSize = 24.sp,
+        lineHeight = 32.sp,
+        fontWeight = FontWeight.W600,
     ),
     displayLarge = TextStyle(
         fontSize = 48.sp,
@@ -98,13 +100,9 @@ fun GuideTradeTheme(
     content: @Composable () -> Unit,
 ) {
     val colorScheme = when {
-        dynamicColor -> {
-            if (darkTheme) DarkColorScheme else LightColorScheme
-        }
         darkTheme -> DarkColorScheme
         else -> LightColorScheme
     }
-
     MaterialTheme(
         colorScheme = colorScheme,
         typography = AppTypography,

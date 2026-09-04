@@ -51,7 +51,6 @@ fun NavGraph(
                 authViewModel = authViewModel,
             )
         }
-
         composable(NavRoutes.HOME) {
             com.guidetradeai.ui.screens.HomeScreen(
                 navController = navController,
@@ -95,7 +94,10 @@ fun NavGraph(
             )
         }
         composable(NavRoutes.SETTINGS) {
-            com.guidetradeai.ui.screens.SettingsScreen(navController = navController)
+            com.guidetradeai.ui.screens.SettingsScreen(
+                navController = navController,
+                authViewModel = authViewModel,
+            )
         }
         composable(NavRoutes.TELEGRAM_SETTINGS) {
             com.guidetradeai.ui.screens.TelegramSettingsScreen(navController = navController)

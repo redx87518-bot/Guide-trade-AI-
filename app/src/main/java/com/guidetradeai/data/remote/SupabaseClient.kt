@@ -10,7 +10,6 @@ import io.github.supabase.postgrest.postgrest
 import io.github.supabase.storage.Storage
 import io.github.supabase.storage.storage
 import kotlinx.serialization.json.Json
-
 object SupabaseClient {
     val client = createSupabaseClient(
         supabaseUrl = "https://dnfutvafibliysnsetwm.supabase.co",
@@ -25,7 +24,6 @@ object SupabaseClient {
             encodeDefaults = true
         }
     }
-
     val auth get() = client.auth
     val postgrest get() = client.postgrest
     val functions get() = client.functions

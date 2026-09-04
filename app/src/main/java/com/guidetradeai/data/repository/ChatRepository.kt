@@ -13,7 +13,6 @@ import kotlinx.serialization.json.jsonPrimitive
 class ChatRepository(
     private val supabase: SupabaseClient,
 ) {
-
     private fun currentUserId(): String {
         return supabase.auth.currentUserOrNull()?.id ?: ""
     }
@@ -27,7 +26,7 @@ class ChatRepository(
             }
             val row = result.firstOrNull()
             if (row != null) {
-                Result.success(mapToChatSession(row))
+                Result.success(mapToChatSession(row.jsonObject))
             } else {
                 Result.error("Failed to create chat session")
             }
@@ -42,7 +41,7 @@ class ChatRepository(
                 eq("user_id", currentUserId())
                 order("updated_at", ascending = false)
             }
-            Result.success(result.map { mapToChatSession(it) })
+            Result.success(result.map { mapToChatSession(it.jsonObject) })
         } catch (e: Exception) {
             Result.error("Failed to load chat sessions: ${e.message}")
         }
@@ -54,7 +53,7 @@ class ChatRepository(
                 eq("session_id", sessionId)
                 order("created_at", ascending = true)
             }
-            Result.success(result.map { mapToChatMessage(it) })
+            Result.success(result.map { mapToChatMessage(it.jsonObject) })
         } catch (e: Exception) {
             Result.error("Failed to load messages: ${e.message}")
         }
@@ -78,7 +77,7 @@ class ChatRepository(
             }
             val row = result.firstOrNull()
             if (row != null) {
-                Result.success(mapToChatMessage(row))
+                Result.success(mapToChatMessage(row.jsonObject))
             } else {
                 Result.error("Failed to save message")
             }
@@ -113,22 +112,22 @@ class ChatRepository(
 
     private fun mapToChatSession(row: JsonObject): ChatSession {
         return ChatSession(
-            id = row.jsonObject["id"]?.jsonPrimitive?.content ?: "",
-            userId = row.jsonObject["user_id"]?.jsonPrimitive?.content ?: "",
-            title = row.jsonObject["title"]?.jsonPrimitive?.content ?: "",
-            createdAt = row.jsonObject["created_at"]?.jsonPrimitive?.content ?: "",
-            updatedAt = row.jsonObject["updated_at"]?.jsonPrimitive?.content ?: "",
+            id = row["id"]?.jsonPrimitive?.content ?: "",
+            userId = row["user_id"]?.jsonPrimitive?.content ?: "",
+            title = row["title"]?.jsonPrimitive?.content ?: "",
+            createdAt = row["created_at"]?.jsonPrimitive?.content ?: "",
+            updatedAt = row["updated_at"]?.jsonPrimitive?.content ?: "",
         )
     }
 
     private fun mapToChatMessage(row: JsonObject): ChatMessage {
         return ChatMessage(
-            id = row.jsonObject["id"]?.jsonPrimitive?.content ?: "",
-            sessionId = row.jsonObject["session_id"]?.jsonPrimitive?.content ?: "",
-            userId = row.jsonObject["user_id"]?.jsonPrimitive?.content ?: "",
-            role = row.jsonObject["role"]?.jsonPrimitive?.content ?: "",
-            content = row.jsonObject["content"]?.jsonPrimitive?.content ?: "",
-            createdAt = row.jsonObject["created_at"]?.jsonPrimitive?.content ?: "",
+            id = row["id"]?.jsonPrimitive?.content ?: "",
+            sessionId = row["session_id"]?.jsonPrimitive?.content ?: "",
+            userId = row["user_id"]?.jsonPrimitive?.content ?: "",
+            role = row["role"]?.jsonPrimitive?.content ?: "",
+            content = row["content"]?.jsonPrimitive?.content ?: "",
+            createdAt = row["created_at"]?.jsonPrimitive?.content ?: "",
         )
     }
 }

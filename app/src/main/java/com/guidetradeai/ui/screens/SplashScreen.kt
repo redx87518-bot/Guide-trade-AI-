@@ -1,7 +1,5 @@
 package com.guidetradeai.ui.screens
 
-import android.os.Bundle
-import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -9,25 +7,29 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
-import com.guidetradeai.R
-import com.guidetradeai.di.AppModule
-import com.guidetradeai.ui.navigation.NavRoutes
+import com.guidetradeai.utils.toGreeting
+import com.guidetradeai.viewmodel.AuthUiState
 import com.guidetradeai.viewmodel.AuthViewModel
-import kotlinx.coroutines.delay
+import com.guidetradeai.viewmodel.HomeUiState
+import com.guidetradeai.viewmodel.HomeViewModel
+import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter
 
 @Composable
 fun SplashScreen(
@@ -37,23 +39,23 @@ fun SplashScreen(
     val context = LocalContext.current
     val app = context.applicationContext as com.guidetradeai.GuideTradeApp
 
-    LaunchedEffect(Unit) {
-        delay(2000)
+    androidx.compose.runtime.LaunchedEffect(Unit) {
+        kotlinx.coroutines.delay(2000)
 
-        val isAuthenticated = AppModule.authRepository.isUserAuthenticated()
+        val isAuthenticated = app.isUserAuthenticated
         if (isAuthenticated) {
-            navController.navigate(NavRoutes.HOME) {
-                popUpTo(NavRoutes.SPLASH) { inclusive = true }
+            navController.navigate(com.guidetradeai.ui.navigation.NavRoutes.HOME) {
+                popUpTo(com.guidetradeai.ui.navigation.NavRoutes.SPLASH) { inclusive = true }
             }
         } else {
             val onboardingComplete = app.getSharedPreferences().getBoolean("onboarding_complete", false)
             if (onboardingComplete) {
-                navController.navigate(NavRoutes.LOGIN) {
-                    popUpTo(NavRoutes.SPLASH) { inclusive = true }
+                navController.navigate(com.guidetradeai.ui.navigation.NavRoutes.LOGIN) {
+                    popUpTo(com.guidetradeai.ui.navigation.NavRoutes.SPLASH) { inclusive = true }
                 }
             } else {
-                navController.navigate(NavRoutes.ONBOARDING) {
-                    popUpTo(NavRoutes.SPLASH) { inclusive = true }
+                navController.navigate(com.guidetradeai.ui.navigation.NavRoutes.ONBOARDING) {
+                    popUpTo(com.guidetradeai.ui.navigation.NavRoutes.SPLASH) { inclusive = true }
                 }
             }
         }
@@ -129,5 +131,14 @@ fun OrbAnimation(modifier: Modifier = Modifier) {
                 radius = 30f,
             )
         }
+    }
+}
+
+private fun getTimeBasedGreeting(): String {
+    val hour = LocalDateTime.now().hour
+    return when {
+        hour in 5..11 -> "Good morning"
+        hour in 12..16 -> "Good afternoon"
+        else -> "Good evening"
     }
 }

@@ -1,18 +1,24 @@
 package com.guidetradeai.ui.screens
 
+import androidx.compose.animation.core.RepeatMode
+import androidx.compose.animation.core.animateFloat
+import androidx.compose.animation.core.infiniteRepeatable
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.core.updateTransition
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
@@ -21,12 +27,14 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.drawscope.StrokeCap
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -40,7 +48,6 @@ fun OnboardingScreen(navController: NavHostController) {
     val context = LocalContext.current
     val pagerState = rememberPagerState { 3 }
     val coroutineScope = rememberCoroutineScope()
-
     val onboardingData = listOf(
         OnboardingPageData(
             title = "AI Trading Research",
@@ -55,7 +62,6 @@ fun OnboardingScreen(navController: NavHostController) {
             description = "Chat sessions, research history, and Telegram notifications keep everything in order.",
         ),
     )
-
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -72,7 +78,6 @@ fun OnboardingScreen(navController: NavHostController) {
                 description = data.description,
             )
         }
-
         Column(
             modifier = Modifier.padding(horizontal = 24.dp, vertical = 24.dp),
         ) {
@@ -95,7 +100,7 @@ fun OnboardingScreen(navController: NavHostController) {
                     fontWeight = FontWeight.Medium,
                 )
             }
-
+            Spacer(modifier = Modifier.height(16.dp))
             Button(
                 onClick = {
                     if (pagerState.currentPage < onboardingData.size - 1) {
@@ -149,8 +154,9 @@ fun OnboardingPage(title: String, description: String) {
                         center = Offset(60f, 60f),
                         radius = 60f,
                     ),
-                    shape = RoundedCornerShape(50),
+                    shape = CircleShape,
                 ),
+            contentAlignment = Alignment.Center,
         )
 
         Spacer(modifier = Modifier.height(32.dp))

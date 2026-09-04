@@ -13,7 +13,6 @@ data class User(
     val updatedAt: String = "",
 )
 
-@Serializable
 data class ChatSession(
     val id: String,
     val userId: String,
@@ -22,7 +21,6 @@ data class ChatSession(
     val updatedAt: String,
 )
 
-@Serializable
 data class ChatMessage(
     val id: String,
     val sessionId: String,
@@ -33,20 +31,25 @@ data class ChatMessage(
 )
 
 @Serializable
+data class AiChatResponse(
+    val role: String? = null,
+    val content: String? = null,
+    val timestamp: String? = null,
+)
+
 data class ResearchResult(
-    val id: String,
-    val userId: String,
-    val sessionId: String?,
-    val title: String,
-    val query: String,
+    val id: String = "",
+    val userId: String = "",
+    val sessionId: String? = null,
+    val title: String = "",
+    val query: String = "",
     val asset: String?,
     val response: String,
-    val createdAt: String,
+    val createdAt: String = "",
 )
 
 @Serializable
 data class UserSettings(
-    val userId: String,
     @SerialName("voice_enabled") val voiceEnabled: Boolean = true,
     @SerialName("auto_speak") val autoSpeak: Boolean = false,
     val theme: String = "dark",
@@ -56,12 +59,12 @@ data class UserSettings(
 
 @Serializable
 data class TelegramSettings(
-    val userId: String,
     @SerialName("bot_token_encrypted") val botTokenEncrypted: String? = null,
     @SerialName("chat_id") val chatId: String? = null,
     val enabled: Boolean = false,
     @SerialName("send_research") val sendResearch: Boolean = true,
     @SerialName("send_chat_results") val sendChatResults: Boolean = false,
+    val userId: String = "",
     val createdAt: String = "",
-    val updatedAt: String = "",
+    val updatedAt: String = "",,
 )

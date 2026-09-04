@@ -22,6 +22,16 @@ sealed class VoiceUiState {
     data class Error(val message: String) : VoiceUiState()
 }
 
+data class VoiceSettings(
+    val voiceEnabled: Boolean = true,
+    val autoSpeak: Boolean = false,
+    val theme: String = "dark",
+) {
+    companion object {
+        val Default = VoiceSettings()
+    }
+}
+
 class VoiceViewModel(
     private val settingsRepository: SettingsRepository = AppModule.settingsRepository,
     private val telegramRepository: TelegramRepository = AppModule.telegramRepository,
@@ -71,7 +81,6 @@ class VoiceViewModel(
 
         viewModelScope.launch {
             _uiState.value = VoiceUiState.Processing("Generating voice...")
-            // Call text-to-speech edge function through the supabase functions
             try {
                 val response = AppModule.supabaseClient.functions.invoke(
                     "text-to-speech",
@@ -127,15 +136,5 @@ class VoiceViewModel(
 
     fun clearError() {
         _uiState.value = VoiceUiState.Idle
-    }
-}
-
-data class VoiceSettings(
-    val voiceEnabled: Boolean = true,
-    val autoSpeak: Boolean = false,
-    val theme: String = "dark",
-) {
-    companion object {
-        val Default = VoiceSettings()
     }
 }

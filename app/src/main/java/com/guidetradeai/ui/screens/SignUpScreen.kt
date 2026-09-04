@@ -2,7 +2,6 @@ package com.guidetradeai.ui.screens
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -23,13 +22,14 @@ import androidx.compose.material3.icons.Icons
 import androidx.compose.material3.icons.filled.Visibility
 import androidx.compose.material3.icons.filled.VisibilityOff
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
@@ -39,6 +39,7 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import com.guidetradeai.utils.isEmailValid
 import com.guidetradeai.utils.isPasswordValid
+import com.guidetradeai.viewmodel.AuthUiState
 import com.guidetradeai.viewmodel.AuthViewModel
 
 @Composable
@@ -46,6 +47,16 @@ fun SignUpScreen(
     navController: NavHostController,
     authViewModel: AuthViewModel,
 ) {
+    val authUiState by authViewModel.uiState.collectAsState()
+
+    LaunchedEffect(authUiState) {
+        if (authUiState is AuthUiState.Authenticated) {
+            navController.navigate(com.guidetradeai.ui.navigation.NavRoutes.HOME) {
+                popUpTo(0) { inclusive = true }
+            }
+        }
+    }
+
     var fullName by rememberSaveable { mutableStateOf("") }
     var email by rememberSaveable { mutableStateOf("") }
     var password by rememberSaveable { mutableStateOf("") }
@@ -68,16 +79,13 @@ fun SignUpScreen(
             style = MaterialTheme.typography.headlineLarge,
             color = MaterialTheme.colorScheme.onBackground,
         )
-
         Text(
             text = "Create an account to start using Guide Trade AI",
             style = MaterialTheme.typography.bodyMedium,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
             modifier = Modifier.padding(top = 8.dp),
         )
-
         Spacer(modifier = Modifier.height(32.dp))
-
         OutlinedTextField(
             value = fullName,
             onValueChange = {
@@ -94,9 +102,7 @@ fun SignUpScreen(
             ),
             modifier = Modifier.fillMaxWidth(),
         )
-
         Spacer(modifier = Modifier.height(16.dp))
-
         OutlinedTextField(
             value = email,
             onValueChange = {
@@ -106,17 +112,15 @@ fun SignUpScreen(
             label = { Text("Email") },
             isError = emailError != null,
             supportingText = { emailError?.let { Text(it, color = MaterialTheme.colorScheme.error) } },
-            singleLine = true,
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email),
+            singleLine = true,
             colors = OutlinedTextFieldDefaults.colors(
                 focusedBorderColor = MaterialTheme.colorScheme.primary,
                 cursorColor = MaterialTheme.colorScheme.primary,
             ),
             modifier = Modifier.fillMaxWidth(),
         )
-
         Spacer(modifier = Modifier.height(16.dp))
-
         OutlinedTextField(
             value = password,
             onValueChange = {
@@ -126,7 +130,6 @@ fun SignUpScreen(
             label = { Text("Password") },
             isError = passwordError != null,
             supportingText = { passwordError?.let { Text(it, color = MaterialTheme.colorScheme.error) } },
-            singleLine = true,
             visualTransformation = if (passwordVisible) VisualTransformation.None else PasswordVisualTransformation(),
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
             trailingIcon = {
@@ -138,15 +141,14 @@ fun SignUpScreen(
                     )
                 }
             },
+            singleLine = true,
             colors = OutlinedTextFieldDefaults.colors(
                 focusedBorderColor = MaterialTheme.colorScheme.primary,
                 cursorColor = MaterialTheme.colorScheme.primary,
             ),
             modifier = Modifier.fillMaxWidth(),
         )
-
         Spacer(modifier = Modifier.height(16.dp))
-
         OutlinedTextField(
             value = confirmPassword,
             onValueChange = {
@@ -156,25 +158,34 @@ fun SignUpScreen(
             label = { Text("Confirm Password") },
             isError = confirmPasswordError != null,
             supportingText = { confirmPasswordError?.let { Text(it, color = MaterialTheme.colorScheme.error) } },
-            singleLine = true,
             visualTransformation = if (passwordVisible) VisualTransformation.None else PasswordVisualTransformation(),
-            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
+            singleLine = true,
             colors = OutlinedTextFieldDefaults.colors(
                 focusedBorderColor = MaterialTheme.colorScheme.primary,
                 cursorColor = MaterialTheme.colorScheme.primary,
             ),
             modifier = Modifier.fillMaxWidth(),
         )
-
         Spacer(modifier = Modifier.height(24.dp))
-
         Button(
             onClick = {
                 var valid = true
-                if (fullName.isBlank()) { fullNameError = "Full name is required"; valid = false }
-                if (!email.isEmailValid()) { emailError = "Invalid email"; valid = false }
-                if (password.length < 8) { passwordError = "At least 8 characters"; valid = false }
-                if (confirmPassword != password) { confirmPasswordError = "Passwords do not match"; valid = false }
+                if (fullName.isBlank()) {
+                    fullNameError = "Full name is required"
+                    valid = false
+                }
+                if (!email.isEmailValid()) {
+                    emailError = "Invalid email"
+                    valid = false
+                }
+                if (password.length < 8) {
+                    passwordError = "At least 8 characters"
+                    valid = false
+                }
+                if (confirmPassword != password) {
+                    confirmPasswordError = "Passwords do not match"
+                    valid = false
+                }
                 if (valid) {
                     authViewModel.signUp(email, password, fullName)
                 }
@@ -191,9 +202,7 @@ fun SignUpScreen(
                 fontWeight = androidx.compose.ui.text.font.FontWeight.SemiBold,
             )
         }
-
         Spacer(modifier = Modifier.height(16.dp))
-
         TextButton(
             onClick = { navController.navigate(com.guidetradeai.ui.navigation.NavRoutes.LOGIN) },
         ) {

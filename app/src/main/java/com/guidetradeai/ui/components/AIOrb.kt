@@ -1,31 +1,60 @@
 package com.guidetradeai.ui.components
 
-import androidx.compose.animation.core.*
+import androidx.compose.animation.core.InfiniteTransition
+import androidx.compose.animation.core.animateFloat
+import androidx.compose.animation.core.infiniteRepeatable
+import androidx.compose.animation.core.rememberInfiniteTransition
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.core.updateTransition
+import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.IconButtonDefaults
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
+import androidx.compose.material3.icons.Icons
+import androidx.compose.material3.icons.automirrored.filled.ArrowBack
+import androidx.compose.material3.icons.filled.MoreVert
+import androidx.compose.material3.icons.filled.PlayCircle
+import androidx.compose.material3.icons.filled.Save
+import androidx.compose.material3.icons.filled.Share
+import androidx.compose.material3.icons.filled.Speaker
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.drawscope.StrokeCap
-import androidx.compose.ui.platform.LocalDensity
-import androidx.compose.ui.res.colorResource
-import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import com.guidetradeai.voice.VoiceState
+import androidx.compose.ui.unit.sp
+import androidx.compose.animation.core.RepeatMode
+import androidx.compose.ui.Alignment.Horizontally
+import com.guidetradeai.utils.Constants
 
 @Composable
 fun AIOrb(
-    state: VoiceState,
+    state: com.guidetradeai.voice.VoiceState,
     modifier: Modifier = Modifier,
-    size: Dp = 180.dp,
+    sizeDp: Float = 180f,
     onClick: () -> Unit = {},
 ) {
     val transition = updateTransition(targetState = state, label = "orb_state_transition")
@@ -35,11 +64,11 @@ fun AIOrb(
         label = "orb_scale",
     ) { currentState ->
         when (currentState) {
-            VoiceState.IDLE -> 1.0f
-            VoiceState.LISTENING -> 1.12f
-            VoiceState.PROCESSING -> 0.92f
-            VoiceState.SPEAKING -> 1.05f
-            VoiceState.ERROR -> 1.0f
+            com.guidetradeai.voice.VoiceState.IDLE -> 1.0f
+            com.guidetradeai.voice.VoiceState.LISTENING -> 1.12f
+            com.guidetradeai.voice.VoiceState.PROCESSING -> 0.92f
+            com.guidetradeai.voice.VoiceState.SPEAKING -> 1.05f
+            com.guidetradeai.voice.VoiceState.ERROR -> 1.0f
         }
     }
 
@@ -48,11 +77,11 @@ fun AIOrb(
         label = "orb_alpha",
     ) { currentState ->
         when (currentState) {
-            VoiceState.IDLE -> 0.85f
-            VoiceState.LISTENING -> 1.0f
-            VoiceState.PROCESSING -> 0.65f
-            VoiceState.SPEAKING -> 1.0f
-            VoiceState.ERROR -> 0.4f
+            com.guidetradeai.voice.VoiceState.IDLE -> 0.85f
+            com.guidetradeai.voice.VoiceState.LISTENING -> 1.0f
+            com.guidetradeai.voice.VoiceState.PROCESSING -> 0.65f
+            com.guidetradeai.voice.VoiceState.SPEAKING -> 1.0f
+            com.guidetradeai.voice.VoiceState.ERROR -> 0.4f
         }
     }
 
@@ -61,11 +90,11 @@ fun AIOrb(
         label = "orb_gradient",
     ) { currentState ->
         when (currentState) {
-            VoiceState.IDLE -> 0f
-            VoiceState.LISTENING -> 1f
-            VoiceState.PROCESSING -> 2f
-            VoiceState.SPEAKING -> 3f
-            VoiceState.ERROR -> 0f
+            com.guidetradeai.voice.VoiceState.IDLE -> 0f
+            com.guidetradeai.voice.VoiceState.LISTENING -> 1f
+            com.guidetradeai.voice.VoiceState.PROCESSING -> 2f
+            com.guidetradeai.voice.VoiceState.SPEAKING -> 3f
+            com.guidetradeai.voice.VoiceState.ERROR -> 0f
         }
     }
 
@@ -74,36 +103,36 @@ fun AIOrb(
         initialValue = 0.95f,
         targetValue = 1.02f,
         animationSpec = infiniteRepeatable(
-            animation = tween(3000, easing = LinearEasing),
+            animation = tween(3000),
             repeatMode = RepeatMode.Reverse,
         ),
         label = "idle_pulse_scale",
     )
 
-    val finalScale = if (state == VoiceState.IDLE) scale * idlePulse else scale
+    val finalScale = if (state == com.guidetradeai.voice.VoiceState.IDLE) scale * idlePulse else scale
 
     val gradientColors = when (state) {
-        VoiceState.IDLE -> listOf(
+        com.guidetradeai.voice.VoiceState.IDLE -> listOf(
             Color(0xFF6366F1),
             Color(0xFF4345D8),
             Color(0xFF10B981),
         )
-        VoiceState.LISTENING -> listOf(
+        com.guidetradeai.voice.VoiceState.LISTENING -> listOf(
             Color(0xFF38BDF8),
             Color(0xFF0EA5E9),
             Color(0xFF6366F1),
         )
-        VoiceState.PROCESSING -> listOf(
+        com.guidetradeai.voice.VoiceState.PROCESSING -> listOf(
             Color(0xFFF59E0B),
             Color(0xFFD97706),
             Color(0xFF6366F1),
         )
-        VoiceState.SPEAKING -> listOf(
+        com.guidetradeai.voice.VoiceState.SPEAKING -> listOf(
             Color(0xFF10B981),
             Color(0xFF059669),
             Color(0xFF6366F1),
         )
-        VoiceState.ERROR -> listOf(
+        com.guidetradeai.voice.VoiceState.ERROR -> listOf(
             Color(0xFFEF4444),
             Color(0xFFDC2626),
             Color(0xFF6366F1),
@@ -112,7 +141,7 @@ fun AIOrb(
 
     Box(
         modifier = modifier
-            .size(size)
+            .size(sizeDp.dp)
             .graphicsLayer(
                 scaleX = finalScale,
                 scaleY = finalScale,
@@ -122,17 +151,17 @@ fun AIOrb(
             .background(
                 brush = Brush.radialGradient(
                     colors = gradientColors,
-                    center = Offset(size.value / 2, size.value / 2),
-                    radius = size.value / 2,
+                    center = Offset(sizeDp / 2, sizeDp / 2),
+                    radius = sizeDp / 2,
                 ),
-                shape = CircleShape,
+                shape = RoundedCornerShape(sizeDp / 2),
             ),
         contentAlignment = Alignment.Center,
     ) {
         Box(
             modifier = Modifier
-                .size(size * 0.55f)
-                .clip(CircleShape)
+                .size(sizeDp.dp * 0.55f)
+                .clip(RoundedCornerShape(sizeDp / 2))
                 .background(
                     brush = Brush.radialGradient(
                         colors = listOf(
@@ -147,37 +176,30 @@ fun AIOrb(
 }
 
 @Composable
-fun VoiceStateIndicator(state: VoiceState) {
-    val dotCount = 3
-    val transition = updateTransition(targetState = state, label = "voice_indicator")
-
-    Box(
-        horizontalAlignment = Alignment.CenterHorizontally,
+fun ChatTypingIndicator() {
+    val infiniteTransition = rememberInfiniteTransition(label = "typing_dots")
+    Row(
+        horizontalArrangement = Arrangement.spacedBy(4.dp),
+        verticalAlignment = Alignment.CenterVertically,
     ) {
-        val alpha by transition.animateFloat(
-            transitionSpec = { tween(300) },
-            label = "indicator_alpha",
-        ) { currentState ->
-            when (currentState) {
-                VoiceState.IDLE -> 0.4f
-                VoiceState.LISTENING -> 1.0f
-                VoiceState.PROCESSING -> 1.0f
-                VoiceState.SPEAKING -> 1.0f
-                VoiceState.ERROR -> 1.0f
-            }
-        }
-
-        val color by transition.animateColor(
-            transitionSpec = { tween(300) },
-            label = "indicator_color",
-        ) { currentState ->
-            when (currentState) {
-                VoiceState.IDLE -> Color(0xFF6366F1)
-                VoiceState.LISTENING -> Color(0xFF38BDF8)
-                VoiceState.PROCESSING -> Color(0xFFF59E0B)
-                VoiceState.SPEAKING -> Color(0xFF10B981)
-                VoiceState.ERROR -> Color(0xFFEF4444)
-            }
+        repeat(3) { index ->
+            val alpha by infiniteTransition.animateFloat(
+                initialValue = 0.3f,
+                targetValue = 1f,
+                animationSpec = infiniteRepeatable(
+                    animation = tween(durationMillis = 500, delayMillis = index * 150),
+                    repeatMode = RepeatMode.Restart,
+                ),
+                label = "dot_alpha_$index",
+            )
+            Box(
+                modifier = Modifier
+                    .size(6.dp)
+                    .background(
+                        color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = alpha),
+                        shape = RoundedCornerShape(50),
+                    ),
+            )
         }
     }
 }

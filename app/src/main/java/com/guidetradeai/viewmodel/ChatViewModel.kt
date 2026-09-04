@@ -2,20 +2,17 @@ package com.guidetradeai.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.guidetradeai.data.repository.AuthRepository
 import com.guidetradeai.data.repository.ChatRepository
 import com.guidetradeai.data.repository.ResearchRepository
 import com.guidetradeai.di.AppModule
 import com.guidetradeai.domain.Result
 import com.guidetradeai.domain.model.ChatMessage
 import com.guidetradeai.domain.model.ChatSession
-import com.guidetradeai.domain.model.ResearchResult
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
-import kotlinx.serialization.json.JsonObject
-import kotlinx.serialization.json.jsonObject
-import kotlinx.serialization.json.jsonPrimitive
 
 sealed class ChatUiState {
     object Loading : ChatUiState()
@@ -32,6 +29,7 @@ sealed class ChatUiState {
 class ChatViewModel(
     private val chatRepository: ChatRepository = AppModule.chatRepository,
     private val researchRepository: ResearchRepository = AppModule.researchRepository,
+    private val authRepository: AuthRepository = AppModule.authRepository,
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow<ChatUiState>(ChatUiState.Loading)
@@ -44,7 +42,6 @@ class ChatViewModel(
             _uiState.value = ChatUiState.Loading
             when (val result = chatRepository.createChatSession("New Chat")) {
                 is Result.Success -> {
-                    currentSessionId = result.data.id
                     isFirstMessage = true
                     _uiState.value = ChatUiState.Ready(
                         sessionId = result.data.id,
@@ -63,7 +60,6 @@ class ChatViewModel(
     fun loadSession(sessionId: String) {
         viewModelScope.launch {
             _uiState.value = ChatUiState.Loading
-            // Load session title
             val msgsResult = chatRepository.getChatMessages(sessionId)
             when (msgsResult) {
                 is Result.Success -> {
@@ -118,7 +114,6 @@ class ChatViewModel(
 
                     val finalMessages = (uiState.value as? ChatUiState.Ready)?.messages ?: emptyList()
 
-                    // Auto-generate title for new chats
                     if (isFirstMessage) {
                         val newTitle = generateTitle(message)
                         chatRepository.renameSession(sessionId, newTitle)
@@ -155,7 +150,7 @@ class ChatViewModel(
 
     fun saveResearch(title: String, response: String, asset: String?) {
         val ready = uiState.value as? ChatUiState.Ready ?: return
-        val user = com.guidetradeai.data.repository.AuthRepository(AppModule.supabaseClient).getCurrentUser()
+        val user = authRepository.getCurrentUser()
         if (user != null) {
             viewModelScope.launch {
                 val query = ready.messages.lastOrNull { it.role == "user" }?.content ?: ""
@@ -177,9 +172,6 @@ class ChatViewModel(
             _uiState.value = current.copy(error = null)
         }
     }
-
-    private var currentSessionId: String? = null
-        private set
 
     private fun generateTitle(message: String): String {
         val trimmed = message.trim()

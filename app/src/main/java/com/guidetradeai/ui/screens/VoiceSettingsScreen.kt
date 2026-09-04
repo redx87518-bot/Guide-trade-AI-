@@ -2,7 +2,6 @@ package com.guidetradeai.ui.screens
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
@@ -12,25 +11,23 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Switch
 import androidx.compose.material3.SwitchDefaults
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.icons.Icons
 import androidx.compose.material3.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.icons.filled.Mic
-import androidx.compose.material3.icons.filled.VolumeUp
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.livedata
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -51,15 +48,15 @@ fun VoiceSettingsScreen(
     settingsViewModel: SettingsViewModel = viewModel(),
 ) {
     val uiState by settingsViewModel.uiState.collectAsState()
-
     LaunchedEffect(Unit) { settingsViewModel.loadSettings() }
-
     val settings = (uiState as? SettingsUiState.Success)?.settings
     var voiceEnabled by remember { mutableStateOf(settings?.voiceEnabled ?: true) }
     var autoSpeak by remember { mutableStateOf(settings?.autoSpeak ?: false) }
 
-    var localVoice by remember { mutableStateOf("en-US-N") }
-    var speed by remember { mutableStateOf(1.0f) }
+    LaunchedEffect(settings?.voiceEnabled, settings?.autoSpeak) {
+        voiceEnabled = settings?.voiceEnabled ?: true
+        autoSpeak = settings?.autoSpeak ?: false
+    }
 
     Scaffold(
         topBar = {
@@ -96,7 +93,6 @@ fun VoiceSettingsScreen(
                     settingsViewModel.updateVoiceEnabled(enabled)
                 },
             )
-
             SettingToggleRow(
                 title = "Auto Speak",
                 subtitle = "Automatically play AI responses",
@@ -105,31 +101,6 @@ fun VoiceSettingsScreen(
                     autoSpeak = enabled
                     settingsViewModel.updateAutoSpeak(enabled)
                 },
-            )
-
-            Spacer(modifier = Modifier.height(16.dp))
-            Text(
-                text = "Voice Profile",
-                style = MaterialTheme.typography.titleSmall,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-                fontWeight = FontWeight.W600,
-                modifier = Modifier.padding(horizontal = 16.dp, top = 8.dp),
-                fontSize = 12.sp,
-                letterSpacing = 1.sp,
-            )
-
-            SettingToggleRow(
-                title = "Voice Selection",
-                subtitle = localVoice,
-                checked = false,
-                onCheckedChange = { },
-            )
-
-            SettingToggleRow(
-                title = "Playback Speed",
-                subtitle = String.format("%.1fx", speed),
-                checked = false,
-                onCheckedChange = { },
             )
         }
     }
@@ -146,8 +117,8 @@ fun SettingToggleRow(
         modifier = Modifier
             .fillMaxWidth()
             .padding(vertical = 12.dp, horizontal = 16.dp),
-        verticalArrangement = Arrangement.SpaceBetween,
         horizontalArrangement = Arrangement.SpaceBetween,
+        verticalAlignment = Alignment.CenterVertically,
     ) {
         Column(modifier = Modifier.weight(1f)) {
             Text(
@@ -155,9 +126,9 @@ fun SettingToggleRow(
                 style = MaterialTheme.typography.bodyLarge,
                 color = MaterialTheme.colorScheme.onSurface,
             )
-            subtitle?.let {
+            subtitle?.let { sub ->
                 Text(
-                    text = it,
+                    text = sub,
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )

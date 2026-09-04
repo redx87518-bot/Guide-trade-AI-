@@ -11,19 +11,15 @@ import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.flow.distinctUntilChanged
 
 class NetworkMonitor(private val context: Context) {
-
     val isConnected: Flow<Boolean> = callbackFlow {
         val connectivityManager = context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
-
         val networkCallback = object : ConnectivityManager.NetworkCallback() {
             override fun onAvailable(network: Network) {
                 trySend(true)
             }
-
             override fun onLost(network: Network) {
                 trySend(false)
             }
-
             override fun onCapabilitiesChanged(
                 network: Network,
                 networkCapabilities: NetworkCapabilities,
@@ -33,19 +29,15 @@ class NetworkMonitor(private val context: Context) {
                 trySend(hasInternet && hasValidated)
             }
         }
-
         val request = NetworkRequest.Builder()
             .addCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET)
             .addCapability(NetworkCapabilities.NET_CAPABILITY_VALIDATED)
             .build()
-
         connectivityManager.registerNetworkCallback(request, networkCallback)
-
         trySend(
             connectivityManager.getNetworkCapabilities(connectivityManager.activeNetwork)
                 ?.hasCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET) == true
         )
-
         awaitClose {
             connectivityManager.unregisterNetworkCallback(networkCallback)
         }

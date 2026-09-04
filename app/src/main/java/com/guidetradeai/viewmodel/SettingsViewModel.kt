@@ -44,7 +44,7 @@ class SettingsViewModel(
                         _uiState.value = SettingsUiState.Success(current.copy(voiceEnabled = enabled))
                     }
                 }
-                is Result.Error -> _uiState.value = SettingsUiState.Error(result.message)
+                is Result.Error -> {}
                 is Result.Loading -> {}
             }
         }
@@ -59,7 +59,7 @@ class SettingsViewModel(
                         _uiState.value = SettingsUiState.Success(current.copy(autoSpeak = enabled))
                     }
                 }
-                is Result.Error -> _uiState.value = SettingsUiState.Error(result.message)
+                is Result.Error -> {}
                 is Result.Loading -> {}
             }
         }
@@ -74,7 +74,7 @@ class SettingsViewModel(
                         _uiState.value = SettingsUiState.Success(current.copy(theme = theme))
                     }
                 }
-                is Result.Error -> _uiState.value = SettingsUiState.Error(result.message)
+                is Result.Error -> {}
                 is Result.Loading -> {}
             }
         }

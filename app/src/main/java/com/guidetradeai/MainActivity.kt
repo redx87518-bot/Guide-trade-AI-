@@ -11,21 +11,16 @@ import com.guidetradeai.ui.theme.GuideTradeTheme
 import com.guidetradeai.viewmodel.AuthViewModel
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
-
 class MainActivity : ComponentActivity() {
-
     private val authViewModel by lazy { AuthViewModel() }
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
-
         val startDestination = if (SupabaseClient.client.auth.currentSessionOrNull() != null) {
             com.guidetradeai.ui.navigation.NavRoutes.HOME
         } else {
             com.guidetradeai.ui.navigation.NavRoutes.SPLASH
         }
-
         setContent {
             GuideTradeTheme(darkTheme = true) {
                 NavGraph(
@@ -33,6 +28,5 @@ class MainActivity : ComponentActivity() {
                     authViewModel = authViewModel,
                 )
             }
-        }
     }
 }

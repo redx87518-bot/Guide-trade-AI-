@@ -4,8 +4,6 @@ import com.guidetradeai.domain.Result
 import com.guidetradeai.domain.model.UserSettings
 import io.github.supabase.SupabaseClient
 import io.github.supabase.auth.auth
-import io.github.supabase.functions.Functions
-import io.github.supabase.functions.functions
 import io.github.supabase.postgrest.postgrest
 import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.jsonObject
@@ -14,7 +12,6 @@ import kotlinx.serialization.json.jsonPrimitive
 class SettingsRepository(
     private val supabase: SupabaseClient,
 ) {
-
     private fun currentUserId(): String {
         return supabase.auth.currentUserOrNull()?.id ?: ""
     }

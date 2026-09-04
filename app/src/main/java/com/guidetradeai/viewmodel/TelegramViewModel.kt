@@ -46,8 +46,8 @@ class TelegramViewModel(
     }
 
     fun testConnection(botToken: String, chatId: String) {
+        _testState.value = TelegramTestState.Loading
         viewModelScope.launch {
-            _testState.value = TelegramTestState.Loading
             when (val result = telegramRepository.testAndSaveConnection(
                 botToken = botToken,
                 chatId = chatId,
@@ -72,21 +72,15 @@ class TelegramViewModel(
         sendChatResults: Boolean,
     ) {
         viewModelScope.launch {
-            _uiState.value = TelegramUiState.Loading
-            when (val result = telegramRepository.testAndSaveConnection(
+            when (val result = telegramRepository.saveSettings(
                 botToken = botToken,
                 chatId = chatId,
+                enabled = enabled,
                 sendResearch = sendResearch,
                 sendChatResults = sendChatResults,
             )) {
-                is Result.Success -> {
-                    _testState.value = TelegramTestState.Success(result.data)
-                    loadSettings()
-                }
-                is Result.Error -> {
-                    _testState.value = TelegramTestState.Error(result.message)
-                    _uiState.value = TelegramUiState.Error(result.message)
-                }
+                is Result.Success -> loadSettings()
+                is Result.Error -> {}
                 is Result.Loading -> {}
             }
         }
@@ -94,16 +88,19 @@ class TelegramViewModel(
 
     fun enableNotifications() {
         viewModelScope.launch {
-            when (val result = telegramRepository.saveSettings(
-                botToken = "",
-                chatId = "",
-                enabled = true,
-                sendResearch = true,
-                sendChatResults = false,
-            )) {
-                is Result.Success -> loadSettings()
-                is Result.Error -> _uiState.value = TelegramUiState.Error(result.message)
-                is Result.Loading -> {}
+            val settings = (uiState.value as? TelegramUiState.Success)?.settings
+            if (settings != null && settings.chatId != null) {
+                when (val result = telegramRepository.saveSettings(
+                    botToken = "",
+                    chatId = settings.chatId,
+                    enabled = true,
+                    sendResearch = settings.sendResearch,
+                    sendChatResults = settings.sendChatResults,
+                )) {
+                    is Result.Success -> loadSettings()
+                    is Result.Error -> {}
+                    is Result.Loading -> {}
+                }
             }
         }
     }
@@ -112,7 +109,7 @@ class TelegramViewModel(
         viewModelScope.launch {
             when (val result = telegramRepository.disableTelegram()) {
                 is Result.Success -> loadSettings()
-                is Result.Error -> _uiState.value = TelegramUiState.Error(result.message)
+                is Result.Error -> {}
                 is Result.Loading -> {}
             }
         }

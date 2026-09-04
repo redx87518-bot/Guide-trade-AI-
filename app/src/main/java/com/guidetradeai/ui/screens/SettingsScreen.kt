@@ -3,7 +3,6 @@ package com.guidetradeai.ui.screens
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
@@ -15,11 +14,11 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Switch
 import androidx.compose.material3.SwitchDefaults
@@ -37,6 +36,7 @@ import androidx.compose.material3.icons.filled.Palette
 import androidx.compose.material3.icons.filled.Send
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -69,7 +69,8 @@ fun SettingsScreen(
     val themeLabel = when (themeValue) {
         "light" -> "Light"
         "dark" -> "Dark"
-        else -> "System"
+        "system" -> "System"
+        else -> "Dark"
     }
     var showThemeDialog by remember { mutableStateOf(false) }
 
@@ -89,7 +90,6 @@ fun SettingsScreen(
             contentPadding = PaddingValues(vertical = 8.dp),
         ) {
             item { SettingsSectionHeader("Preferences") }
-
             item {
                 SettingItem(
                     title = "Voice",
@@ -99,17 +99,15 @@ fun SettingsScreen(
                     navController.navigate(com.guidetradeai.ui.navigation.NavRoutes.VOICE_SETTINGS)
                 }
             }
-
             item {
                 SettingItem(
                     title = "Telegram",
                     icon = Icons.Default.Send,
-                    subtitle = if (settings != null && settings.theme.isNotEmpty()) "Bot configured" else "Set up",
+                    subtitle = "Set up Telegram notifications",
                 ) {
                     navController.navigate(com.guidetradeai.ui.navigation.NavRoutes.TELEGRAM_SETTINGS)
                 }
             }
-
             item {
                 SettingItem(
                     title = "Notifications",
@@ -117,7 +115,6 @@ fun SettingsScreen(
                     subtitle = null,
                 ) { }
             }
-
             item {
                 SettingItem(
                     title = "Appearance",
@@ -127,9 +124,7 @@ fun SettingsScreen(
                     showThemeDialog = true
                 }
             }
-
             item { SettingsSectionHeader("Account") }
-
             item {
                 SettingItem(
                     title = "Account",
@@ -139,7 +134,6 @@ fun SettingsScreen(
                     navController.navigate(com.guidetradeai.ui.navigation.NavRoutes.PROFILE)
                 }
             }
-
             item {
                 SettingItem(
                     title = "Logout",
@@ -153,9 +147,7 @@ fun SettingsScreen(
                     }
                 }
             }
-
             item { SettingsSectionHeader("About") }
-
             item {
                 SettingItem(
                     title = "About",
@@ -225,9 +217,9 @@ fun SettingItem(
                     style = MaterialTheme.typography.bodyLarge,
                     color = tint,
                 )
-                subtitle?.let {
+                subtitle?.let { sub ->
                     Text(
-                        text = it,
+                        text = sub,
                         style = MaterialTheme.typography.bodySmall,
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
                     )

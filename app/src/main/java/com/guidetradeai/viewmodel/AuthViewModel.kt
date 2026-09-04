@@ -33,14 +33,11 @@ class AuthViewModel(
         viewModelScope.launch {
             _uiState.value = AuthUiState.Loading
             if (authRepository.isUserAuthenticated()) {
-                val user = authRepository.currentUser
-                // Collect current user
-                user.collect { u ->
-                    if (u != null) {
-                        _uiState.value = AuthUiState.Authenticated(u)
-                    } else {
-                        _uiState.value = AuthUiState.Unauthenticated
-                    }
+                val user = authRepository.getCurrentUser()
+                if (user != null) {
+                    _uiState.value = AuthUiState.Authenticated(user)
+                } else {
+                    _uiState.value = AuthUiState.Unauthenticated
                 }
             } else {
                 _uiState.value = AuthUiState.Unauthenticated
@@ -76,17 +73,16 @@ class AuthViewModel(
             when (val result = authRepository.signOut()) {
                 is Result.Success -> _uiState.value = AuthUiState.Unauthenticated
                 is Result.Error -> _uiState.value = AuthUiState.Error(result.message)
-                is Result.Loading -> {}
+                is Result.Loading -> _uiState.value = AuthUiState.Loading
             }
         }
     }
 
     fun resetPassword(email: String) {
         viewModelScope.launch {
-            _uiState.value = AuthUiState.Loading
             when (val result = authRepository.resetPassword(email)) {
-                is Result.Success -> _uiState.value = AuthUiState.Unauthenticated
-                is Result.Error -> _uiState.value = AuthUiState.Error(result.message)
+                is Result.Success -> {}
+                is Result.Error -> {}
                 is Result.Loading -> {}
             }
         }

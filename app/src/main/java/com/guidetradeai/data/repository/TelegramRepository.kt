@@ -4,21 +4,22 @@ import com.guidetradeai.domain.Result
 import com.guidetradeai.domain.model.TelegramSettings
 import io.github.supabase.SupabaseClient
 import io.github.supabase.auth.auth
-import io.github.supabase.functions.Functions
 import io.github.supabase.functions.functions
 import io.github.supabase.postgrest.postgrest
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonObject
+import kotlinx.serialization.json.buildJsonObject
 import kotlinx.serialization.json.jsonObject
 import kotlinx.serialization.json.jsonPrimitive
 
 class TelegramRepository(
     private val supabase: SupabaseClient,
 ) {
-
     private fun currentUserId(): String {
         return supabase.auth.currentUserOrNull()?.id ?: ""
     }
+
+    private val json = Json { ignoreUnknownKeys = true }
 
     suspend fun getTelegramSettings(): Result<TelegramSettings> {
         return try {
@@ -43,7 +44,13 @@ class TelegramRepository(
         sendChatResults: Boolean,
     ): Result<String> {
         return try {
-            val body = Json.encodeToString(JsonObject::class, buildJsonObjectLimited(botToken, chatId))
+            val body = """
+            {
+                "action": "test",
+                "bot_token": ${Json.encodeToString(botToken)},
+                "chat_id": ${Json.encodeToString(chatId)}
+            }
+            """.trimIndent()
             val resp = supabase.functions.invoke("telegram-test", body = body)
             parseSuccessResponse(resp.data)
         } catch (e: Exception) {
@@ -60,13 +67,14 @@ class TelegramRepository(
     ): Result<Unit> {
         return try {
             val updates = mapOf(
+                "bot_token" to botToken,
                 "chat_id" to chatId,
                 "enabled" to enabled,
                 "send_research" to sendResearch,
                 "send_chat_results" to sendChatResults,
             )
             supabase.postgrest.from("telegram_settings")
-                .update(updates) {
+                .upsert(updates) {
                     eq("user_id", currentUserId())
                 }
             Result.success(Unit)
@@ -95,12 +103,13 @@ class TelegramRepository(
 
     suspend fun sendResearchToTelegram(
         title: String,
+        query: String,
         response: String,
         asset: String?,
         researchId: String?,
     ): Result<String> {
         return try {
-            val body = buildTelegramSendBody(title, "", response, asset, researchId)
+            val body = buildTelegramSendBody(title, query, response, asset, researchId)
             val resp = supabase.functions.invoke("telegram-send", body = body)
             parseSuccessResponse(resp.data)
         } catch (e: Exception) {
@@ -110,10 +119,10 @@ class TelegramRepository(
 
     private fun parseSuccessResponse(data: String): Result<String> {
         return try {
-            val json = Json.decodeFromString<JsonObject>(data)
-            val success = json.jsonObject["success"]?.jsonPrimitive?.content?.toBooleanStrictOrNull()
-            val message = json.jsonObject["message"]?.jsonPrimitive?.content ?: ""
-            val error = json.jsonObject["error"]?.jsonPrimitive?.contentOrNull
+            val jsonObj = json.decodeFromString<JsonObject>(data)
+            val success = jsonObj.jsonObject["success"]?.jsonPrimitive?.content?.toBooleanStrictOrNull()
+            val message = jsonObj.jsonObject["message"]?.jsonPrimitive?.content ?: ""
+            val error = jsonObj.jsonObject["error"]?.jsonPrimitive?.contentOrNull
             if (error != null && success != true) {
                 Result.error(error)
             } else {
@@ -150,14 +159,6 @@ class TelegramRepository(
             "asset": $assetJson
         }
         """.trimIndent()
-    }
-
-    private fun buildJsonObjectLimited(botToken: String, chatId: String): JsonObject {
-        return kotlinx.serialization.json.buildJsonObject {
-            put("action", kotlinx.serialization.json.JsonPrimitive("test"))
-            put("bot_token", kotlinx.serialization.json.JsonPrimitive(botToken))
-            put("chat_id", kotlinx.serialization.json.JsonPrimitive(chatId))
-        }
     }
 
     private fun mapToTelegramSettings(obj: JsonObject): TelegramSettings {

@@ -3,14 +3,11 @@ package com.guidetradeai.data.repository
 import com.guidetradeai.domain.Result
 import com.guidetradeai.domain.model.User
 import io.github.supabase.SupabaseClient
-import io.github.supabase.auth.SignInWithPasswordAuthData
-import io.github.supabase.auth.SignUpAuthData
 import io.github.supabase.auth.UpdateUserData
 import io.github.supabase.auth.auth
 import io.github.supabase.auth.exception.AuthException
 import io.github.supabase.auth.status.SessionStatus
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.map
 import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.JsonPrimitive
 import kotlinx.serialization.json.buildJsonObject
@@ -20,7 +17,6 @@ import kotlinx.serialization.json.jsonPrimitive
 class AuthRepository(
     private val supabase: SupabaseClient,
 ) {
-
     val sessionStatus: Flow<SessionStatus> = supabase.auth.sessionStatus
 
     fun getCurrentUser(): User? {
@@ -39,7 +35,7 @@ class AuthRepository(
         return try {
             val data = buildJsonObject { put("full_name", JsonPrimitive(fullName)) }
             val result = supabase.auth.signUpWith(
-                SignUpAuthData(
+                io.github.supabase.auth.SignUpAuthData(
                     email = email,
                     password = password,
                     data = data,
@@ -67,7 +63,7 @@ class AuthRepository(
     suspend fun signIn(email: String, password: String): Result<User> {
         return try {
             val result = supabase.auth.signInWith(
-                SignInWithPasswordAuthData(
+                io.github.supabase.auth.SignInWithPasswordAuthData(
                     email = email,
                     password = password,
                 ),
@@ -79,6 +75,9 @@ class AuthRepository(
                         id = u.id,
                         email = u.email ?: "",
                         fullName = u.userMetadata?.jsonObject?.get("full_name")?.jsonPrimitive?.contentOrNull ?: "",
+                        avatarUrl = u.userMetadata?.jsonObject?.get("avatar_url")?.jsonPrimitive?.contentOrNull,
+                        createdAt = u.createdAt?.toString() ?: "",
+                        updatedAt = u.updatedAt?.toString() ?: "",
                     ),
                 )
             } else {
@@ -125,14 +124,20 @@ class AuthRepository(
                 ),
             )
             val u = supabase.auth.currentUserOrNull()
-            Result.success(
-                User(
-                    id = u?.id ?: "",
-                    email = u?.email ?: "",
-                    fullName = fullName ?: "",
-                    avatarUrl = avatarUrl,
-                ),
-            )
+            if (u != null) {
+                Result.success(
+                    User(
+                        id = u.id,
+                        email = u.email ?: "",
+                        fullName = fullName ?: u.userMetadata?.jsonObject?.get("full_name")?.jsonPrimitive?.contentOrNull ?: "",
+                        avatarUrl = avatarUrl ?: u.userMetadata?.jsonObject?.get("avatar_url")?.jsonPrimitive?.contentOrNull,
+                        createdAt = u.createdAt?.toString() ?: "",
+                        updatedAt = u.updatedAt?.toString() ?: "",
+                    ),
+                )
+            } else {
+                Result.error("No user found after update")
+            }
         } catch (e: AuthException) {
             Result.error(mapAuthError(e.message ?: "Failed to update profile"))
         } catch (e: Exception) {

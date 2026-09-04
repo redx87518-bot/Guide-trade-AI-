@@ -39,7 +39,7 @@ class ChatHistoryViewModel(
         viewModelScope.launch {
             when (val result = chatRepository.renameSession(sessionId, newTitle)) {
                 is Result.Success -> loadSessions()
-                is Result.Error -> _uiState.value = ChatHistoryUiState.Error(result.message)
+                is Result.Error -> {}
                 is Result.Loading -> {}
             }
         }
@@ -49,7 +49,7 @@ class ChatHistoryViewModel(
         viewModelScope.launch {
             when (val result = chatRepository.deleteSession(sessionId)) {
                 is Result.Success -> loadSessions()
-                is Result.Error -> _uiState.value = ChatHistoryUiState.Error(result.message)
+                is Result.Error -> {}
                 is Result.Loading -> {}
             }
         }
@@ -59,7 +59,7 @@ class ChatHistoryViewModel(
         viewModelScope.launch {
             when (val result = chatRepository.createChatSession("New Chat")) {
                 is Result.Success -> onCreated(result.data.id)
-                is Result.Error -> _uiState.value = ChatHistoryUiState.Error(result.message)
+                is Result.Error -> {}
                 is Result.Loading -> {}
             }
         }
