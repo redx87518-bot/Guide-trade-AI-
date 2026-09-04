@@ -55,6 +55,7 @@ import com.guidetradeai.viewmodel.ChatHistoryViewModel
 import java.time.Instant
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
+import androidx.compose.runtime.setValue
 
 @Composable
 fun ChatHistoryScreen(

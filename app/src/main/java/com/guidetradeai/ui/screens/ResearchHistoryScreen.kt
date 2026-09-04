@@ -42,6 +42,7 @@ import com.guidetradeai.ui.components.BottomBar
 import com.guidetradeai.utils.formatDate
 import com.guidetradeai.viewmodel.ResearchHistoryUiState
 import com.guidetradeai.viewmodel.ResearchViewModel
+import androidx.compose.runtime.setValue
 
 @Composable
 fun ResearchHistoryScreen(

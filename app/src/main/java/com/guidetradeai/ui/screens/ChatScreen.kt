@@ -59,6 +59,7 @@ import com.guidetradeai.ui.components.BottomBar
 import com.guidetradeai.ui.components.MarkdownText
 import com.guidetradeai.viewmodel.ChatUiState
 import com.guidetradeai.viewmodel.ChatViewModel
+import androidx.compose.runtime.setValue
 
 @Composable
 fun ChatScreen(

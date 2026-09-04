@@ -33,6 +33,7 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import com.guidetradeai.utils.isEmailValid
 import com.guidetradeai.viewmodel.AuthViewModel
+import androidx.compose.runtime.setValue
 
 @Composable
 fun ForgotPasswordScreen(

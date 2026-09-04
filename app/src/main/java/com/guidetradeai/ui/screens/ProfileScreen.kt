@@ -57,6 +57,7 @@ import com.guidetradeai.viewmodel.AuthUiState
 import com.guidetradeai.viewmodel.AuthViewModel
 import com.guidetradeai.viewmodel.ProfileUiState
 import com.guidetradeai.viewmodel.ProfileViewModel
+import androidx.compose.runtime.setValue
 
 @Composable
 fun ProfileScreen(

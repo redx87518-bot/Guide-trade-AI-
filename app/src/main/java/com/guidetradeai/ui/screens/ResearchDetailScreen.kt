@@ -55,6 +55,7 @@ import com.guidetradeai.utils.formatDate
 import com.guidetradeai.viewmodel.ResearchDetailUiState
 import com.guidetradeai.viewmodel.ResearchDetailViewModel
 import com.guidetradeai.viewmodel.VoiceViewModel
+import androidx.compose.runtime.setValue
 
 @Composable
 fun ResearchDetailScreen(
