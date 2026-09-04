@@ -20,6 +20,9 @@ jobs:
           java-version: '17'
           cache: 'gradle'
 
+      - name: Print Supabase deps
+        run: ./gradlew :app:dependencies --configuration debugCompileClasspath --no-daemon 2>&1 | grep -E "(supabase|gotrue|postgrest|kotlinx-datetime|auth)" | head -30
+
       - name: Build Debug APK
         run: ./gradlew assembleDebug --no-daemon -x lint
 
