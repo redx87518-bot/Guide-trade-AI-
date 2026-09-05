@@ -73,6 +73,7 @@ class ChatViewModel(
     fun startNewSession() {
         viewModelScope.launch {
             val userId = authRepository.getCurrentUser()?.id ?: return@launch
+            Log.d("ChatViewModel", "Creating new session for user: $userId")
             val result = chatRepository.createSession(userId)
             if (result is Result.Success) {
                 _currentSessionId.value = result.data
@@ -80,6 +81,9 @@ class ChatViewModel(
                 _currentSessionTitle.value = "New Chat"
                 isFirstMessage = true
                 AppModule.appPreferences.saveLastSessionId(result.data)
+                Log.d("ChatViewModel", "Session created: ${result.data}")
+            } else {
+                Log.e("ChatViewModel", "Failed to create session: ${(result as? Result.Error)?.message}")
             }
         }
     }
@@ -98,6 +102,7 @@ class ChatViewModel(
     fun sendMessage(text: String) {
         val sessionId = _currentSessionId.value ?: return
         val userId = authRepository.getCurrentUser()?.id ?: return
+        Log.d("ChatViewModel", "sendMessage called with sessionId: $sessionId, userId: $userId")
         viewModelScope.launch {
             _isLoading.value = true
             _error.value = null
@@ -123,6 +128,7 @@ class ChatViewModel(
             }
 
             val result = chatRepository.sendMessage(sessionId, text)
+            Log.d("ChatViewModel", "Edge Function result: $result")
             if (result is Result.Success) {
                 val aiMsg = ChatMessage(
                     id = UUID.randomUUID().toString(),

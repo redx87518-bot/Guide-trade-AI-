@@ -18,15 +18,14 @@ class ChatRepository(private val supabase: SupabaseClient) {
 
     suspend fun createSession(userId: String, title: String = "New Chat"): Result<String> {
         return try {
-            val result = supabase.postgrest.from("chat_sessions")
+            val sessionId = java.util.UUID.randomUUID().toString()
+            supabase.postgrest.from("chat_sessions")
                 .insert(buildJsonObject {
+                    put("id", JsonPrimitive(sessionId))
                     put("user_id", JsonPrimitive(userId))
                     put("title", JsonPrimitive(title))
                 })
-            val rows = result.decodeList<JsonObject>()
-            val id = rows.firstOrNull()?.get("id")?.jsonPrimitive?.content
-                ?: return Result.error("No session id returned")
-            Result.success(id)
+            Result.success(sessionId)
         } catch (e: Exception) {
             Result.error(e.message ?: "Failed to create session")
         }
