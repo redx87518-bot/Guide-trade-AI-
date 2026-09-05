@@ -11,8 +11,9 @@ import android.speech.SpeechRecognizer
 import android.util.Log
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.State
-import com.guidetradeai.data.remote.SupabaseClient
+import io.github.jan.supabase.SupabaseClient
 import io.github.jan.supabase.functions.functions
+import io.ktor.client.statement.bodyAsText
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.JsonPrimitive
@@ -103,11 +104,13 @@ class VoiceManager(
         if (cleaned.isBlank()) { onDone(); return }
 
         try {
+            val body = buildJsonObject { put("text", cleaned) }.toString()
             val response = supabase.functions.invoke(
                 function = "text-to-speech",
-                body = buildJsonObject { put("text", cleaned) }
+                body = body
             )
-            val json = Json.parseToJsonElement(response.body ?: "").jsonObject
+            val data = response.bodyAsText()
+            val json = Json.parseToJsonElement(data).jsonObject
 
             if (json["error"]?.jsonPrimitive?.content == "VOICE_DISABLED") {
                 onDone(); return

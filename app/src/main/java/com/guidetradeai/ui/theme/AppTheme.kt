@@ -79,7 +79,7 @@ val JarvisTypography = Typography(
         fontFamily = FontFamily.Default,
         fontWeight = FontWeight.Medium,
         fontSize = 11.sp,
-        letterSpacing = 0.08.em,
+        letterSpacing = 0.08f,
         color = TextSecondary,
     ),
 )

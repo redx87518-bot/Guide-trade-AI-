@@ -6,6 +6,8 @@ import com.guidetradeai.domain.model.ChatSession
 import io.github.jan.supabase.SupabaseClient
 import io.github.jan.supabase.postgrest.postgrest
 import io.github.jan.supabase.postgrest.query.eq
+import io.github.jan.supabase.postgrest.query.filter
+import io.ktor.client.statement.bodyAsText
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.JsonPrimitive
@@ -16,14 +18,13 @@ class ChatRepository(private val supabase: SupabaseClient) {
 
     suspend fun createSession(userId: String, title: String = "New Chat"): Result<String> {
         return try {
-            val result = supabase
-                .from("chat_sessions")
+            val result = supabase.postgrest.from("chat_sessions")
                 .insert(buildJsonObject {
                     put("user_id", JsonPrimitive(userId))
                     put("title", JsonPrimitive(title))
                 })
-                .decodeSingle<JsonObject>()
-            val id = result["id"]?.jsonPrimitive?.content
+            val rows = result.decodeList<JsonObject>()
+            val id = rows.firstOrNull()?.get("id")?.jsonPrimitive?.content
                 ?: return Result.error("No session id returned")
             Result.success(id)
         } catch (e: Exception) {
@@ -33,7 +34,7 @@ class ChatRepository(private val supabase: SupabaseClient) {
 
     suspend fun renameSession(sessionId: String, title: String): Result<Unit> {
         return try {
-            supabase.from("chat_sessions")
+            supabase.postgrest.from("chat_sessions")
                 .update(buildJsonObject { put("title", JsonPrimitive(title)) }) {
                     filter { eq("id", sessionId) }
                 }
@@ -45,9 +46,9 @@ class ChatRepository(private val supabase: SupabaseClient) {
 
     suspend fun getSessions(userId: String): Result<List<ChatSession>> {
         return try {
-            val rows = supabase.from("chat_sessions")
+            val result = supabase.postgrest.from("chat_sessions")
                 .select { filter { eq("user_id", userId) } }
-                .decodeList<JsonObject>()
+            val rows = result.decodeList<JsonObject>()
             val sessions = rows.map { row ->
                 ChatSession(
                     id = row["id"]?.jsonPrimitive?.content ?: "",
@@ -65,9 +66,9 @@ class ChatRepository(private val supabase: SupabaseClient) {
 
     suspend fun getMessages(sessionId: String): Result<List<ChatMessage>> {
         return try {
-            val rows = supabase.from("chat_messages")
+            val result = supabase.postgrest.from("chat_messages")
                 .select { filter { eq("session_id", sessionId) } }
-                .decodeList<JsonObject>()
+            val rows = result.decodeList<JsonObject>()
             val messages = rows.map { row ->
                 ChatMessage(
                     id = row["id"]?.jsonPrimitive?.content ?: "",
@@ -86,15 +87,16 @@ class ChatRepository(private val supabase: SupabaseClient) {
 
     suspend fun sendMessage(sessionId: String, message: String): Result<String> {
         return try {
+            val body = buildJsonObject {
+                put("session_id", sessionId)
+                put("message", message)
+            }.toString()
             val response = supabase.functions.invoke(
                 function = "ai-chat",
-                body = buildJsonObject {
-                    put("session_id", sessionId)
-                    put("message", message)
-                }
+                body = body
             )
-            val json = response.body ?: return Result.error("Empty response")
-            val parsed = Json.parseToJsonElement(json).jsonObject
+            val data = response.bodyAsText()
+            val parsed = Json.parseToJsonElement(data).jsonObject
             val content = parsed["content"]?.jsonPrimitive?.content
                 ?: return Result.error(parsed["error"]?.jsonPrimitive?.content ?: "Empty response")
             Result.success(content)
@@ -105,8 +107,8 @@ class ChatRepository(private val supabase: SupabaseClient) {
 
     suspend fun deleteSession(sessionId: String): Result<Unit> {
         return try {
-            supabase.from("chat_messages").delete { filter { eq("session_id", sessionId) } }
-            supabase.from("chat_sessions").delete { filter { eq("id", sessionId) } }
+            supabase.postgrest.from("chat_messages").delete { filter { eq("session_id", sessionId) } }
+            supabase.postgrest.from("chat_sessions").delete { filter { eq("id", sessionId) } }
             Result.success(Unit)
         } catch (e: Exception) {
             Result.error(e.message ?: "Failed to delete session")

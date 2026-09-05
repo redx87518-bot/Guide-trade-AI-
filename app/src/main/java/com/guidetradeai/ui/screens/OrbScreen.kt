@@ -41,6 +41,7 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.graphics.drawscope.rotate
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -122,7 +123,7 @@ fun OrbScreen(
                 },
                 fontSize = 12.sp,
                 fontWeight = FontWeight.Medium,
-                letterSpacing = 0.08.em,
+                letterSpacing = 0.08f,
             )
 
             Spacer(modifier = Modifier.height(16.dp))

@@ -3,6 +3,7 @@ package com.guidetradeai.data.local
 import android.content.Context
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.booleanPreferencesKey
+import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
 import kotlinx.coroutines.flow.Flow
@@ -21,24 +22,24 @@ class AppPreferences(private val context: Context) {
         .map { it[LAST_SESSION_ID] }
 
     suspend fun saveLastSessionId(id: String) {
-        context.dataStore.edit { it[LAST_SESSION_ID] = id }
+        context.dataStore.edit { prefs -> prefs[LAST_SESSION_ID] = id }
     }
 
     suspend fun clearLastSessionId() {
-        context.dataStore.edit { it.remove(LAST_SESSION_ID) }
+        context.dataStore.edit { prefs -> prefs.remove(LAST_SESSION_ID) }
     }
 
     val voiceEnabled: Flow<Boolean> = context.dataStore.data
         .map { it[VOICE_ENABLED] ?: true }
 
     suspend fun setVoiceEnabled(enabled: Boolean) {
-        context.dataStore.edit { it[VOICE_ENABLED] = enabled }
+        context.dataStore.edit { prefs -> prefs[VOICE_ENABLED] = enabled }
     }
 
     val autoSpeak: Flow<Boolean> = context.dataStore.data
         .map { it[AUTO_SPEAK] ?: false }
 
     suspend fun setAutoSpeak(enabled: Boolean) {
-        context.dataStore.edit { it[AUTO_SPEAK] = enabled }
+        context.dataStore.edit { prefs -> prefs[AUTO_SPEAK] = enabled }
     }
 }

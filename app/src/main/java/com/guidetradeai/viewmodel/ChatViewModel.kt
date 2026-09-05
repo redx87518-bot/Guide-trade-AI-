@@ -2,9 +2,10 @@ package com.guidetradeai.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.guidetradeai.audio.VoiceManager
+import com.guidetradeai.data.local.AppPreferences
 import com.guidetradeai.data.repository.AuthRepository
 import com.guidetradeai.data.repository.ChatRepository
-import com.guidetradeai.data.local.AppPreferences
 import com.guidetradeai.di.AppModule
 import com.guidetradeai.domain.Result
 import com.guidetradeai.domain.model.ChatMessage
@@ -12,6 +13,7 @@ import com.guidetradeai.domain.model.ChatSession
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import java.time.Instant
 import java.util.UUID
@@ -53,8 +55,9 @@ class ChatViewModel(
             val userId = authRepository.getCurrentUser()?.id ?: return@launch
             loadSessions(userId)
             val lastSessionId = AppModule.appPreferences.lastSessionId.first()
-            if (!lastSessionId.isNullOrBlank() && sessions.value.any { it.id == lastSessionId }) {
-                switchSession(sessions.value.first { it.id == lastSessionId })
+            val currentSessions = _sessions.value
+            if (!lastSessionId.isNullOrBlank() && currentSessions.any { it.id == lastSessionId }) {
+                switchSession(currentSessions.first { it.id == lastSessionId })
             } else if (_currentSessionId.value == null) {
                 startNewSession()
             }
@@ -65,7 +68,7 @@ class ChatViewModel(
         viewModelScope.launch {
             val userId = authRepository.getCurrentUser()?.id ?: return@launch
             val result = chatRepository.createSession(userId)
-            if (result.isSuccess) {
+            if (result is Result.Success) {
                 _currentSessionId.value = result.data
                 _messages.value = emptyList()
                 _currentSessionTitle.value = "New Chat"
@@ -81,7 +84,7 @@ class ChatViewModel(
             _currentSessionTitle.value = session.title
             isFirstMessage = false
             val result = chatRepository.getMessages(session.id)
-            if (result.isSuccess) _messages.value = result.data!!
+            if (result is Result.Success) _messages.value = result.data!!
             AppModule.appPreferences.saveLastSessionId(session.id)
         }
     }
@@ -96,11 +99,11 @@ class ChatViewModel(
 
             val userMsg = ChatMessage(
                 id = UUID.randomUUID().toString(),
-                session_id = sessionId,
-                user_id = userId,
+                sessionId = sessionId,
+                userId = userId,
                 role = "user",
                 content = text,
-                created_at = Instant.now().toString()
+                createdAt = Instant.now().toString()
             )
             _messages.value = _messages.value + userMsg
 
@@ -113,36 +116,38 @@ class ChatViewModel(
             }
 
             val result = chatRepository.sendMessage(sessionId, text)
-            if (result.isSuccess) {
+            if (result is Result.Success) {
                 val aiMsg = ChatMessage(
                     id = UUID.randomUUID().toString(),
-                    session_id = sessionId,
-                    user_id = userId,
+                    sessionId = sessionId,
+                    userId = userId,
                     role = "assistant",
                     content = result.data!!,
-                    created_at = Instant.now().toString()
+                    createdAt = Instant.now().toString()
                 )
                 _messages.value = _messages.value + aiMsg
                 speakResponse(result.data)
             } else {
-                _error.value = result.error
+                _error.value = (result as? Result.Error)?.message ?: "Unknown error"
             }
             _isLoading.value = false
         }
     }
 
     fun startVoiceInput() {
-        _isListening.value = true
-        voiceManager.startListening(
-            onResult = { text ->
-                _isListening.value = false
-                sendMessage(text)
-            },
-            onError = { error ->
-                _isListening.value = false
-                _error.value = error
-            }
-        )
+        viewModelScope.launch {
+            voiceManager.startListening(
+                onResult = { text ->
+                    _isListening.value = false
+                    sendMessage(text)
+                },
+                onError = { error ->
+                    _isListening.value = false
+                    _error.value = error
+                }
+            )
+            _isListening.value = true
+        }
     }
 
     fun stopVoiceInput() {
@@ -178,7 +183,7 @@ class ChatViewModel(
     private fun loadSessions(userId: String) {
         viewModelScope.launch {
             val result = chatRepository.getSessions(userId)
-            if (result.isSuccess) _sessions.value = result.data!!
+            if (result is Result.Success) _sessions.value = result.data!!
         }
     }
 }

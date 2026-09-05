@@ -25,6 +25,7 @@ import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Mic
 import androidx.compose.material.icons.filled.Palette
 import androidx.compose.material3.Divider
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -58,6 +59,7 @@ import com.guidetradeai.ui.theme.DividerColor
 import com.guidetradeai.ui.theme.ErrorColor
 import com.guidetradeai.ui.theme.SurfaceDark
 import com.guidetradeai.ui.theme.TextPrimary
+import com.guidetradeai.ui.theme.SurfaceMid
 import com.guidetradeai.ui.theme.TextSecondary
 import com.guidetradeai.viewmodel.AuthViewModel
 import com.guidetradeai.viewmodel.SettingsViewModel
@@ -339,6 +341,7 @@ fun SettingsScreen(
             },
         )
     }
+    BottomBar(navController = navController)
 }
 
 @Composable
@@ -357,12 +360,13 @@ fun SettingsCard(
                 color = AccentCyan,
                 fontSize = 11.sp,
                 fontWeight = FontWeight.Medium,
-                letterSpacing = 0.08.em,
+                letterSpacing = 0.08f,
                 modifier = Modifier.padding(bottom = 12.dp),
             )
             content()
         }
     }
+    BottomBar(navController = navController)
 }
 
 @Composable
@@ -400,6 +404,7 @@ fun SettingsRow(
             }
         }
     }
+    BottomBar(navController = navController)
 }
 
 @Composable

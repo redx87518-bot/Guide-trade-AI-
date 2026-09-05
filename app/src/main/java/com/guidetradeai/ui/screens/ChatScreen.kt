@@ -31,6 +31,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Mic
 import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material.icons.filled.Send
 import androidx.compose.material.icons.filled.Settings
@@ -69,8 +70,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
-import com.guidetradeai.ui.components.MarkdownText
 import com.guidetradeai.ui.components.BottomBar
+import com.guidetradeai.ui.components.MarkdownText
 import com.guidetradeai.ui.theme.AccentCyan
 import com.guidetradeai.ui.theme.AccentPurple
 import com.guidetradeai.ui.theme.AccentGlow
@@ -113,14 +114,14 @@ fun ChatScreen(
     val listState = rememberLazyListState()
     val drawerState = remember { DrawerState(DrawerValue.Closed) }
 
+    LaunchedEffect(Unit) {
+        chatViewModel.initialize()
+    }
+
     LaunchedEffect(messages.size) {
         if (messages.isNotEmpty()) {
             listState.animateScrollToItem(messages.size)
         }
-    }
-
-    LaunchedEffect(Unit) {
-        chatViewModel.initialize()
     }
 
     LaunchedEffect(currentSessionId) {
@@ -130,7 +131,8 @@ fun ChatScreen(
     }
 
     LaunchedEffect(error) {
-        if (error != null) {
+        val errorMessage = error
+        if (errorMessage != null) {
             delay(4000)
         }
     }
@@ -165,7 +167,6 @@ fun ChatScreen(
                     TextButton(
                         onClick = {
                             chatViewModel.startNewSession()
-                            drawerState.close()
                         },
                         modifier = Modifier.fillMaxWidth(),
                         shape = RoundedCornerShape(12.dp),
@@ -188,7 +189,6 @@ fun ChatScreen(
                                     .fillMaxWidth()
                                     .clickable {
                                         chatViewModel.switchSession(session)
-                                        drawerState.close()
                                     }
                                     .background(
                                         if (isActive) AccentGlow else Color.Transparent
@@ -432,7 +432,7 @@ fun EmptyChatState(onSuggestionClick: (String) -> Unit) {
             modifier = Modifier
                 .size(80.dp)
                 .shadow(
-                    radius = 24.dp,
+                    elevation = 24.dp,
                     shape = CircleShape,
                     spotColor = AccentCyan.copy(alpha = 0.4f),
                 )
@@ -528,12 +528,11 @@ fun UserMessageBubble(content: String, timestamp: String) {
             horizontalAlignment = Alignment.End,
         ) {
             Surface(
-                modifier = Modifier
-                    .shadow(
-                        elevation = 4.dp,
-                        shape = RoundedCornerShape(20.dp),
-                        spotColor = UserBubble.copy(alpha = 0.5f),
-                    ),
+                modifier = Modifier.shadow(
+                    elevation = 4.dp,
+                    shape = RoundedCornerShape(20.dp),
+                    spotColor = UserBubble.copy(alpha = 0.5f),
+                ),
                 color = UserBubble,
                 shape = RoundedCornerShape(20.dp),
             ) {
@@ -605,12 +604,11 @@ fun AiMessageBubble(content: String, timestamp: String) {
             modifier = Modifier.widthIn(max = 280.dp),
         ) {
             Surface(
-                modifier = Modifier
-                    .shadow(
-                        elevation = 4.dp,
-                        shape = RoundedCornerShape(20.dp),
-                        spotColor = AiBubble.copy(alpha = 0.5f),
-                    ),
+                modifier = Modifier.shadow(
+                    elevation = 4.dp,
+                    shape = RoundedCornerShape(20.dp),
+                    spotColor = AiBubble.copy(alpha = 0.5f),
+                ),
                 color = AiBubble,
                 shape = RoundedCornerShape(20.dp),
             ) {
