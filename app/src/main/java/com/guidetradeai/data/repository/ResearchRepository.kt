@@ -10,7 +10,6 @@ import io.github.jan.supabase.postgrest.postgrest
 import io.github.jan.supabase.postgrest.query.Order
 import io.ktor.client.statement.bodyAsText
 import kotlinx.serialization.json.Json
-import kotlinx.serialization.json.JsonElement
 import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.JsonPrimitive
 import kotlinx.serialization.json.buildJsonObject
@@ -28,13 +27,11 @@ class ResearchRepository(
 
     suspend fun sendAiMessage(sessionId: String, message: String): Result<AiChatResponse> {
         return try {
-            val body = """
-            {
-                "session_id": ${json.encodeToString(JsonElement.serializer(), JsonPrimitive(sessionId))},
-                "message": ${json.encodeToString(JsonElement.serializer(), JsonPrimitive(message))}
+            val body = buildJsonObject {
+                put("session_id", JsonPrimitive(sessionId))
+                put("message", JsonPrimitive(message))
             }
-            """.trimIndent()
-            val response = supabase.functions.invoke("ai-chat", body = body)
+            val response = supabase.functions.invoke("ai-chat", body = json.encodeToString(JsonObject.serializer(), body))
             val data = response.bodyAsText()
             val jsonObject = json.decodeFromString<JsonObject>(data)
             val error = jsonObject.jsonObject["error"]?.jsonPrimitive?.content
@@ -130,18 +127,16 @@ class ResearchRepository(
         researchId: String?,
     ): Result<String> {
         return try {
-            val assetJson = if (asset != null) json.encodeToString(JsonElement.serializer(), JsonPrimitive(asset)) else "null"
-            val researchIdJson = if (researchId != null) json.encodeToString(JsonElement.serializer(), JsonPrimitive(researchId)) else "null"
-            val body = """
-            {
-                "research_id": $researchIdJson,
-                "title": ${json.encodeToString(JsonElement.serializer(), JsonPrimitive(title))},
-                "query": ${json.encodeToString(JsonElement.serializer(), JsonPrimitive(query))},
-                "response": ${json.encodeToString(JsonElement.serializer(), JsonPrimitive(response))},
-                "asset": $assetJson
+            val assetJson = if (asset != null) json.encodeToString(JsonPrimitive(asset)) else "null"
+            val researchIdJson = if (researchId != null) json.encodeToString(JsonPrimitive(researchId)) else "null"
+            val body = buildJsonObject {
+                put("research_id", JsonPrimitive(researchId ?: ""))
+                put("title", JsonPrimitive(title))
+                put("query", JsonPrimitive(query))
+                put("response", JsonPrimitive(response))
+                put("asset", JsonPrimitive(asset ?: ""))
             }
-            """.trimIndent()
-            val resp = supabase.functions.invoke("telegram-send", body = body)
+            val resp = supabase.functions.invoke("telegram-send", body = json.encodeToString(JsonObject.serializer(), body))
             val data = resp.bodyAsText()
             val jsonObj = json.decodeFromString<JsonObject>(data)
             val success = jsonObj.jsonObject["success"]?.jsonPrimitive?.content?.toBooleanStrictOrNull()

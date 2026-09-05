@@ -68,6 +68,15 @@ fun TelegramSettingsScreen(
     var showMessageDialog by remember { mutableStateOf(false) }
     var promptMessage by remember { mutableStateOf("") }
 
+    LaunchedEffect(settings) {
+        if (botToken.isEmpty() && settings?.botTokenEncrypted != null) {
+            botToken = telegramViewModel.maskToken(settings.botTokenEncrypted)
+        }
+        if (chatId.isEmpty() && settings?.chatId != null) {
+            chatId = settings.chatId
+        }
+    }
+
     val isConfigured = settings?.enabled == true && settings?.chatId != null
     val maskedToken = telegramViewModel.maskToken(settings?.botTokenEncrypted)
 
