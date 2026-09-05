@@ -127,8 +127,6 @@ class ResearchRepository(
         researchId: String?,
     ): Result<String> {
         return try {
-            val assetJson = if (asset != null) json.encodeToString(JsonPrimitive(asset)) else "null"
-            val researchIdJson = if (researchId != null) json.encodeToString(JsonPrimitive(researchId)) else "null"
             val body = buildJsonObject {
                 put("research_id", JsonPrimitive(researchId ?: ""))
                 put("title", JsonPrimitive(title))
