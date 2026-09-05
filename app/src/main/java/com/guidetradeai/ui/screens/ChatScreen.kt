@@ -259,7 +259,11 @@ fun ChatScreen(
                         .padding(horizontal = 12.dp, vertical = 12.dp),
                     verticalAlignment = Alignment.CenterVertically,
                 ) {
-                    IconButton(onClick = { drawerState.open() }) {
+                    IconButton(onClick = { 
+                        kotlinx.coroutines.GlobalScope.launch(kotlinx.coroutines.Dispatchers.Main) {
+                            drawerState.open()
+                        }
+                    }) {
                         Icon(Icons.Default.Menu, contentDescription = "Menu", tint = TextPrimary)
                     }
                     Text(
@@ -312,7 +316,8 @@ fun ChatScreen(
                 }
             }
 
-            if (error != null) {
+            val currentError = error
+            if (currentError != null) {
                 Surface(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -321,7 +326,7 @@ fun ChatScreen(
                     shape = RoundedCornerShape(12.dp),
                 ) {
                     Text(
-                        text = error,
+                        text = currentError,
                         color = ErrorColor,
                         modifier = Modifier.padding(12.dp),
                         fontSize = 13.sp,

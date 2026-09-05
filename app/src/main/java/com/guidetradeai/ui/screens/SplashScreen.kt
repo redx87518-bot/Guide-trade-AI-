@@ -35,9 +35,9 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.draw.shadow
-import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -119,8 +119,8 @@ fun SplashScreen(
                     modifier = Modifier
                         .size(100.dp)
                         .scale(scale)
-                        .shadow(elevation = 
-                            radius = 40.dp,
+                        .shadow(
+                            elevation = 40.dp,
                             shape = CircleShape,
                             spotColor = AccentCyan.copy(alpha = 0.45f),
                         )
@@ -181,7 +181,7 @@ fun SplashScreen(
                     color = AccentCyan,
                     fontWeight = FontWeight.Medium,
                     fontSize = 12.sp,
-                    letterSpacing = 0.12.em,
+                    letterSpacing = 0.12f,
                     textAlign = TextAlign.Center,
                 )
             }

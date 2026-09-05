@@ -359,8 +359,8 @@ fun SettingsCard(
                 text = title,
                 color = AccentCyan,
                 fontSize = 11.sp,
-                fontWeight = FontWeight.Medium,
-                letterSpacing = 0.08f,
+                fontWeight = FontWeight.W500,
+                letterSpacing = 0.08.sp,
                 modifier = Modifier.padding(bottom = 12.dp),
             )
             content()

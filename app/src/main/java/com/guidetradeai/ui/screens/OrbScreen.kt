@@ -122,8 +122,8 @@ fun OrbScreen(
                     OrbState.PROCESSING -> TextSecondary
                 },
                 fontSize = 12.sp,
-                fontWeight = FontWeight.Medium,
-                letterSpacing = 0.08f,
+                fontWeight = FontWeight.W500,
+                letterSpacing = 0.08.sp,
             )
 
             Spacer(modifier = Modifier.height(16.dp))

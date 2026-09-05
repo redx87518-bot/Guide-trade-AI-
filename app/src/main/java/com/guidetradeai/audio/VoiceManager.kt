@@ -13,7 +13,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.State
 import io.github.jan.supabase.SupabaseClient
 import io.github.jan.supabase.functions.functions
-import io.ktor.client.statement.bodyAsText
+import io.ktor.client.call.bodyAsText
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.JsonPrimitive

@@ -4,14 +4,14 @@ import com.guidetradeai.domain.Result
 import com.guidetradeai.domain.model.ChatMessage
 import com.guidetradeai.domain.model.ChatSession
 import io.github.jan.supabase.SupabaseClient
+import io.github.jan.supabase.functions.functions
 import io.github.jan.supabase.postgrest.postgrest
-import io.github.jan.supabase.postgrest.query.eq
-import io.github.jan.supabase.postgrest.query.filter
-import io.ktor.client.statement.bodyAsText
+import io.ktor.client.call.bodyAsText
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.JsonPrimitive
 import kotlinx.serialization.json.buildJsonObject
+import kotlinx.serialization.json.jsonObject
 import kotlinx.serialization.json.jsonPrimitive
 
 class ChatRepository(private val supabase: SupabaseClient) {
