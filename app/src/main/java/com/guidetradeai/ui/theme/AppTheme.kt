@@ -46,40 +46,34 @@ val JarvisColorScheme = darkColorScheme(
 
 val JarvisTypography = Typography(
     displayLarge = TextStyle(
-        fontFamily = FontFamily.Default,
         fontWeight = FontWeight.Bold,
         fontSize = 28.sp,
         color = TextPrimary,
     ),
     titleLarge = TextStyle(
-        fontFamily = FontFamily.Default,
         fontWeight = FontWeight.SemiBold,
         fontSize = 22.sp,
         color = TextPrimary,
     ),
     titleMedium = TextStyle(
-        fontFamily = FontFamily.Default,
-        fontWeight = FontWeight.Medium,
+        fontWeight = FontWeight.W500,
         fontSize = 18.sp,
         color = TextPrimary,
     ),
     bodyLarge = TextStyle(
-        fontFamily = FontFamily.Default,
         fontWeight = FontWeight.Normal,
         fontSize = 15.sp,
         color = TextPrimary,
     ),
     bodyMedium = TextStyle(
-        fontFamily = FontFamily.Default,
         fontWeight = FontWeight.Normal,
         fontSize = 13.sp,
         color = TextPrimary,
     ),
     labelSmall = TextStyle(
-        fontFamily = FontFamily.Default,
-        fontWeight = FontWeight.Medium,
+        fontWeight = FontWeight.W500,
         fontSize = 11.sp,
-        letterSpacing = 0.08f,
+        letterSpacing = 0.08.sp,
         color = TextSecondary,
     ),
 )

@@ -366,7 +366,6 @@ fun SettingsCard(
             content()
         }
     }
-    BottomBar(navController = navController)
 }
 
 @Composable
@@ -404,7 +403,6 @@ fun SettingsRow(
             }
         }
     }
-    BottomBar(navController = navController)
 }
 
 @Composable
@@ -468,5 +466,4 @@ fun ThemeSelectorDialog(
         },
         containerColor = SurfaceDark,
     )
-    BottomBar(navController = navController)
 }

@@ -104,10 +104,9 @@ class VoiceManager(
         if (cleaned.isBlank()) { onDone(); return }
 
         try {
-            val body = buildJsonObject { put("text", cleaned) }.toString()
             val response = supabase.functions.invoke(
-                function = "text-to-speech",
-                body = body
+                "text-to-speech",
+                buildJsonObject { put("text", JsonPrimitive(cleaned)) }
             )
             val data = response.bodyAsText()
             val json = Json.parseToJsonElement(data).jsonObject

@@ -141,7 +141,7 @@ fun SplashScreen(
                         val baseRadius = size.minDimension / 2f
 
                         drawCircle(
-                            color = Color.White.copy(alpha = alpha * 0.12f),
+                            color = Color.White.copy(alpha = alpha * 0.12.sp),
                             radius = baseRadius,
                         )
                         drawCircle(
@@ -179,9 +179,9 @@ fun SplashScreen(
                 Text(
                     text = tagline.take(typedText),
                     color = AccentCyan,
-                    fontWeight = FontWeight.Medium,
+                    fontWeight = FontWeight.W500,
                     fontSize = 12.sp,
-                    letterSpacing = 0.12f,
+                    letterSpacing = 0.12.sp,
                     textAlign = TextAlign.Center,
                 )
             }

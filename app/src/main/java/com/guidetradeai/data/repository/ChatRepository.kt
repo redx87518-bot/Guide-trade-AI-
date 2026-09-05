@@ -5,8 +5,8 @@ import com.guidetradeai.domain.model.ChatMessage
 import com.guidetradeai.domain.model.ChatSession
 import io.github.jan.supabase.SupabaseClient
 import io.github.jan.supabase.functions.functions
-import io.github.jan.supabase.postgrest.postgrest
 import io.ktor.client.call.bodyAsText
+import io.github.jan.supabase.postgrest.postgrest
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.JsonPrimitive
@@ -87,13 +87,12 @@ class ChatRepository(private val supabase: SupabaseClient) {
 
     suspend fun sendMessage(sessionId: String, message: String): Result<String> {
         return try {
-            val body = buildJsonObject {
-                put("session_id", sessionId)
-                put("message", message)
-            }.toString()
             val response = supabase.functions.invoke(
-                function = "ai-chat",
-                body = body
+                "ai-chat",
+                buildJsonObject {
+                    put("session_id", JsonPrimitive(sessionId))
+                    put("message", JsonPrimitive(message))
+                }
             )
             val data = response.bodyAsText()
             val parsed = Json.parseToJsonElement(data).jsonObject

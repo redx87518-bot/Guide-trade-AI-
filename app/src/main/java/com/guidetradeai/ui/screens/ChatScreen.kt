@@ -31,7 +31,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.Mic
+import Icons.Default.Mic
 import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material.icons.filled.Send
 import androidx.compose.material.icons.filled.Settings
@@ -759,7 +759,7 @@ fun OrbButton(
             }
             else -> {
                 Icon(
-                    imageVector = androidx.compose.material.icons.filled.Mic,
+                    imageVector = Icons.Default.Mic,
                     contentDescription = "Voice",
                     tint = Color.White,
                     modifier = Modifier.size(22.dp),
