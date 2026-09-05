@@ -175,6 +175,27 @@ fun TelegramSettingsScreen(
             Button(
                 onClick = {
                     if (botToken.isNotBlank() && chatId.isNotBlank()) {
+                        telegramViewModel.saveSettings(botToken, chatId, true, true, true)
+                        promptMessage = "Settings saved successfully!"
+                        showMessageDialog = true
+                    } else {
+                        promptMessage = "Please enter both bot token and chat ID"
+                        showMessageDialog = true
+                    }
+                },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(56.dp),
+                shape = RoundedCornerShape(16.dp),
+            ) {
+                Text("SAVE SETTINGS", fontSize = 16.sp, fontWeight = androidx.compose.ui.text.font.FontWeight.SemiBold)
+            }
+
+            Spacer(modifier = Modifier.height(12.dp))
+
+            Button(
+                onClick = {
+                    if (botToken.isNotBlank() && chatId.isNotBlank()) {
                         telegramViewModel.testConnection(botToken, chatId)
                     } else {
                         promptMessage = "Please enter both bot token and chat ID"
@@ -185,7 +206,11 @@ fun TelegramSettingsScreen(
                     .fillMaxWidth()
                     .height(56.dp),
                 shape = RoundedCornerShape(16.dp),
-                enabled = testState !is TelegramTestState.Loading,
+                enabled = testState is TelegramTestState.Loading,
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = MaterialTheme.colorScheme.surface,
+                    contentColor = MaterialTheme.colorScheme.onSurface,
+                ),
             ) {
                 when (testState) {
                     is TelegramTestState.Loading -> {
