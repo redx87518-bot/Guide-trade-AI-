@@ -84,6 +84,7 @@ import com.guidetradeai.ui.theme.SurfaceMid
 import com.guidetradeai.ui.theme.TextPrimary
 import com.guidetradeai.ui.theme.TextSecondary
 import com.guidetradeai.ui.theme.UserBubble
+import com.guidetradeai.viewmodel.AuthViewModel
 import com.guidetradeai.viewmodel.ChatViewModel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -96,6 +97,7 @@ import java.time.format.DateTimeFormatter
 fun ChatScreen(
     navController: NavHostController,
     sessionId: String? = null,
+    authViewModel: AuthViewModel = viewModel(),
     chatViewModel: ChatViewModel = viewModel(),
 ) {
     val messages by chatViewModel.messages.collectAsState()
@@ -116,6 +118,14 @@ fun ChatScreen(
 
     LaunchedEffect(Unit) {
         chatViewModel.initialize()
+    }
+
+    LaunchedEffect(authViewModel.isLoggedIn) {
+        if (!authViewModel.isLoggedIn) {
+            navController.navigate("login") {
+                popUpTo(0) { inclusive = true }
+            }
+        }
     }
 
     LaunchedEffect(messages.size) {
