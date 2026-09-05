@@ -105,6 +105,8 @@ Deno.serve(async (req) => {
           model: quanModel,
           messages,
           stream: false,
+          googleSearch: true,
+          temperature: 0.2,
         }),
         signal: controller.signal,
       })
@@ -112,6 +114,7 @@ Deno.serve(async (req) => {
       if (e instanceof DOMException && e.name === 'AbortError') {
         return jsonResponse({ error: 'QUAN_TIMEOUT' }, 504)
       }
+      console.error('Quan network error:', e)
       return jsonResponse({ error: 'QUAN_ERROR' }, 502)
     } finally {
       clearTimeout(timeoutId)
@@ -120,14 +123,17 @@ Deno.serve(async (req) => {
     if (!quanResponse.ok) {
       const errorText = await quanResponse.text()
       console.error('Quan API error:', quanResponse.status, errorText)
-      if (quanResponse.status === 429) {
-        return jsonResponse({ error: 'RATE_LIMITED' }, 429)
-      }
-      return jsonResponse({ error: 'QUAN_ERROR' }, 502)
+      return jsonResponse({
+        error: 'QUAN_ERROR',
+        details: {
+          status: quanResponse.status,
+          body: errorText.substring(0, 500),
+        }
+      }, 502)
     }
 
     const quanData = await quanResponse.json()
-    console.log('Quan API response:', JSON.stringify(quanData).substring(0, 500))
+    console.log('Quan API response keys:', Object.keys(quanData))
 
     const aiResponse = quanData?.candidates?.[0]?.content?.parts?.[0]?.text
       || quanData?.choices?.[0]?.message?.content
@@ -135,7 +141,13 @@ Deno.serve(async (req) => {
 
     if (!aiResponse.trim()) {
       console.error('Empty AI response:', quanData)
-      return jsonResponse({ error: 'INVALID_RESPONSE' }, 502)
+      return jsonResponse({
+        error: 'INVALID_RESPONSE',
+        details: {
+          keys: Object.keys(quanData),
+          sample: JSON.stringify(quanData).substring(0, 300),
+        }
+      }, 502)
     }
 
     const { error: userMsgError } = await supabaseAdmin
