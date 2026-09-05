@@ -1,8 +1,11 @@
 package com.guidetradeai.ui.screens
 
+import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
@@ -14,148 +17,269 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.material3.AlertDialog
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.filled.Check
+import androidx.compose.material.icons.filled.Mic
+import androidx.compose.material.icons.filled.Palette
+import androidx.compose.material3.Divider
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.OutlinedTextFieldDefaults
-import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Switch
 import androidx.compose.material3.SwitchDefaults
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
-import androidx.compose.material3.TopAppBar
-import androidx.compose.material3.TopAppBarDefaults
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ExitToApp
-import androidx.compose.material.icons.filled.Info
-import androidx.compose.material.icons.filled.ManageAccounts
-import androidx.compose.material.icons.filled.Mic
-import androidx.compose.material.icons.filled.Notifications
-import androidx.compose.material.icons.filled.Palette
-import androidx.compose.material.icons.filled.Send
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.scale
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import com.guidetradeai.ui.components.BottomBar
+import com.guidetradeai.ui.theme.AccentCyan
+import com.guidetradeai.ui.theme.AccentPurple
+import com.guidetradeai.ui.theme.Background
+import com.guidetradeai.ui.theme.DividerColor
+import com.guidetradeai.ui.theme.ErrorColor
+import com.guidetradeai.ui.theme.SurfaceDark
+import com.guidetradeai.ui.theme.TextPrimary
+import com.guidetradeai.ui.theme.TextSecondary
 import com.guidetradeai.viewmodel.AuthViewModel
-import com.guidetradeai.viewmodel.SettingsUiState
 import com.guidetradeai.viewmodel.SettingsViewModel
-import androidx.compose.runtime.setValue
 
 @Composable
 fun SettingsScreen(
     navController: NavHostController,
     authViewModel: AuthViewModel = viewModel(),
+    settingsViewModel: SettingsViewModel = viewModel(),
 ) {
-    val settingsViewModel: SettingsViewModel = viewModel()
     val uiState by settingsViewModel.uiState.collectAsState()
+    val user = authViewModel.currentUser.collectAsState()
 
     LaunchedEffect(Unit) { settingsViewModel.loadSettings() }
 
-    val settings = (uiState as? SettingsUiState.Success)?.settings
-    val themeValue = settings?.theme ?: "dark"
-    val themeLabel = when (themeValue) {
-        "light" -> "Light"
-        "dark" -> "Dark"
-        "system" -> "System"
-        else -> "Dark"
-    }
+    val settings = (uiState as? com.guidetradeai.viewmodel.SettingsUiState.Success)?.settings
     var showThemeDialog by remember { mutableStateOf(false) }
+    var showDeleteDialog by remember { mutableStateOf(false) }
+    var showSignOutDialog by remember { mutableStateOf(false) }
 
-    Scaffold(
-        topBar = {
-            TopAppBar(
-                title = { Text("Settings") },
-                colors = TopAppBarDefaults.topAppBarColors(containerColor = Color.Transparent),
-            )
-        },
-        bottomBar = { BottomBar(navController = navController) },
-    ) { padding ->
-        LazyColumn(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(padding),
-            contentPadding = PaddingValues(vertical = 8.dp),
+    val themeValue = settings?.theme ?: "dark"
+
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(Background),
+    ) {
+        Surface(
+            modifier = Modifier.fillMaxWidth(),
+            color = SurfaceDark,
         ) {
-            item { SettingsSectionHeader("Preferences") }
-            item {
-                SettingItem(
-                    title = "Voice",
-                    icon = Icons.Default.Mic,
-                    subtitle = "Voice responses, auto speak",
-                ) {
-                    navController.navigate(com.guidetradeai.ui.navigation.NavRoutes.VOICE_SETTINGS)
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 12.dp, vertical = 12.dp),
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
+                IconButton(onClick = { navController.popBackStack() }) {
+                    Icon(Icons.Default.ArrowBack, contentDescription = "Back", tint = TextPrimary)
                 }
+                Text(
+                    text = "Settings",
+                    style = MaterialTheme.typography.titleMedium,
+                    color = TextPrimary,
+                    fontWeight = FontWeight.SemiBold,
+                )
             }
+        }
+
+        LazyColumn(
+            modifier = Modifier.fillMaxSize(),
+            contentPadding = PaddingValues(horizontal = 16.dp, vertical = 16.dp),
+            verticalArrangement = Arrangement.spacedBy(16.dp),
+        ) {
             item {
-                SettingItem(
-                    title = "Telegram",
-                    icon = Icons.Default.Send,
-                    subtitle = "Set up Telegram notifications",
+                Surface(
+                    modifier = Modifier.fillMaxWidth(),
+                    shape = RoundedCornerShape(20.dp),
+                    color = SurfaceDark,
                 ) {
-                    navController.navigate(com.guidetradeai.ui.navigation.NavRoutes.TELEGRAM_SETTINGS)
-                }
-            }
-            item {
-                SettingItem(
-                    title = "Notifications",
-                    icon = Icons.Default.Notifications,
-                    subtitle = null,
-                ) { }
-            }
-            item {
-                SettingItem(
-                    title = "Appearance",
-                    icon = Icons.Default.Palette,
-                    subtitle = themeLabel,
-                ) {
-                    showThemeDialog = true
-                }
-            }
-            item { SettingsSectionHeader("Account") }
-            item {
-                SettingItem(
-                    title = "Account",
-                    icon = Icons.Default.ManageAccounts,
-                    subtitle = null,
-                ) {
-                    navController.navigate(com.guidetradeai.ui.navigation.NavRoutes.PROFILE)
-                }
-            }
-            item {
-                SettingItem(
-                    title = "Logout",
-                    icon = Icons.Default.ExitToApp,
-                    subtitle = null,
-                    tint = MaterialTheme.colorScheme.error,
-                ) {
-                    authViewModel.signOut()
-                    navController.navigate(com.guidetradeai.ui.navigation.NavRoutes.LOGIN) {
-                        popUpTo(0) { inclusive = true }
+                    Column(modifier = Modifier.padding(20.dp)) {
+                        Row(verticalAlignment = Alignment.CenterVertically) {
+                            Surface(
+                                modifier = Modifier.size(56.dp),
+                                shape = CircleShape,
+                                color = AccentCyan.copy(alpha = 0.15f),
+                            ) {
+                                Box(contentAlignment = Alignment.Center) {
+                                    Text(
+                                        text = user.value?.fullName?.firstOrNull()?.toString()?.uppercase() ?: "U",
+                                        color = AccentCyan,
+                                        fontWeight = FontWeight.Bold,
+                                        fontSize = 22.sp,
+                                    )
+                                }
+                            }
+                            Spacer(modifier = Modifier.width(16.dp))
+                            Column {
+                                Text(
+                                    text = user.value?.fullName ?: "User",
+                                    color = TextPrimary,
+                                    fontWeight = FontWeight.SemiBold,
+                                    fontSize = 18.sp,
+                                )
+                                Text(
+                                    text = user.value?.email ?: "",
+                                    color = TextSecondary,
+                                    fontSize = 13.sp,
+                                )
+                            }
+                        }
                     }
                 }
             }
-            item { SettingsSectionHeader("About") }
+
             item {
-                SettingItem(
-                    title = "About",
-                    icon = Icons.Default.Info,
-                    subtitle = null,
+                SettingsCard(title = "ASSISTANT") {
+                    SettingsRow(
+                        icon = Icons.Default.Mic,
+                        title = "Voice responses",
+                        trailing = {
+                            Switch(
+                                checked = settings?.voiceEnabled ?: true,
+                                onCheckedChange = {
+                                    settingsViewModel.updateVoiceEnabled(it)
+                                },
+                                colors = SwitchDefaults.colors(
+                                    checkedThumbColor = AccentCyan,
+                                    checkedTrackColor = AccentCyan.copy(alpha = 0.3f),
+                                ),
+                            )
+                        },
+                    )
+                    Divider(color = DividerColor, modifier = Modifier.padding(vertical = 8.dp))
+                    SettingsRow(
+                        icon = Icons.Default.Mic,
+                        title = "Auto-speak replies",
+                        trailing = {
+                            Switch(
+                                checked = settings?.autoSpeak ?: false,
+                                onCheckedChange = {
+                                    settingsViewModel.updateAutoSpeak(it)
+                                },
+                                colors = SwitchDefaults.colors(
+                                    checkedThumbColor = AccentCyan,
+                                    checkedTrackColor = AccentCyan.copy(alpha = 0.3f),
+                                ),
+                            )
+                        },
+                    )
+                    Divider(color = DividerColor, modifier = Modifier.padding(vertical = 8.dp))
+                    SettingsRow(
+                        icon = Icons.Default.Mic,
+                        title = "Voice model",
+                        trailing = {
+                            Text(
+                                text = "Quan Voice (ElevenLabs)",
+                                color = TextSecondary,
+                                fontSize = 13.sp,
+                            )
+                        },
+                    )
+                }
+            }
+
+            item {
+                SettingsCard(title = "INTERFACE") {
+                    SettingsRow(
+                        icon = Icons.Default.Palette,
+                        title = "Theme",
+                        trailing = {
+                            Surface(
+                                modifier = Modifier.clickable { showThemeDialog = true },
+                                shape = RoundedCornerShape(8.dp),
+                                color = SurfaceMid,
+                            ) {
+                                Text(
+                                    text = when (themeValue) {
+                                        "light" -> "Light"
+                                        "system" -> "System"
+                                        else -> "Dark"
+                                    },
+                                    modifier = Modifier.padding(horizontal = 12.dp, vertical = 6.dp),
+                                    color = TextPrimary,
+                                    fontSize = 13.sp,
+                                )
+                            }
+                        },
+                    )
+                }
+            }
+
+            item {
+                SettingsCard(title = "ACCOUNT") {
+                    SettingsRow(
+                        icon = Icons.Default.Palette,
+                        title = "Full name",
+                        trailing = {
+                            Text(
+                                text = user.value?.fullName ?: "",
+                                color = TextSecondary,
+                                fontSize = 13.sp,
+                            )
+                        },
+                    )
+                    Divider(color = DividerColor, modifier = Modifier.padding(vertical = 8.dp))
+                    SettingsRow(
+                        icon = Icons.Default.Palette,
+                        title = "Email",
+                        trailing = {
+                            Text(
+                                text = user.value?.email ?: "",
+                                color = TextSecondary,
+                                fontSize = 13.sp,
+                            )
+                        },
+                    )
+                    Divider(color = DividerColor, modifier = Modifier.padding(vertical = 8.dp))
+                    SettingsRow(
+                        icon = Icons.Default.ArrowBack,
+                        title = "Sign Out",
+                        trailing = null,
+                        titleColor = ErrorColor,
+                        onClick = { showSignOutDialog = true },
+                    )
+                }
+            }
+
+            item {
+                Surface(
+                    modifier = Modifier.fillMaxWidth(),
+                    shape = RoundedCornerShape(16.dp),
+                    color = SurfaceDark,
                 ) {
-                    navController.navigate(com.guidetradeai.ui.navigation.NavRoutes.ABOUT)
+                    SettingsRow(
+                        icon = Icons.Default.ArrowBack,
+                        title = "Delete Account",
+                        trailing = null,
+                        titleColor = ErrorColor,
+                        onClick = { showDeleteDialog = true },
+                        modifier = Modifier.padding(vertical = 8.dp, horizontal = 16.dp),
+                    )
                 }
             }
         }
@@ -165,74 +289,116 @@ fun SettingsScreen(
         ThemeSelectorDialog(
             currentTheme = themeValue,
             onDismiss = { showThemeDialog = false },
-            onSelect = { theme ->
-                settingsViewModel.updateTheme(theme)
+            onSelect = {
+                settingsViewModel.updateTheme(it)
                 showThemeDialog = false
+            },
+        )
+    }
+
+    if (showSignOutDialog) {
+        androidx.compose.material3.AlertDialog(
+            onDismissRequest = { showSignOutDialog = false },
+            title = { Text("Sign Out") },
+            text = { Text("Are you sure you want to sign out?") },
+            confirmButton = {
+                TextButton(onClick = {
+                    showSignOutDialog = false
+                    authViewModel.signOut()
+                    navController.navigate("login") {
+                        popUpTo(0) { inclusive = true }
+                    }
+                }) {
+                    Text("Sign Out", color = ErrorColor)
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = { showSignOutDialog = false }) {
+                    Text("Cancel")
+                }
+            },
+        )
+    }
+
+    if (showDeleteDialog) {
+        androidx.compose.material3.AlertDialog(
+            onDismissRequest = { showDeleteDialog = false },
+            title = { Text("Delete Account") },
+            text = { Text("This action cannot be undone. All your data will be permanently deleted.") },
+            confirmButton = {
+                TextButton(onClick = {
+                    showDeleteDialog = false
+                }) {
+                    Text("Delete", color = ErrorColor)
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = { showDeleteDialog = false }) {
+                    Text("Cancel")
+                }
             },
         )
     }
 }
 
 @Composable
-fun SettingsSectionHeader(title: String) {
-    Text(
-        text = title,
-        style = MaterialTheme.typography.titleSmall,
-        color = MaterialTheme.colorScheme.onSurfaceVariant,
-        fontWeight = FontWeight.W600,
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(horizontal = 16.dp, vertical = 12.dp),
-        fontSize = 12.sp,
-        letterSpacing = 1.sp,
-    )
+fun SettingsCard(
+    title: String,
+    content: @Composable () -> Unit,
+) {
+    Surface(
+        modifier = Modifier.fillMaxWidth(),
+        shape = RoundedCornerShape(16.dp),
+        color = SurfaceDark,
+    ) {
+        Column(modifier = Modifier.padding(16.dp)) {
+            Text(
+                text = title,
+                color = AccentCyan,
+                fontSize = 11.sp,
+                fontWeight = FontWeight.Medium,
+                letterSpacing = 0.08.em,
+                modifier = Modifier.padding(bottom = 12.dp),
+            )
+            content()
+        }
+    }
 }
 
 @Composable
-fun SettingItem(
+fun SettingsRow(
+    icon: androidx.compose.ui.graphics.vector.ImageVector,
     title: String,
-    icon: ImageVector,
-    subtitle: String?,
-    tint: Color = MaterialTheme.colorScheme.onSurface,
-    onClick: () -> Unit,
+    trailing: @Composable (() -> Unit)? = null,
+    titleColor: Color = TextPrimary,
+    onClick: (() -> Unit)? = null,
+    modifier: Modifier = Modifier,
 ) {
     Row(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxWidth()
-            .clickable(onClick = onClick)
-            .padding(vertical = 14.dp, horizontal = 16.dp),
+            .clickable(enabled = onClick != null, onClick = { onClick?.invoke() })
+            .padding(vertical = 10.dp),
         verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.SpaceBetween,
     ) {
-        Row(verticalAlignment = Alignment.CenterVertically) {
-            Icon(
-                imageVector = icon,
-                contentDescription = null,
-                tint = tint,
-                modifier = Modifier.size(24.dp),
-            )
-            Spacer(modifier = Modifier.width(12.dp))
-            Column {
-                Text(
-                    text = title,
-                    style = MaterialTheme.typography.bodyLarge,
-                    color = tint,
-                )
-                subtitle?.let { sub ->
-                    Text(
-                        text = sub,
-                        style = MaterialTheme.typography.bodySmall,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant,
-                    )
-                }
+        Icon(
+            imageVector = icon,
+            contentDescription = null,
+            tint = AccentCyan,
+            modifier = Modifier.size(22.dp),
+        )
+        Spacer(modifier = Modifier.width(12.dp))
+        Text(
+            text = title,
+            color = titleColor,
+            fontSize = 15.sp,
+            modifier = Modifier.weight(1f),
+        )
+        if (trailing != null) {
+            Box(modifier = Modifier.padding(start = 8.dp)) {
+                trailing()
             }
         }
-        Icon(
-            imageVector = Icons.Default.Info,
-            contentDescription = null,
-            tint = MaterialTheme.colorScheme.onSurfaceVariant,
-            modifier = Modifier.size(20.dp),
-        )
     }
 }
 
@@ -247,39 +413,55 @@ fun ThemeSelectorDialog(
         "light" to "Light",
         "system" to "System Default",
     )
-    AlertDialog(
+    androidx.compose.material3.AlertDialog(
         onDismissRequest = onDismiss,
         title = { Text("Select Theme") },
         text = {
             Column {
                 themes.forEach { (value, label) ->
-                    Row(
+                    val selected = value == currentTheme
+                    val animatedScale by animateFloatAsState(
+                        targetValue = if (selected) 1.02f else 1f,
+                        label = "scale",
+                    )
+                    Surface(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .clickable { onSelect(value) }
-                            .padding(vertical = 12.dp),
-                        verticalAlignment = Alignment.CenterVertically,
+                            .scale(animatedScale)
+                            .clip(RoundedCornerShape(12.dp))
+                            .clickable { onSelect(value) },
+                        color = if (selected) AccentCyan.copy(alpha = 0.1f) else Color.Transparent,
                     ) {
-                        Text(
-                            text = label,
-                            style = MaterialTheme.typography.bodyLarge,
-                            color = if (value == currentTheme) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurface,
-                            modifier = Modifier.weight(1f),
-                        )
-                        if (value == currentTheme) {
-                            Icon(
-                                imageVector = Icons.Default.Info,
-                                contentDescription = null,
-                                tint = MaterialTheme.colorScheme.primary,
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(vertical = 12.dp, horizontal = 12.dp),
+                            verticalAlignment = Alignment.CenterVertically,
+                        ) {
+                            Text(
+                                text = label,
+                                color = if (selected) AccentCyan else TextPrimary,
+                                fontSize = 16.sp,
+                                modifier = Modifier.weight(1f),
                             )
+                            if (selected) {
+                                Icon(
+                                    imageVector = Icons.Default.Check,
+                                    contentDescription = null,
+                                    tint = AccentCyan,
+                                )
+                            }
                         }
                     }
+                    Spacer(modifier = Modifier.height(4.dp))
                 }
             }
         },
         confirmButton = {},
         dismissButton = {
-            TextButton(onClick = onDismiss) { Text("Cancel") }
+            TextButton(onClick = onDismiss) { Text("Cancel", color = TextSecondary) }
         },
+        containerColor = SurfaceDark,
     )
+    BottomBar(navController = navController)
 }

@@ -13,6 +13,7 @@ data class User(
     val updatedAt: String = "",
 )
 
+@Serializable
 data class ChatSession(
     val id: String,
     val userId: String,
@@ -21,6 +22,7 @@ data class ChatSession(
     val updatedAt: String,
 )
 
+@Serializable
 data class ChatMessage(
     val id: String,
     val sessionId: String,

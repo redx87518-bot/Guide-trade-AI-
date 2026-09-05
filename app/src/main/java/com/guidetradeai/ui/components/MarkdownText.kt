@@ -44,6 +44,7 @@ fun MarkdownText(
 
 fun buildMarkdownAnnotatedString(text: String, color: Color = Color.Unspecified): AnnotatedString {
     val builder = AnnotatedString.Builder()
+    val boldRegex = Regex("\\*\\*(.*?)\\*\\*")
     val paragraphs = text.split("\n\n").filter { it.isNotBlank() }
 
     for (paragraph in paragraphs) {
@@ -52,47 +53,42 @@ fun buildMarkdownAnnotatedString(text: String, color: Color = Color.Unspecified)
             val trimmed = line.trim()
             when {
                 trimmed.startsWith("### ") -> {
-                    builder.pushStyle(SpanStyle(fontSize = 18.sp, fontWeight = FontWeight.W600, color = color))
                     builder.append(trimmed.substring(4))
-                    builder.pop()
                 }
                 trimmed.startsWith("## ") -> {
-                    builder.pushStyle(SpanStyle(fontSize = 22.sp, fontWeight = FontWeight.W700, color = color))
                     builder.append(trimmed.substring(3))
-                    builder.pop()
                 }
                 trimmed.startsWith("# ") -> {
-                    builder.pushStyle(SpanStyle(fontSize = 26.sp, fontWeight = FontWeight.W700, color = color))
                     builder.append(trimmed.substring(2))
-                    builder.pop()
                 }
                 trimmed.startsWith("- ") || trimmed.startsWith("* ") -> {
-                    builder.pushStyle(SpanStyle(color = color))
                     builder.append("\u2022 ${trimmed.substring(2)}")
-                    builder.pop()
                 }
                 trimmed.matches(Regex("^[0-9]+\\. .*")) -> {
                     val content = trimmed.substringAfter(". ")
                     val num = trimmed.substringBefore(".")
-                    builder.pushStyle(SpanStyle(color = color))
                     builder.append("$num. $content")
-                    builder.pop()
                 }
                 else -> {
-                    builder.pushStyle(SpanStyle(color = color))
                     builder.append(trimmed)
-                    builder.pop()
                 }
             }
-            builder.pushStyle(SpanStyle(color = Color.Transparent))
-            builder.append("\n")
-            builder.pop()
+            builder.append("\n\n")
         }
-        builder.pushStyle(SpanStyle(color = Color.Transparent))
-        builder.append("\n")
-        builder.pop()
     }
-    return builder.toAnnotatedString()
+
+    val result = builder.toAnnotatedString()
+    val styled = AnnotatedString.Builder(result)
+    val boldPattern = Regex("\\*\\*(.*?)\\*\\*")
+    var searchStart = 0
+    boldPattern.findAll(result.text).forEach { match ->
+        styled.addStyle(
+            style = SpanStyle(fontWeight = FontWeight.Bold, color = color),
+            start = match.range.first,
+            end = match.range.last + 1,
+        )
+    }
+    return styled.toAnnotatedString()
 }
 
 @Composable

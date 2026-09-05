@@ -18,6 +18,7 @@ object NavRoutes {
     const val TELEGRAM_SETTINGS = "telegram_settings"
     const val VOICE_SETTINGS = "voice_settings"
     const val ABOUT = "about"
+    const val ORB = "orb"
     fun chatRoute(sessionId: String) = "chat/$sessionId"
     fun researchDetailRoute(researchId: String) = "research_detail/$researchId"
     fun verificationRoute(email: String) = "verification/$email"

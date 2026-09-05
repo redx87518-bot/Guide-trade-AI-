@@ -12,6 +12,7 @@ import io.github.jan.supabase.storage.Storage
 import io.github.jan.supabase.storage.storage
 import kotlinx.serialization.json.Json
 object SupabaseClient {
+    // NOTE: rotate the publishable key in Supabase dashboard → Project Settings → API
     val client = createSupabaseClient(
         supabaseUrl = "https://dnfutvafibliysnsetwm.supabase.co",
         supabaseKey = "sb_publishable_Y-kuMPpPKDT9NKKi9fCKcw_YaVdkIpL",

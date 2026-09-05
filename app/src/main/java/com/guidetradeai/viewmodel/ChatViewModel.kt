@@ -4,7 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.guidetradeai.data.repository.AuthRepository
 import com.guidetradeai.data.repository.ChatRepository
-import com.guidetradeai.data.repository.ResearchRepository
+import com.guidetradeai.data.local.AppPreferences
 import com.guidetradeai.di.AppModule
 import com.guidetradeai.domain.Result
 import com.guidetradeai.domain.model.ChatMessage
@@ -13,169 +13,172 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
-
-sealed class ChatUiState {
-    object Loading : ChatUiState()
-    data class Ready(
-        val sessionId: String? = null,
-        val sessionTitle: String = "New Chat",
-        val messages: List<ChatMessage> = emptyList(),
-        val isTyping: Boolean = false,
-        val error: String? = null,
-    ) : ChatUiState()
-    data class Error(val message: String) : ChatUiState()
-}
+import java.time.Instant
+import java.util.UUID
 
 class ChatViewModel(
     private val chatRepository: ChatRepository = AppModule.chatRepository,
-    private val researchRepository: ResearchRepository = AppModule.researchRepository,
     private val authRepository: AuthRepository = AppModule.authRepository,
+    private val voiceManager: VoiceManager = AppModule.voiceManager,
 ) : ViewModel() {
 
-    private val _uiState = MutableStateFlow<ChatUiState>(ChatUiState.Loading)
-    val uiState: StateFlow<ChatUiState> = _uiState.asStateFlow()
+    private val _messages = MutableStateFlow<List<ChatMessage>>(emptyList())
+    val messages: StateFlow<List<ChatMessage>> = _messages.asStateFlow()
 
-    private var isFirstMessage = false
+    private val _sessions = MutableStateFlow<List<ChatSession>>(emptyList())
+    val sessions: StateFlow<List<ChatSession>> = _sessions.asStateFlow()
 
-    fun createNewSession() {
+    private val _currentSessionId = MutableStateFlow<String?>(null)
+    val currentSessionId: StateFlow<String?> = _currentSessionId.asStateFlow()
+
+    private val _isLoading = MutableStateFlow(false)
+    val isLoading: StateFlow<Boolean> = _isLoading.asStateFlow()
+
+    private val _isSpeaking = MutableStateFlow(false)
+    val isSpeaking: StateFlow<Boolean> = _isSpeaking.asStateFlow()
+
+    private val _isListening = MutableStateFlow(false)
+    val isListening: StateFlow<Boolean> = _isListening.asStateFlow()
+
+    private val _error = MutableStateFlow<String?>(null)
+    val error: StateFlow<String?> = _error.asStateFlow()
+
+    private val _currentSessionTitle = MutableStateFlow("New Chat")
+    val currentSessionTitle: StateFlow<String> = _currentSessionTitle.asStateFlow()
+
+    private var isFirstMessage = true
+
+    fun initialize() {
         viewModelScope.launch {
-            _uiState.value = ChatUiState.Loading
-            when (val result = chatRepository.createChatSession("New Chat")) {
-                is Result.Success -> {
-                    isFirstMessage = true
-                    _uiState.value = ChatUiState.Ready(
-                        sessionId = result.data.id,
-                        sessionTitle = "New Chat",
-                        messages = emptyList(),
-                    )
-                }
-                is Result.Error -> {
-                    _uiState.value = ChatUiState.Error(result.message)
-                }
-                is Result.Loading -> {}
+            val userId = authRepository.getCurrentUser()?.id ?: return@launch
+            loadSessions(userId)
+            val lastSessionId = AppModule.appPreferences.lastSessionId.first()
+            if (!lastSessionId.isNullOrBlank() && sessions.value.any { it.id == lastSessionId }) {
+                switchSession(sessions.value.first { it.id == lastSessionId })
+            } else if (_currentSessionId.value == null) {
+                startNewSession()
             }
         }
     }
 
-    fun loadSession(sessionId: String) {
+    fun startNewSession() {
         viewModelScope.launch {
-            _uiState.value = ChatUiState.Loading
-            val msgsResult = chatRepository.getChatMessages(sessionId)
-            when (msgsResult) {
-                is Result.Success -> {
-                    _uiState.value = ChatUiState.Ready(
-                        sessionId = sessionId,
-                        sessionTitle = "Chat",
-                        messages = msgsResult.data,
-                        isTyping = false,
-                    )
-                }
-                is Result.Error -> {
-                    _uiState.value = ChatUiState.Error(msgsResult.message)
-                }
-                is Result.Loading -> {}
+            val userId = authRepository.getCurrentUser()?.id ?: return@launch
+            val result = chatRepository.createSession(userId)
+            if (result.isSuccess) {
+                _currentSessionId.value = result.data
+                _messages.value = emptyList()
+                _currentSessionTitle.value = "New Chat"
+                isFirstMessage = true
+                AppModule.appPreferences.saveLastSessionId(result.data)
             }
         }
     }
 
-    fun sendMessage(message: String) {
-        val sessionId = (uiState.value as? ChatUiState.Ready)?.sessionId ?: return
-        if (message.isBlank()) return
-
-        val currentState = uiState.value as? ChatUiState.Ready ?: return
-        val updatedMessages = currentState.messages + ChatMessage(
-            id = "local_${System.currentTimeMillis()}_user",
-            sessionId = sessionId,
-            userId = "",
-            role = "user",
-            content = message,
-            createdAt = java.time.Instant.now().toString(),
-        )
-
-        _uiState.value = ChatUiState.Ready(
-            sessionId = sessionId,
-            sessionTitle = currentState.sessionTitle,
-            messages = updatedMessages,
-            isTyping = true,
-            error = null,
-        )
-
+    fun switchSession(session: ChatSession) {
         viewModelScope.launch {
-            when (val result = researchRepository.sendAiMessage(sessionId, message)) {
-                is Result.Success -> {
-                    val aiMsg = ChatMessage(
-                        id = "local_${System.currentTimeMillis()}_ai",
-                        sessionId = sessionId,
-                        userId = "",
-                        role = "assistant",
-                        content = result.data.content ?: "",
-                        createdAt = result.data.timestamp ?: java.time.Instant.now().toString(),
-                    )
-
-                    val finalMessages = (uiState.value as? ChatUiState.Ready)?.messages ?: emptyList()
-
-                    if (isFirstMessage) {
-                        val newTitle = generateTitle(message)
-                        chatRepository.renameSession(sessionId, newTitle)
-                        isFirstMessage = false
-                        _uiState.value = ChatUiState.Ready(
-                            sessionId = sessionId,
-                            sessionTitle = newTitle,
-                            messages = finalMessages + aiMsg,
-                            isTyping = false,
-                        )
-                    } else {
-                        _uiState.value = ChatUiState.Ready(
-                            sessionId = sessionId,
-                            sessionTitle = (uiState.value as? ChatUiState.Ready)?.sessionTitle ?: "Chat",
-                            messages = finalMessages + aiMsg,
-                            isTyping = false,
-                        )
-                    }
-                }
-                is Result.Error -> {
-                    val msgs = (uiState.value as? ChatUiState.Ready)?.messages ?: emptyList()
-                    _uiState.value = ChatUiState.Ready(
-                        sessionId = sessionId,
-                        sessionTitle = (uiState.value as? ChatUiState.Ready)?.sessionTitle ?: "Chat",
-                        messages = msgs,
-                        isTyping = false,
-                        error = result.message,
-                    )
-                }
-                is Result.Loading -> {}
-            }
+            _currentSessionId.value = session.id
+            _currentSessionTitle.value = session.title
+            isFirstMessage = false
+            val result = chatRepository.getMessages(session.id)
+            if (result.isSuccess) _messages.value = result.data!!
+            AppModule.appPreferences.saveLastSessionId(session.id)
         }
     }
 
-    fun saveResearch(title: String, response: String, asset: String?) {
-        val ready = uiState.value as? ChatUiState.Ready ?: return
-        val user = authRepository.getCurrentUser()
-        if (user != null) {
-            viewModelScope.launch {
-                val query = ready.messages.lastOrNull { it.role == "user" }?.content ?: ""
-                researchRepository.saveResearchResult(
-                    userId = user.id,
-                    sessionId = ready.sessionId ?: "",
-                    title = title,
-                    query = query,
-                    asset = asset,
-                    response = response,
+    fun sendMessage(text: String) {
+        val sessionId = _currentSessionId.value ?: return
+        val userId = authRepository.getCurrentUser()?.id ?: return
+        viewModelScope.launch {
+            _isLoading.value = true
+            _error.value = null
+            voiceManager.stopSpeaking()
+
+            val userMsg = ChatMessage(
+                id = UUID.randomUUID().toString(),
+                session_id = sessionId,
+                user_id = userId,
+                role = "user",
+                content = text,
+                created_at = Instant.now().toString()
+            )
+            _messages.value = _messages.value + userMsg
+
+            if (isFirstMessage) {
+                isFirstMessage = false
+                val title = if (text.length > 40) text.take(37) + "..." else text
+                _currentSessionTitle.value = title
+                chatRepository.renameSession(sessionId, title)
+                loadSessions(userId)
+            }
+
+            val result = chatRepository.sendMessage(sessionId, text)
+            if (result.isSuccess) {
+                val aiMsg = ChatMessage(
+                    id = UUID.randomUUID().toString(),
+                    session_id = sessionId,
+                    user_id = userId,
+                    role = "assistant",
+                    content = result.data!!,
+                    created_at = Instant.now().toString()
                 )
+                _messages.value = _messages.value + aiMsg
+                speakResponse(result.data)
+            } else {
+                _error.value = result.error
             }
+            _isLoading.value = false
         }
     }
 
-    fun clearError() {
-        val current = uiState.value as? ChatUiState.Ready
-        if (current != null) {
-            _uiState.value = current.copy(error = null)
+    fun startVoiceInput() {
+        _isListening.value = true
+        voiceManager.startListening(
+            onResult = { text ->
+                _isListening.value = false
+                sendMessage(text)
+            },
+            onError = { error ->
+                _isListening.value = false
+                _error.value = error
+            }
+        )
+    }
+
+    fun stopVoiceInput() {
+        voiceManager.stopListening()
+        _isListening.value = false
+    }
+
+    private fun speakResponse(text: String) {
+        viewModelScope.launch {
+            _isSpeaking.value = true
+            voiceManager.speak(
+                text = text,
+                onDone = { _isSpeaking.value = false },
+                onError = { _isSpeaking.value = false }
+            )
         }
     }
 
-    private fun generateTitle(message: String): String {
-        val trimmed = message.trim()
-        if (trimmed.length <= 40) return trimmed
-        return trimmed.take(37) + "..."
+    fun stopSpeaking() {
+        voiceManager.stopSpeaking()
+        _isSpeaking.value = false
+    }
+
+    fun deleteSession(sessionId: String) {
+        viewModelScope.launch {
+            val userId = authRepository.getCurrentUser()?.id ?: return@launch
+            chatRepository.deleteSession(sessionId)
+            if (_currentSessionId.value == sessionId) startNewSession()
+            loadSessions(userId)
+        }
+    }
+
+    private fun loadSessions(userId: String) {
+        viewModelScope.launch {
+            val result = chatRepository.getSessions(userId)
+            if (result.isSuccess) _sessions.value = result.data!!
+        }
     }
 }

@@ -2,6 +2,7 @@ package com.guidetradeai.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.guidetradeai.data.local.AppPreferences
 import com.guidetradeai.data.repository.SettingsRepository
 import com.guidetradeai.di.AppModule
 import com.guidetradeai.domain.Result
@@ -43,6 +44,7 @@ class SettingsViewModel(
                     if (current != null) {
                         _uiState.value = SettingsUiState.Success(current.copy(voiceEnabled = enabled))
                     }
+                    AppModule.appPreferences.setVoiceEnabled(enabled)
                 }
                 is Result.Error -> {}
                 is Result.Loading -> {}
@@ -58,6 +60,7 @@ class SettingsViewModel(
                     if (current != null) {
                         _uiState.value = SettingsUiState.Success(current.copy(autoSpeak = enabled))
                     }
+                    AppModule.appPreferences.setAutoSpeak(enabled)
                 }
                 is Result.Error -> {}
                 is Result.Loading -> {}

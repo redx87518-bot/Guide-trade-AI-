@@ -2,6 +2,7 @@ package com.guidetradeai.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.guidetradeai.data.repository.AuthRepository
 import com.guidetradeai.data.repository.ChatRepository
 import com.guidetradeai.di.AppModule
 import com.guidetradeai.domain.Result
@@ -19,6 +20,7 @@ sealed class ChatHistoryUiState {
 
 class ChatHistoryViewModel(
     private val chatRepository: ChatRepository = AppModule.chatRepository,
+    private val authRepository: AuthRepository = AppModule.authRepository,
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow<ChatHistoryUiState>(ChatHistoryUiState.Loading)
@@ -27,7 +29,8 @@ class ChatHistoryViewModel(
     fun loadSessions() {
         viewModelScope.launch {
             _uiState.value = ChatHistoryUiState.Loading
-            when (val result = chatRepository.getChatSessions()) {
+            val userId = authRepository.getCurrentUser()?.id ?: return@launch
+            when (val result = chatRepository.getSessions(userId)) {
                 is Result.Success -> _uiState.value = ChatHistoryUiState.Success(result.data)
                 is Result.Error -> _uiState.value = ChatHistoryUiState.Error(result.message)
                 is Result.Loading -> {}
@@ -57,8 +60,9 @@ class ChatHistoryViewModel(
 
     fun createNewSession(onCreated: (String) -> Unit) {
         viewModelScope.launch {
-            when (val result = chatRepository.createChatSession("New Chat")) {
-                is Result.Success -> onCreated(result.data.id)
+            val userId = authRepository.getCurrentUser()?.id ?: return@launch
+            when (val result = chatRepository.createSession(userId)) {
+                is Result.Success -> onCreated(result.data)
                 is Result.Error -> {}
                 is Result.Loading -> {}
             }

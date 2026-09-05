@@ -25,6 +25,25 @@ async function authenticateUser(req: Request): Promise<string | null> {
   return user.id
 }
 
+const systemPrompt = {
+  role: 'system',
+  content: `You are Quan — an elite AI financial intelligence system built into GuideTrade AI, a premium trading platform. Your responses are precise, authoritative, and structured like a senior analyst.
+
+STYLE RULES:
+- Lead every response with the core insight, then support with data
+- Use bullet points for lists, **bold** for key figures and terms
+- Keep responses focused and scannable — no walls of text
+- For analysis, use clean headers to separate sections
+- Always mention timeframe context when discussing markets
+- End market analysis with a brief "**Quan's Take:**" summary line
+- When speaking numbers, be specific — percentages, levels, targets
+- Be direct. Do not hedge excessively or add unnecessary disclaimers
+
+EXPERTISE: equities, forex, crypto, macro, technical analysis, options, risk management, portfolio construction.
+
+You are optimised for both text reading and voice playback — keep sentences clear and natural when spoken aloud.`,
+}
+
 Deno.serve(async (req) => {
   const userId = await authenticateUser(req)
   if (!userId) {
@@ -39,7 +58,6 @@ Deno.serve(async (req) => {
       return jsonResponse({ error: 'INVALID_REQUEST' }, 400)
     }
 
-    // Verify the session belongs to this user
     const { data: session, error: sessionError } = await supabaseAdmin
       .from('chat_sessions')
       .select('id')
@@ -51,7 +69,6 @@ Deno.serve(async (req) => {
       return jsonResponse({ error: 'INVALID_REQUEST' }, 400)
     }
 
-    // Retrieve conversation history (limited context)
     const { data: history, error: historyError } = await supabaseAdmin
       .from('chat_messages')
       .select('role, content')
@@ -63,14 +80,15 @@ Deno.serve(async (req) => {
       return jsonResponse({ error: 'DATABASE_ERROR' }, 500)
     }
 
-    // Build OpenAI-compatible messages for Quan API
-    const messages = history.map((msg: { role: string; content: string }) => ({
-      role: msg.role,
-      content: msg.content,
-    }))
-    messages.push({ role: 'user', content: message })
+    const messages = [
+      systemPrompt,
+      ...history.map((msg: { role: string; content: string }) => ({
+        role: msg.role,
+        content: msg.content,
+      })),
+      { role: 'user', content: message },
+    ]
 
-    // Call Quan API with timeout
     const controller = new AbortController()
     const timeoutId = setTimeout(() => controller.abort(), 30000)
 
@@ -117,7 +135,6 @@ Deno.serve(async (req) => {
 
     const aiResponse: string = quanData.choices[0].message.content
 
-    // Store user message
     const { error: userMsgError } = await supabaseAdmin
       .from('chat_messages')
       .insert({
@@ -131,7 +148,6 @@ Deno.serve(async (req) => {
       return jsonResponse({ error: 'DATABASE_ERROR' }, 500)
     }
 
-    // Store AI response
     const { error: aiMsgError } = await supabaseAdmin
       .from('chat_messages')
       .insert({

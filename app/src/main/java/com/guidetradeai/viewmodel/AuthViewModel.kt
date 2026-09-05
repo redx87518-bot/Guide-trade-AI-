@@ -28,6 +28,12 @@ class AuthViewModel(
     private val _uiState = MutableStateFlow<AuthUiState>(AuthUiState.Loading)
     val uiState: StateFlow<AuthUiState> = _uiState.asStateFlow()
 
+    private val _currentUser = MutableStateFlow<User?>(null)
+    val currentUser: StateFlow<User?> = _currentUser.asStateFlow()
+
+    val isLoggedIn: Boolean
+        get() = _uiState.value is AuthUiState.Authenticated
+
     init {
         checkAuth()
     }
@@ -37,6 +43,7 @@ class AuthViewModel(
             _uiState.value = AuthUiState.Loading
             if (authRepository.isUserAuthenticated()) {
                 val user = authRepository.getCurrentUser()
+                _currentUser.value = user
                 if (user != null) {
                     _uiState.value = AuthUiState.Authenticated(user)
                 } else {
@@ -63,7 +70,10 @@ class AuthViewModel(
         viewModelScope.launch {
             _uiState.value = AuthUiState.Loading
             when (val result = authRepository.signIn(email, password)) {
-                is Result.Success -> _uiState.value = AuthUiState.Authenticated(result.data)
+                is Result.Success -> {
+                    _currentUser.value = result.data
+                    _uiState.value = AuthUiState.Authenticated(result.data)
+                }
                 is Result.Error -> {
                     val lower = result.message.lowercase()
                     if (lower.contains("verify") || lower.contains("not confirmed") || lower.contains("email")) {
@@ -81,7 +91,10 @@ class AuthViewModel(
         viewModelScope.launch {
             _uiState.value = AuthUiState.Loading
             when (val result = authRepository.signOut()) {
-                is Result.Success -> _uiState.value = AuthUiState.Unauthenticated
+                is Result.Success -> {
+                    _currentUser.value = null
+                    _uiState.value = AuthUiState.Unauthenticated
+                }
                 is Result.Error -> _uiState.value = AuthUiState.Error(result.message)
                 is Result.Loading -> _uiState.value = AuthUiState.Loading
             }

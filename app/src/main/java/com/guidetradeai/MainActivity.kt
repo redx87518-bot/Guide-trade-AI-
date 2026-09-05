@@ -6,7 +6,7 @@ import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import com.guidetradeai.data.remote.SupabaseClient
 import com.guidetradeai.ui.navigation.NavGraph
-import com.guidetradeai.ui.theme.GuideTradeTheme
+import com.guidetradeai.ui.theme.AppTheme
 import com.guidetradeai.viewmodel.AuthViewModel
 import io.github.jan.supabase.gotrue.auth
 
@@ -22,7 +22,7 @@ class MainActivity : ComponentActivity() {
             com.guidetradeai.ui.navigation.NavRoutes.SPLASH
         }
         setContent {
-            GuideTradeTheme(darkTheme = true) {
+            AppTheme(darkTheme = true) {
                 NavGraph(
                     startDestination = startDestination,
                     authViewModel = authViewModel,
