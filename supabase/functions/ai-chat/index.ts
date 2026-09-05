@@ -49,12 +49,10 @@ Deno.serve(async (req) => {
   if (!userId) {
     return jsonResponse({ error: 'AUTH_REQUIRED' }, 401)
   }
-  console.log('Authenticated user:', userId)
 
   try {
     const body = await req.json()
     const { session_id, message } = body
-    console.log('Request body:', JSON.stringify({ session_id, message_length: message?.length }))
 
     if (!session_id || !message || typeof message !== 'string') {
       return jsonResponse({ error: 'INVALID_REQUEST' }, 400)
@@ -67,13 +65,7 @@ Deno.serve(async (req) => {
       .eq('user_id', userId)
       .single()
 
-    if (sessionError) {
-      console.error('Session query error:', sessionError)
-      return jsonResponse({ error: 'INVALID_REQUEST' }, 400)
-    }
-
-    if (!session) {
-      console.error('Session not found:', session_id, 'for user:', userId)
+    if (sessionError || !session) {
       return jsonResponse({ error: 'INVALID_REQUEST' }, 400)
     }
 
@@ -99,7 +91,7 @@ Deno.serve(async (req) => {
     ]
 
     const controller = new AbortController()
-    const timeoutId = setTimeout(() => controller.abort(), 30000)
+    const timeoutId = setTimeout(() => controller.abort(), 60000)
 
     let quanResponse: Response
     try {
@@ -112,7 +104,7 @@ Deno.serve(async (req) => {
         body: JSON.stringify({
           model: quanModel,
           messages,
-          stream: true,
+          stream: false,
         }),
         signal: controller.signal,
       })
@@ -131,53 +123,18 @@ Deno.serve(async (req) => {
       if (quanResponse.status === 429) {
         return jsonResponse({ error: 'RATE_LIMITED' }, 429)
       }
-      if (quanResponse.status >= 500) {
-        return jsonResponse({ error: 'QUAN_ERROR' }, 502)
-      }
       return jsonResponse({ error: 'QUAN_ERROR' }, 502)
     }
 
-    // Read SSE stream
-    const reader = quanResponse.body?.getReader()
-    if (!reader) {
-      return jsonResponse({ error: 'QUAN_ERROR' }, 502)
-    }
+    const quanData = await quanResponse.json()
+    console.log('Quan API response:', JSON.stringify(quanData).substring(0, 500))
 
-    const decoder = new TextDecoder()
-    let buffer = ''
-    let aiResponse = ''
-
-    try {
-      while (true) {
-        const { done, value } = await reader.read()
-        if (done) break
-
-        buffer += decoder.decode(value, { stream: true })
-        const lines = buffer.split('\n')
-        buffer = lines.pop() || ''
-
-        for (const line of lines) {
-          const trimmed = line.trim()
-          if (!trimmed.startsWith('data: ')) continue
-          
-          const payload = trimmed.slice(6)
-          if (payload === '[DONE]') continue
-
-          try {
-            const chunk = JSON.parse(payload)
-            const text = chunk.candidates?.[0]?.content?.parts?.[0]?.text || ''
-            aiResponse += text
-          } catch (e) {
-            // Skip non-JSON chunks
-          }
-        }
-      }
-    } catch (e) {
-      console.error('Stream read error:', e)
-      return jsonResponse({ error: 'QUAN_ERROR' }, 502)
-    }
+    const aiResponse = quanData?.candidates?.[0]?.content?.parts?.[0]?.text
+      || quanData?.choices?.[0]?.message?.content
+      || ''
 
     if (!aiResponse.trim()) {
+      console.error('Empty AI response:', quanData)
       return jsonResponse({ error: 'INVALID_RESPONSE' }, 502)
     }
 
@@ -191,6 +148,7 @@ Deno.serve(async (req) => {
       })
 
     if (userMsgError) {
+      console.error('Failed to save user message:', userMsgError)
       return jsonResponse({ error: 'DATABASE_ERROR' }, 500)
     }
 
@@ -204,6 +162,7 @@ Deno.serve(async (req) => {
       })
 
     if (aiMsgError) {
+      console.error('Failed to save AI message:', aiMsgError)
       return jsonResponse({ error: 'DATABASE_ERROR' }, 500)
     }
 
@@ -211,9 +170,9 @@ Deno.serve(async (req) => {
       role: 'assistant',
       content: aiResponse,
       timestamp: new Date().toISOString(),
-      usage: quanData.usage ?? null,
     }, 200)
   } catch (error) {
+    console.error('Unexpected error:', error)
     return jsonResponse({ error: 'UNKNOWN_ERROR' }, 500)
   }
 })
