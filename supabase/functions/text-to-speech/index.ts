@@ -41,17 +41,39 @@ Deno.serve(async (req) => {
     }
 
     // Check user's voice settings
-    const { data: settings, error: settingsError } = await supabaseAdmin
-      .from('user_settings')
-      .select('voice_enabled')
-      .eq('user_id', userId)
-      .single()
-
-    if (settingsError) {
-      return jsonResponse({ error: 'DATABASE_ERROR' }, 500)
+    let settings = null
+    let settingsError = null
+    
+    try {
+      const result = await supabaseAdmin
+        .from('user_settings')
+        .select('voice_enabled')
+        .eq('user_id', userId)
+        .single()
+      settings = result.data
+      settingsError = result.error
+    } catch (e) {
+      settingsError = e
     }
 
-    if (!settings.voice_enabled) {
+    if (settingsError || !settings) {
+      // Create default user_settings with voice_enabled = true
+      const { error: insertError } = await supabaseAdmin
+        .from('user_settings')
+        .insert({
+          user_id: userId,
+          voice_enabled: true,
+          auto_speak: false,
+          theme: 'dark',
+        })
+      
+      if (insertError) {
+        console.error('Failed to create user_settings:', insertError)
+        return jsonResponse({ error: 'DATABASE_ERROR' }, 500)
+      }
+      
+      // Continue with TTS since we just created the settings
+    } else if (!settings.voice_enabled) {
       return jsonResponse({ error: 'VOICE_DISABLED' }, 403)
     }
 

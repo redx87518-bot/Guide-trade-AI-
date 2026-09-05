@@ -77,6 +77,7 @@ Deno.serve(async (req) => {
       .limit(MAX_HISTORY_MESSAGES)
 
     if (historyError) {
+      console.error('Failed to load chat history:', historyError)
       return jsonResponse({ error: 'DATABASE_ERROR' }, 500)
     }
 

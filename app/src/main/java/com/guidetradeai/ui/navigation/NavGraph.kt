@@ -70,6 +70,8 @@ fun NavGraph(
     )
     val navBackStackEntry by navController.currentBackStackEntryAsState()
     val currentRoute = navBackStackEntry?.destination?.route
+    val authUiState by authViewModel.uiState.collectAsState()
+    val isAuthenticated = authUiState is AuthUiState.Authenticated
     val hideBottomBarRoutes = setOf(
         NavRoutes.SPLASH,
         NavRoutes.ONBOARDING,
@@ -120,43 +122,123 @@ fun NavGraph(
             ForgotPasswordScreen(navController = navController, authViewModel = authViewModel)
         }
         composable(NavRoutes.HOME) {
-            HomeScreen(navController = navController, authViewModel = authViewModel)
+            if (isAuthenticated) {
+                HomeScreen(navController = navController, authViewModel = authViewModel)
+            } else {
+                LaunchedEffect(Unit) {
+                    navController.navigate(NavRoutes.LOGIN) {
+                        popUpTo(0) { inclusive = true }
+                    }
+                }
+            }
         }
         composable(NavRoutes.CHAT_NEW) {
-            ChatScreen(navController = navController, sessionId = null)
+            if (isAuthenticated) {
+                ChatScreen(navController = navController, sessionId = null)
+            } else {
+                LaunchedEffect(Unit) {
+                    navController.navigate(NavRoutes.LOGIN) {
+                        popUpTo(0) { inclusive = true }
+                    }
+                }
+            }
         }
         composable(
             route = NavRoutes.CHAT,
             arguments = listOf(navArgument("sessionId") { type = NavType.StringType }),
         ) {
-            ChatScreen(navController = navController, sessionId = it.arguments?.getString("sessionId"))
+            if (isAuthenticated) {
+                ChatScreen(navController = navController, sessionId = it.arguments?.getString("sessionId"))
+            } else {
+                LaunchedEffect(Unit) {
+                    navController.navigate(NavRoutes.LOGIN) {
+                        popUpTo(0) { inclusive = true }
+                    }
+                }
+            }
         }
         composable(NavRoutes.CHAT_HISTORY) {
-            ChatHistoryScreen(navController = navController)
+            if (isAuthenticated) {
+                ChatHistoryScreen(navController = navController)
+            } else {
+                LaunchedEffect(Unit) {
+                    navController.navigate(NavRoutes.LOGIN) {
+                        popUpTo(0) { inclusive = true }
+                    }
+                }
+            }
         }
         composable(NavRoutes.RESEARCH_HISTORY) {
-            ResearchHistoryScreen(navController = navController)
+            if (isAuthenticated) {
+                ResearchHistoryScreen(navController = navController)
+            } else {
+                LaunchedEffect(Unit) {
+                    navController.navigate(NavRoutes.LOGIN) {
+                        popUpTo(0) { inclusive = true }
+                    }
+                }
+            }
         }
         composable(
             route = NavRoutes.RESEARCH_DETAIL,
             arguments = listOf(navArgument("researchId") { type = NavType.StringType }),
         ) {
-            ResearchDetailScreen(
-                navController = navController,
-                researchId = it.arguments?.getString("researchId") ?: "",
-            )
+            if (isAuthenticated) {
+                ResearchDetailScreen(
+                    navController = navController,
+                    researchId = it.arguments?.getString("researchId") ?: "",
+                )
+            } else {
+                LaunchedEffect(Unit) {
+                    navController.navigate(NavRoutes.LOGIN) {
+                        popUpTo(0) { inclusive = true }
+                    }
+                }
+            }
         }
         composable(NavRoutes.PROFILE) {
-            ProfileScreen(navController = navController, authViewModel = authViewModel)
+            if (isAuthenticated) {
+                ProfileScreen(navController = navController, authViewModel = authViewModel)
+            } else {
+                LaunchedEffect(Unit) {
+                    navController.navigate(NavRoutes.LOGIN) {
+                        popUpTo(0) { inclusive = true }
+                    }
+                }
+            }
         }
         composable(NavRoutes.SETTINGS) {
-            SettingsScreen(navController = navController, authViewModel = authViewModel)
+            if (isAuthenticated) {
+                SettingsScreen(navController = navController, authViewModel = authViewModel)
+            } else {
+                LaunchedEffect(Unit) {
+                    navController.navigate(NavRoutes.LOGIN) {
+                        popUpTo(0) { inclusive = true }
+                    }
+                }
+            }
         }
         composable(NavRoutes.TELEGRAM_SETTINGS) {
-            TelegramSettingsScreen(navController = navController)
+            if (isAuthenticated) {
+                TelegramSettingsScreen(navController = navController)
+            } else {
+                LaunchedEffect(Unit) {
+                    navController.navigate(NavRoutes.LOGIN) {
+                        popUpTo(0) { inclusive = true }
+                    }
+                }
+            }
         }
         composable(NavRoutes.VOICE_SETTINGS) {
-            VoiceSettingsScreen(navController = navController)
+            if (isAuthenticated) {
+                VoiceSettingsScreen(navController = navController)
+            } else {
+                LaunchedEffect(Unit) {
+                    navController.navigate(NavRoutes.LOGIN) {
+                        popUpTo(0) { inclusive = true }
+                    }
+                }
+            }
         }
         composable(NavRoutes.ABOUT) {
             AboutScreen(navController = navController)
