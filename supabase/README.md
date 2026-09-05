@@ -34,3 +34,4 @@
 - Check your email for the Supabase verification link.
 - After verifying, log in.
 - Open a chat and send a message; it should call `ai-chat`.
+ 
