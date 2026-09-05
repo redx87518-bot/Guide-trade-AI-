@@ -110,6 +110,7 @@ class ChatViewModel(
                 content = text,
                 createdAt = Instant.now().toString()
             )
+            Log.d("ChatViewModel", "Adding user message: $text, total messages: ${_messages.value.size + 1}")
             _messages.value = _messages.value + userMsg
 
             if (isFirstMessage) {
@@ -131,9 +132,11 @@ class ChatViewModel(
                     createdAt = Instant.now().toString()
                 )
                 _messages.value = _messages.value + aiMsg
+                Log.d("ChatViewModel", "Adding AI message, total messages: ${_messages.value.size}")
                 speakResponse(result.data)
                 sendToTelegram(text, result.data!!)
             } else {
+                Log.e("ChatViewModel", "Failed to send message: ${(result as? Result.Error)?.message}")
                 _error.value = (result as? Result.Error)?.message ?: "Unknown error"
             }
             _isLoading.value = false

@@ -105,6 +105,7 @@ class VoiceManager(
     ) {
         val cleaned = cleanTextForSpeech(text)
         if (cleaned.isBlank()) { onDone(); return }
+        Log.d("VoiceManager", "TTS request: $cleaned")
 
         try {
             val response = supabase.functions.invoke(
@@ -112,14 +113,19 @@ class VoiceManager(
                 buildJsonObject { put("text", JsonPrimitive(cleaned)) }
             )
             val data = response.bodyAsText()
+            Log.d("VoiceManager", "TTS response: $data")
             val json = Json.parseToJsonElement(data).jsonObject
 
             if (json["error"]?.jsonPrimitive?.content == "VOICE_DISABLED") {
+                Log.w("VoiceManager", "Voice disabled in settings")
                 onDone(); return
             }
 
             val audioBase64 = json["audio"]?.jsonPrimitive?.content
-                ?: run { onError(); return }
+                ?: run { 
+                    Log.e("VoiceManager", "No audio in TTS response")
+                    onError(); return 
+                }
 
             val audioBytes = Base64.decode(audioBase64, Base64.DEFAULT)
             playAudio(audioBytes, onDone, onError)

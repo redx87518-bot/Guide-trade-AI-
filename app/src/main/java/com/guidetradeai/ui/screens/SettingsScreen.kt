@@ -23,6 +23,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Mic
+import androidx.compose.material.icons.filled.Send
 import androidx.compose.material.icons.filled.Palette
 import androidx.compose.material3.Divider
 import androidx.compose.runtime.LaunchedEffect
@@ -152,6 +153,23 @@ fun SettingsScreen(
                             }
                         }
                     }
+                }
+            }
+
+            item {
+                SettingsCard(title = "NOTIFICATIONS") {
+                    SettingsRow(
+                        icon = Icons.Default.Send,
+                        title = "Telegram Bot",
+                        trailing = {
+                            Text(
+                                text = "Configure",
+                                color = AccentCyan,
+                                fontSize = 13.sp,
+                            )
+                        },
+                        onClick = { navController.navigate(com.guidetradeai.ui.navigation.NavRoutes.TELEGRAM_SETTINGS) },
+                    )
                 }
             }
 
