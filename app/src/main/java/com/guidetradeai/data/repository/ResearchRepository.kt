@@ -11,10 +11,12 @@ import io.github.jan.supabase.postgrest.query.Order
 import io.ktor.client.statement.bodyAsText
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonObject
-import kotlinx.serialization.json.JsonPrimitive
-import kotlinx.serialization.json.buildJsonObject
-import kotlinx.serialization.json.jsonObject
-import kotlinx.serialization.json.jsonPrimitive
+ import kotlinx.serialization.json.JsonPrimitive
+ import kotlinx.serialization.json.buildJsonObject
+ import kotlinx.serialization.json.buildJsonArray
+ import android.util.Log
+ import kotlinx.serialization.json.jsonObject
+ import kotlinx.serialization.json.jsonPrimitive
 
 class ResearchRepository(
     private val supabase: SupabaseClient,
@@ -27,15 +29,23 @@ class ResearchRepository(
 
     suspend fun sendAiMessage(sessionId: String, message: String): Result<AiChatResponse> {
         return try {
+            val messagesArray = buildJsonArray {
+                add(buildJsonObject {
+                    put("role", JsonPrimitive("user"))
+                    put("content", JsonPrimitive(message))
+                })
+            }
             val body = buildJsonObject {
                 put("session_id", JsonPrimitive(sessionId))
-                put("message", JsonPrimitive(message))
+                put("messages", messagesArray)
             }
             val response = supabase.functions.invoke("ai-chat", body = json.encodeToString(JsonObject.serializer(), body))
             val data = response.bodyAsText()
+            Log.d("ResearchRepository", "AI response raw: $data")
             val jsonObject = json.decodeFromString<JsonObject>(data)
             val error = jsonObject.jsonObject["error"]?.jsonPrimitive?.content
             if (error != null) {
+                Log.e("ResearchRepository", "AI function error: $error")
                 return Result.error(mapFunctionError(error))
             }
             val content = jsonObject.jsonObject["content"]?.jsonPrimitive?.content ?: ""
@@ -43,6 +53,7 @@ class ResearchRepository(
             val timestamp = jsonObject.jsonObject["timestamp"]?.jsonPrimitive?.content
             Result.success(AiChatResponse(role = role, content = content, timestamp = timestamp))
         } catch (e: Exception) {
+            Log.e("ResearchRepository", "sendAiMessage failed", e)
             Result.error("Failed to get AI response: ${e.message}")
         }
     }
