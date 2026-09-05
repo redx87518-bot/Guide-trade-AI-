@@ -54,7 +54,7 @@ fun SignUpScreen(
         when (authUiState) {
             is AuthUiState.VerificationSent -> {
                 val emailArg = (authUiState as AuthUiState.VerificationSent).email
-                navController.navigate("${com.guidetradeai.ui.navigation.NavRoutes.VERIFICATION}/$emailArg") {
+                navController.navigate(com.guidetradeai.ui.navigation.NavRoutes.verificationRoute(emailArg)) {
                     popUpTo(com.guidetradeai.ui.navigation.NavRoutes.SIGNUP) { inclusive = true }
                 }
             }

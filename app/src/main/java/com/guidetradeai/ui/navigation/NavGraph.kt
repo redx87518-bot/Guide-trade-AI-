@@ -45,6 +45,20 @@ fun NavGraph(
                 authViewModel = authViewModel,
             )
         }
+        composable(
+            route = NavRoutes.VERIFICATION,
+            arguments = listOf(
+                navArgument("email") {
+                    type = NavType.StringType
+                }
+            ),
+        ) {
+            com.guidetradeai.ui.screens.EmailVerificationScreen(
+                navController = navController,
+                authViewModel = authViewModel,
+                email = it.arguments?.getString("email") ?: "",
+            )
+        }
         composable(NavRoutes.FORGOT_PASSWORD) {
             com.guidetradeai.ui.screens.ForgotPasswordScreen(
                 navController = navController,
