@@ -4,11 +4,11 @@ import android.util.Log
 import com.guidetradeai.domain.Result
 import com.guidetradeai.domain.model.User
 import io.github.jan.supabase.SupabaseClient
+import io.github.jan.supabase.gotrue.OtpType
 import io.github.jan.supabase.gotrue.SessionStatus
 import io.github.jan.supabase.gotrue.auth
 import io.github.jan.supabase.gotrue.providers.builtin.Email
 import kotlinx.coroutines.flow.Flow
-import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.JsonPrimitive
 import kotlinx.serialization.json.buildJsonObject
 import kotlinx.serialization.json.jsonObject
@@ -34,11 +34,9 @@ class AuthRepository(
     suspend fun signUp(email: String, password: String, fullName: String): Result<User> {
         return try {
             val data = buildJsonObject { put("full_name", JsonPrimitive(fullName)) }
-            val result = supabase.auth.signUpWith(
-                Email,
-                password,
-            ) {
+            val result = supabase.auth.signUpWith(Email) {
                 this.email = email
+                this.password = password
                 this.data = data
             }
             val u = result
@@ -46,7 +44,7 @@ class AuthRepository(
                 Result.success(
                     User(
                         id = u.id,
-                        email = u.email ?: email,
+                        email = u.email ?: "",
                         fullName = fullName,
                     ),
                 )
@@ -67,11 +65,9 @@ class AuthRepository(
 
     suspend fun signIn(email: String, password: String): Result<User> {
         return try {
-            supabase.auth.signInWith(
-                Email,
-                password,
-            ) {
+            supabase.auth.signInWith(Email) {
                 this.email = email
+                this.password = password
             }
             val u = supabase.auth.currentUserOrNull()
             if (u != null) {
@@ -116,7 +112,7 @@ class AuthRepository(
 
     suspend fun resendVerificationEmail(email: String): Result<Unit> {
         return try {
-            supabase.auth.resetPasswordForEmail(email)
+            supabase.auth.resendEmail(OtpType.Email.SIGNUP, email)
             Result.success(Unit)
         } catch (e: Exception) {
             Log.e("SupabaseAuth", "resendVerificationEmail failed", e)
@@ -164,9 +160,8 @@ class AuthRepository(
             message.contains("already been registered", ignoreCase = true) -> "This email is already registered."
             message.contains("rate limit", ignoreCase = true) -> "Too many attempts. Please try again later."
             message.contains("weak password", ignoreCase = true) -> "Password is too weak. Use at least 8 characters."
-            message.contains("verify", ignoreCase = true) -> "Please verify your email before logging in."
             message.contains("not confirmed", ignoreCase = true) -> "Please verify your email before logging in."
-            message.contains("email", ignoreCase = true) -> "Please verify your email before logging in."
+            message.contains("verify", ignoreCase = true) -> "Please verify your email before logging in."
             else -> message
         }
     }
