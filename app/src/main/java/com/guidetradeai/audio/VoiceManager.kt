@@ -1,4 +1,6 @@
 package com.guidetradeai.audio
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.Dispatchers
 
 import android.content.Context
 import android.content.Intent
@@ -149,12 +151,12 @@ class VoiceManager(
                 )
                 setOnCompletionListener {
                     tempFile.delete()
-                    kotlinx.coroutines.GlobalScope.launch(kotlinx.coroutines.Dispatchers.Main) {
+                    GlobalScope.launch(Dispatchers.Main) {
                         onDone()
                     }
                 }
                 setOnErrorListener { _, _, _ -> 
-                    kotlinx.coroutines.GlobalScope.launch(kotlinx.coroutines.Dispatchers.Main) {
+                    GlobalScope.launch(Dispatchers.Main) {
                         onError()
                     }
                     true 
@@ -164,7 +166,7 @@ class VoiceManager(
             }
         } catch (e: Exception) {
             Log.e("VoiceManager", "MediaPlayer failed", e)
-            kotlinx.coroutines.GlobalScope.launch(kotlinx.coroutines.Dispatchers.Main) {
+            GlobalScope.launch(Dispatchers.Main) {
                 onError()
             }
         }
