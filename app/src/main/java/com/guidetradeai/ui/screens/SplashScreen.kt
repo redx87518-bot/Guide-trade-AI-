@@ -141,7 +141,7 @@ fun SplashScreen(
                         val baseRadius = size.minDimension / 2f
 
                         drawCircle(
-                            color = Color.White.copy(alpha = alpha * 0.12.sp),
+                            color = Color.White.copy(alpha = alpha * 0.12f),
                             radius = baseRadius,
                         )
                         drawCircle(

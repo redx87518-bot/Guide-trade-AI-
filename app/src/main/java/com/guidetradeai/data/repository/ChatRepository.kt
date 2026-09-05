@@ -5,7 +5,7 @@ import com.guidetradeai.domain.model.ChatMessage
 import com.guidetradeai.domain.model.ChatSession
 import io.github.jan.supabase.SupabaseClient
 import io.github.jan.supabase.functions.functions
-import io.ktor.client.call.bodyAsText
+import io.ktor.client.statement.bodyAsText
 import io.github.jan.supabase.postgrest.postgrest
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonObject
