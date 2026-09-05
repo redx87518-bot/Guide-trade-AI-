@@ -55,6 +55,7 @@ import com.guidetradeai.viewmodel.AuthUiState
 import com.guidetradeai.viewmodel.AuthViewModel
 import com.guidetradeai.viewmodel.HomeUiState
 import com.guidetradeai.viewmodel.HomeViewModel
+import com.guidetradeai.viewmodel.ChatViewModel
 import com.guidetradeai.voice.VoiceState
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
@@ -68,6 +69,9 @@ fun HomeScreen(
     val homeViewModel: HomeViewModel = viewModel()
     val homeUiState by homeViewModel.uiState.collectAsState()
     val authState by authViewModel.uiState.collectAsState()
+    val chatViewModel: ChatViewModel = viewModel()
+    val isListening by chatViewModel.isListening.collectAsState()
+    val isSpeaking by chatViewModel.isSpeaking.collectAsState()
 
     LaunchedEffect(authState) {
         if (authState is AuthUiState.Authenticated) {
@@ -135,10 +139,19 @@ fun HomeScreen(
                     .height(220.dp),
                 contentAlignment = Alignment.Center,
             ) {
+                val voiceState = when {
+                    isSpeaking -> com.guidetradeai.voice.VoiceState.SPEAKING
+                    isListening -> com.guidetradeai.voice.VoiceState.LISTENING
+                    else -> com.guidetradeai.voice.VoiceState.IDLE
+                }
                 AIOrb(
-                    state = VoiceState.IDLE,
+                    state = voiceState,
                     modifier = Modifier.size(160.dp),
-                    onClick = { navController.navigate(com.guidetradeai.ui.navigation.NavRoutes.CHAT_NEW) },
+                    onClick = { 
+                        if (!isListening && !isSpeaking) {
+                            chatViewModel.startVoiceLoop()
+                        }
+                    },
                 )
             }
 

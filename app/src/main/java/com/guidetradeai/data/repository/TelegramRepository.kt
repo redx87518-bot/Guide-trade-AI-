@@ -109,6 +109,24 @@ class TelegramRepository(
         return "••••••••••$last4"
     }
 
+    suspend fun sendChatResultToTelegram(
+        sessionId: String,
+        userMessage: String,
+        aiResponse: String,
+    ): Result<String> {
+        return try {
+            val body = buildJsonObject {
+                put("session_id", JsonPrimitive(sessionId))
+                put("user_message", JsonPrimitive(userMessage))
+                put("response", JsonPrimitive(aiResponse))
+            }.toString()
+            val resp = supabase.functions.invoke("telegram-send", body = body)
+            parseSuccessResponse(resp.bodyAsText())
+        } catch (e: Exception) {
+            Result.error("Failed to send chat result to Telegram: ${e.message}")
+        }
+    }
+
     suspend fun sendResearchToTelegram(
         title: String,
         query: String,

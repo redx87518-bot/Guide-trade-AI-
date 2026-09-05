@@ -80,6 +80,8 @@ fun NavGraph(
         NavRoutes.TELEGRAM_SETTINGS,
         NavRoutes.VOICE_SETTINGS,
         NavRoutes.PROFILE,
+        NavRoutes.CHAT,
+        NavRoutes.CHAT_NEW,
     )
     val showBottomBar = currentRoute != null && !hideBottomBarRoutes.any { currentRoute == it || currentRoute?.startsWith(it) == true }
 

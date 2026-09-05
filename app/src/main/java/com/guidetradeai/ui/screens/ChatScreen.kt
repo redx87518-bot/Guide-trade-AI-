@@ -32,6 +32,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Mic
+import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material.icons.filled.Send
 import androidx.compose.material.icons.filled.Settings
@@ -70,7 +71,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
-import com.guidetradeai.ui.components.BottomBar
 import com.guidetradeai.ui.components.MarkdownText
 import com.guidetradeai.ui.theme.AccentCyan
 import com.guidetradeai.ui.theme.AccentPurple
@@ -259,12 +259,8 @@ fun ChatScreen(
                         .padding(horizontal = 12.dp, vertical = 12.dp),
                     verticalAlignment = Alignment.CenterVertically,
                 ) {
-                    IconButton(onClick = { 
-                        kotlinx.coroutines.GlobalScope.launch(kotlinx.coroutines.Dispatchers.Main) {
-                            drawerState.open()
-                        }
-                    }) {
-                        Icon(Icons.Default.Menu, contentDescription = "Menu", tint = TextPrimary)
+                    IconButton(onClick = { navController.popBackStack() }) {
+                        Icon(Icons.Default.ArrowBack, contentDescription = "Back", tint = TextPrimary)
                     }
                     Text(
                         text = currentTitle.ifBlank { "New Chat" },
@@ -399,7 +395,6 @@ fun ChatScreen(
             }
         }
     }
-    BottomBar(navController = navController)
 
     if (showDeleteDialog && sessionToDelete != null) {
         androidx.compose.material3.AlertDialog(

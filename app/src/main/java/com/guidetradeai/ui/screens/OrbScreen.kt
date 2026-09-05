@@ -83,6 +83,16 @@ fun OrbScreen(
         }
     }
 
+    LaunchedEffect(Unit) {
+        chatViewModel.startVoiceLoop()
+    }
+
+    androidx.compose.runtime.DisposableEffect(Unit) {
+        onDispose {
+            chatViewModel.stopVoiceLoop()
+        }
+    }
+
     Box(
         modifier = Modifier
             .fillMaxSize()

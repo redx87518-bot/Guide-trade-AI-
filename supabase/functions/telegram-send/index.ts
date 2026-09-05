@@ -71,13 +71,12 @@ Deno.serve(async (req) => {
 
   try {
     const body = await req.json()
-    const { research_id, query, response, title, asset } = body
+    const { research_id, query, response, title, asset, session_id, user_message } = body
 
-    if (!response || !title) {
+    if (!response) {
       return jsonResponse({ error: 'INVALID_REQUEST' }, 400)
     }
 
-    // Get user's Telegram settings
     const { data: tgSettings, error: tgError } = await supabaseAdmin
       .from('telegram_settings')
       .select('bot_token_encrypted, chat_id, enabled, send_research, send_chat_results')
@@ -96,7 +95,6 @@ Deno.serve(async (req) => {
       return jsonResponse({ error: 'TELEGRAM_NOT_CONFIGURED' }, 400)
     }
 
-    // Decrypt the bot token
     let botToken: string
     try {
       botToken = await decryptToken(tgSettings.bot_token_encrypted)
@@ -109,29 +107,41 @@ Deno.serve(async (req) => {
       return jsonResponse({ error: 'TELEGRAM_NOT_CONFIGURED' }, 400)
     }
 
-    // Build the Telegram message
     const date = new Date().toLocaleDateString('en-US', {
       year: 'numeric',
       month: 'short',
       day: 'numeric',
     })
 
-    const shortSummary = truncateText(response.replace(/[#*\[\]()~`><]/g, ''), 300)
+    let message = ''
+    const isResearch = research_id !== undefined && research_id !== null
+    const isChat = session_id !== undefined && session_id !== null
 
-    const message =
-      'GUIDE TRADE AI\n\n' +
-      'AI RESEARCH\n\n' +
-      `* ${escapeMarkdown(title)} *\n\n` +
-      `Date: ${date}\n\n` +
-      `Summary:\n${escapeMarkdown(shortSummary)}\n\n` +
-      `Key Factors:\n` +
-      `• ${escapeMarkdown(asset || 'General market research')}\n\n` +
-      `Disclaimer:\n` +
-      escapeMarkdown(
-        'AI-generated research only. Not financial advice. Verify before trading.',
-      )
+    if (isResearch && tgSettings.send_research) {
+      const shortSummary = truncateText(response.replace(/[#*\[\]()~`><]/g, ''), 300)
+      message =
+        'GUIDE TRADE AI\n\n' +
+        'AI RESEARCH\n\n' +
+        `* ${escapeMarkdown(title || 'Research Result')} *\n\n` +
+        `Date: ${date}\n\n` +
+        `Summary:\n${escapeMarkdown(shortSummary)}\n\n` +
+        `Key Factors:\n` +
+        `• ${escapeMarkdown(asset || 'General market research')}\n\n` +
+        escapeMarkdown('AI-generated research only. Not financial advice. Verify before trading.')
+    } else if (isChat && tgSettings.send_chat_results) {
+      const shortResponse = truncateText(response.replace(/[#*\[\]()~`><]/g, ''), 300)
+      const shortQuery = truncateText((user_message || query || '').replace(/[#*\[\]()~`><]/g, ''), 200)
+      message =
+        'GUIDE TRADE AI\n\n' +
+        'AI CHAT RESULT\n\n' +
+        `Date: ${date}\n\n` +
+        `You asked:\n${escapeMarkdown(shortQuery)}\n\n` +
+        `Quan replied:\n${escapeMarkdown(shortResponse)}\n\n` +
+        escapeMarkdown('AI-generated chat response. Not financial advice.')
+    } else {
+      return jsonResponse({ error: 'NOT_ENABLED' }, 403)
+    }
 
-    // Split into chunks if message is too long (Telegram limit: 4096 chars)
     const chunks: string[] = []
     if (message.length <= 4096) {
       chunks.push(message)
@@ -152,7 +162,6 @@ Deno.serve(async (req) => {
       }
     }
 
-    // Send each chunk
     const controller = new AbortController()
     const timeoutId = setTimeout(() => controller.abort(), 15000)
 
@@ -184,11 +193,10 @@ Deno.serve(async (req) => {
 
     clearTimeout(timeoutId)
 
-    // If this was a saved research result, update the telegram status
     if (research_id) {
       await supabaseAdmin
         .from('research_results')
-        .update({ response: response })
+        .update({ response })
         .eq('id', research_id)
         .eq('user_id', userId)
         .select()
@@ -197,7 +205,7 @@ Deno.serve(async (req) => {
 
     return jsonResponse({
       success: true,
-      message: 'Research result sent to Telegram.',
+      message: isResearch ? 'Research result sent to Telegram.' : 'Chat result sent to Telegram.',
       chunks_sent: chunks.length,
     }, 200)
   } catch (error) {

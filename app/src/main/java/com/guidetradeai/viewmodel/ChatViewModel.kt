@@ -6,6 +6,7 @@ import com.guidetradeai.audio.VoiceManager
 import com.guidetradeai.data.local.AppPreferences
 import com.guidetradeai.data.repository.AuthRepository
 import com.guidetradeai.data.repository.ChatRepository
+import com.guidetradeai.data.repository.TelegramRepository
 import com.guidetradeai.di.AppModule
 import com.guidetradeai.domain.Result
 import com.guidetradeai.domain.model.ChatMessage
@@ -22,6 +23,7 @@ class ChatViewModel(
     private val chatRepository: ChatRepository = AppModule.chatRepository,
     private val authRepository: AuthRepository = AppModule.authRepository,
     private val voiceManager: VoiceManager = AppModule.voiceManager,
+    private val telegramRepository: TelegramRepository = AppModule.telegramRepository,
 ) : ViewModel() {
 
     private val _messages = MutableStateFlow<List<ChatMessage>>(emptyList())
@@ -49,11 +51,14 @@ class ChatViewModel(
     val currentSessionTitle: StateFlow<String> = _currentSessionTitle.asStateFlow()
 
     private var isFirstMessage = true
+    private var voiceLoopActive = false
+    private var telegramSettings: com.guidetradeai.domain.model.TelegramSettings? = null
 
     fun initialize() {
         viewModelScope.launch {
             val userId = authRepository.getCurrentUser()?.id ?: return@launch
             loadSessions(userId)
+            loadTelegramSettings()
             val lastSessionId = AppModule.appPreferences.lastSessionId.first()
             val currentSessions = _sessions.value
             if (!lastSessionId.isNullOrBlank() && currentSessions.any { it.id == lastSessionId }) {
@@ -127,11 +132,29 @@ class ChatViewModel(
                 )
                 _messages.value = _messages.value + aiMsg
                 speakResponse(result.data)
+                sendToTelegram(text, result.data!!)
             } else {
                 _error.value = (result as? Result.Error)?.message ?: "Unknown error"
             }
             _isLoading.value = false
         }
+    }
+
+    fun startVoiceLoop() {
+        voiceLoopActive = true
+        viewModelScope.launch {
+            voiceManager.speak(
+                text = "Hello, I'm Quan. How can I help you?",
+                onDone = { startVoiceInput() },
+                onError = { startVoiceInput() }
+            )
+        }
+    }
+
+    fun stopVoiceLoop() {
+        voiceLoopActive = false
+        stopVoiceInput()
+        stopSpeaking()
     }
 
     fun startVoiceInput() {
@@ -160,8 +183,20 @@ class ChatViewModel(
             _isSpeaking.value = true
             voiceManager.speak(
                 text = text,
-                onDone = { _isSpeaking.value = false },
-                onError = { _isSpeaking.value = false }
+                onDone = {
+                    _isSpeaking.value = false
+                    if (voiceLoopActive) {
+                        kotlinx.coroutines.delay(300)
+                        startVoiceInput()
+                    }
+                },
+                onError = {
+                    _isSpeaking.value = false
+                    if (voiceLoopActive) {
+                        kotlinx.coroutines.delay(300)
+                        startVoiceInput()
+                    }
+                }
             )
         }
     }
@@ -180,10 +215,26 @@ class ChatViewModel(
         }
     }
 
-    private fun loadSessions(userId: String) {
+    private suspend fun loadSessions(userId: String) {
+        val result = chatRepository.getSessions(userId)
+        if (result is Result.Success) _sessions.value = result.data!!
+    }
+
+    private fun loadTelegramSettings() {
         viewModelScope.launch {
-            val result = chatRepository.getSessions(userId)
-            if (result is Result.Success) _sessions.value = result.data!!
+            val result = telegramRepository.getTelegramSettings()
+            if (result is Result.Success) {
+                telegramSettings = result.data
+            }
+        }
+    }
+
+    private fun sendToTelegram(userMessage: String, aiResponse: String) {
+        val settings = telegramSettings ?: return
+        if (!settings.enabled || !settings.sendChatResults) return
+        val sessionId = _currentSessionId.value ?: return
+        viewModelScope.launch {
+            telegramRepository.sendChatResultToTelegram(sessionId, userMessage, aiResponse)
         }
     }
 }

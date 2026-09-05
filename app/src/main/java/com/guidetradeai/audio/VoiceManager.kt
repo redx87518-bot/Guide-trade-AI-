@@ -97,8 +97,8 @@ class VoiceManager(
 
     suspend fun speak(
         text: String,
-        onDone: () -> Unit = {},
-        onError: () -> Unit = {}
+        onDone: suspend () -> Unit = {},
+        onError: suspend () -> Unit = {}
     ) {
         val cleaned = cleanTextForSpeech(text)
         if (cleaned.isBlank()) { onDone(); return }
@@ -129,8 +129,8 @@ class VoiceManager(
 
     private fun playAudio(
         audioBytes: ByteArray,
-        onDone: () -> Unit,
-        onError: () -> Unit
+        onDone: suspend () -> Unit,
+        onError: suspend () -> Unit
     ) {
         try {
             mediaPlayer?.release()
@@ -149,15 +149,24 @@ class VoiceManager(
                 )
                 setOnCompletionListener {
                     tempFile.delete()
-                    onDone()
+                    kotlinx.coroutines.GlobalScope.launch(kotlinx.coroutines.Dispatchers.Main) {
+                        onDone()
+                    }
                 }
-                setOnErrorListener { _, _, _ -> onError(); true }
+                setOnErrorListener { _, _, _ -> 
+                    kotlinx.coroutines.GlobalScope.launch(kotlinx.coroutines.Dispatchers.Main) {
+                        onError()
+                    }
+                    true 
+                }
                 prepare()
                 start()
             }
         } catch (e: Exception) {
             Log.e("VoiceManager", "MediaPlayer failed", e)
-            onError()
+            kotlinx.coroutines.GlobalScope.launch(kotlinx.coroutines.Dispatchers.Main) {
+                onError()
+            }
         }
     }
 
