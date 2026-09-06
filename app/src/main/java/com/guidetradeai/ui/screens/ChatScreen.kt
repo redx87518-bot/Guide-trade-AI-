@@ -477,6 +477,8 @@ fun ChatScreen(
             market = selectedMarket,
             symbol = selectedSymbol,
             timeframe = selectedTimeframe,
+            showAssetSheet = showAssetSheet,
+            onShowAssetSheetChange = { showAssetSheet = it },
             onFeatureChange = { selectedFeature = it },
             onMarketChange = { selectedMarket = it },
             onSymbolChange = { selectedSymbol = it },
