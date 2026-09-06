@@ -97,8 +97,6 @@ import java.time.ZoneId
 import java.time.format.DateTimeFormatter
 
 @Composable
-
-@Composable
 fun ProviderSelectorRow(
     selectedProvider: String,
     selectedFeature: String,
@@ -230,6 +228,7 @@ fun SimpleDropdown(
     }
 }
 
+@Composable
 fun ChatScreen(
     navController: NavHostController,
     sessionId: String? = null,
