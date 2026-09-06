@@ -4,14 +4,14 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.guidetradeai.data.repository.AuthRepository
 import com.guidetradeai.data.repository.ChatRepository
-import com.guidetradeai.data.repository.MarketIntelligenceRepository
-import com.guidetradeai.domain.model.SymbolItem
+import com.guidetradeai.data.repository.SiftingIORepository
+import com.guidetradeai.data.repository.StockupRepository
 import com.guidetradeai.data.local.AppPreferences
 import com.guidetradeai.di.AppModule
 import com.guidetradeai.domain.Result
+import com.guidetradeai.domain.model.AIProvider
 import com.guidetradeai.domain.model.ChatMessage
 import com.guidetradeai.domain.model.ChatSession
-import com.guidetradeai.domain.model.MarketIntelligenceRequest
 import com.guidetradeai.domain.messageOrNull
 import com.guidetradeai.audio.VoiceManager
 import kotlinx.coroutines.flow.first
@@ -19,8 +19,6 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
-import kotlinx.serialization.json.JsonPrimitive
-import kotlinx.serialization.json.JsonObject
 import java.time.Instant
 import java.util.UUID
 
@@ -28,7 +26,8 @@ class ChatViewModel(
     private val chatRepository: ChatRepository = AppModule.chatRepository,
     private val authRepository: AuthRepository = AppModule.authRepository,
     private val voiceManager: VoiceManager = AppModule.voiceManager,
-    private val marketIntelligenceRepository: MarketIntelligenceRepository = MarketIntelligenceRepository(AppModule.supabaseClient),
+    private val stockupRepository: StockupRepository = AppModule.stockupRepository,
+    private val siftingIORepository: SiftingIORepository = AppModule.siftingIORepository,
 ) : ViewModel() {
 
     private val _messages = MutableStateFlow<List<ChatMessage>>(emptyList())
@@ -55,8 +54,8 @@ class ChatViewModel(
     private val _currentSessionTitle = MutableStateFlow("New Chat")
     val currentSessionTitle: StateFlow<String> = _currentSessionTitle.asStateFlow()
 
-    private val _selectedProvider = MutableStateFlow("StockUp")
-    val selectedProvider: StateFlow<String> = _selectedProvider.asStateFlow()
+    private val _selectedProvider = MutableStateFlow(AIProvider.STOCKUP)
+    val selectedProvider: StateFlow<AIProvider> = _selectedProvider.asStateFlow()
 
     private val _selectedFeature = MutableStateFlow("Chat")
     val selectedFeature: StateFlow<String> = _selectedFeature.asStateFlow()
@@ -110,12 +109,12 @@ class ChatViewModel(
         }
     }
 
-    fun setProvider(provider: String) {
+    fun setProvider(provider: AIProvider) {
         _selectedProvider.value = provider
         _selectedFeature.value = when (provider) {
-            "SiftingIO" -> "Full Analysis"
-            "Guavy" -> "Full Analysis"
-            "Combined" -> "Full Analysis"
+            AIProvider.SIFTING_IO -> "Full Analysis"
+            AIProvider.GUAVY -> "Full Analysis"
+            AIProvider.COMBINED -> "Full Analysis"
             else -> "Chat"
         }
         _selectedMarket.value = null
@@ -128,7 +127,7 @@ class ChatViewModel(
     fun setTimeframe(timeframe: String) { _selectedTimeframe.value = timeframe }
 
     data class IntentRoute(
-        val provider: String,
+        val provider: AIProvider,
         val feature: String,
         val market: String? = null,
         val symbol: String? = null,
@@ -187,120 +186,55 @@ class ChatViewModel(
             }
 
             val provider = _selectedProvider.value
-            val (content, marketData) = when (provider) {
-                "StockUp" -> {
-                    val res = chatRepository.sendMessage(sessionId, text)
-                    if (res is Result.Success) Pair(res.data, null) else Pair(res.messageOrNull() ?: "Error", null)
+            val result = when (provider) {
+                AIProvider.STOCKUP -> {
+                    val res = stockupRepository.sendMessage(sessionId, text)
+                    if (res is Result.Success) Result.success(res.data) else Result.error(res.messageOrNull() ?: "StockUp failed")
                 }
-                else -> {
-                    val request = com.guidetradeai.domain.model.MarketIntelligenceRequest(
-                        provider = provider.lowercase(),
-                        feature = _selectedFeature.value.lowercase().replace(" ", "_"),
-                        market = _selectedMarket.value?.lowercase(),
-                        symbol = _selectedSymbol.value,
+                AIProvider.SIFTING_IO -> {
+                    when (val miResult = siftingIORepository.query(
+                        market = _selectedMarket.value?.lowercase() ?: "crypto",
+                        symbol = _selectedSymbol.value ?: "BTC",
                         timeframe = _selectedTimeframe.value,
+                        feature = _selectedFeature.value.lowercase().replace(" ", "_"),
                         query = text,
-                    )
-                    when (val miResult = marketIntelligenceRepository.queryProvider(request)) {
+                    )) {
                         is Result.Success -> {
-                            val formatted = formatMarketIntelligenceResponse(miResult.data)
-                            Pair(formatted.first, formatted.second)
+                            val content = formatSiftingIOResponse(miResult.data)
+                            Result.success(content)
                         }
-                        is Result.Error -> Pair(miResult.message, null)
-                        else -> Pair("Unknown error", null)
+                        is Result.Error -> Result.error(miResult.message)
+                        else -> Result.error("Unknown SiftingIO error")
                     }
                 }
+                else -> Result.error("Provider $provider is not implemented yet")
             }
 
-            val aiMsg = ChatMessage(
-                id = UUID.randomUUID().toString(),
-                sessionId = sessionId,
-                userId = userId,
-                role = "assistant",
-                content = content,
-                createdAt = Instant.now().toString(),
-                marketData = marketData
-            )
-            _messages.value = _messages.value + aiMsg
-            speakResponse(content)
+            if (result is Result.Success) {
+                val aiMsg = ChatMessage(
+                    id = UUID.randomUUID().toString(),
+                    sessionId = sessionId,
+                    userId = userId,
+                    role = "assistant",
+                    content = result.data,
+                    createdAt = Instant.now().toString()
+                )
+                _messages.value = _messages.value + aiMsg
+                speakResponse(result.data)
+            } else {
+                _error.value = result.messageOrNull()
+            }
             _isLoading.value = false
         }
     }
 
-    private fun formatMarketIntelligenceResponse(response: com.guidetradeai.domain.model.MarketIntelligenceResponse): Pair<String, com.guidetradeai.domain.model.MarketDataResponse?> {
-        val provider = response.provider.lowercase()
-        val symbol = response.symbol ?: response.market ?: "Market"
-        val result = response.result
-        
-        return if (provider == "siftingio") {
-            val marketData = parseSiftingIOToMarketData(response)
-            val text = buildString {
-                append("**SIFTINGIO — $symbol**\n\n")
-                append("Feature: ${response.feature}\n")
-                append("Time: ${response.timeframe ?: "N/A"}\n\n")
-                if (marketData != null) {
-                    if (marketData.signal.isNotBlank()) append("Signal: ${marketData.signal}\n")
-                    marketData.score?.let { append("Score: ${"%.2f".format(it)}\n") }
-                    if (marketData.oscillator.isNotBlank()) append("Oscillators: ${marketData.oscillator}\n")
-                    if (marketData.movingAverage.isNotBlank()) append("Moving Average: ${marketData.movingAverage}\n")
-                    marketData.rsi?.let { append("RSI: ${"%.1f".format(it)}\n") }
-                    if (marketData.macd.isNotBlank()) append("MACD: ${marketData.macd}\n")
-                    marketData.price?.let { append("Price: $${"%.2f".format(it)}\n") }
-                } else {
-                    append("Raw data returned.\n")
-                }
-            }
-            Pair(text, marketData)
-        } else {
-            // Guavy and others: show as normal text
-            val text = buildString {
-                append("**${provider.uppercase()} — $symbol**\n\n")
-                if (result != null) {
-                    append(result.toString().take(800))
-                } else {
-                    append("No data available.")
-                }
-            }
-            Pair(text, null)
+    private fun formatSiftingIOResponse(data: JsonObject): String {
+        return buildString {
+            append("**SIFTINGIO**\n\n")
+            append("```json\n")
+            append(data.toString().take(800))
+            append("\n```")
         }
-    }
-    
-    private fun parseSiftingIOToMarketData(response: com.guidetradeai.domain.model.MarketIntelligenceResponse): com.guidetradeai.domain.model.MarketDataResponse? {
-        val result = response.result ?: return null
-        val symbol = response.symbol ?: return null
-        val market = response.market ?: return null
-        
-        fun getString(obj: JsonObject?, key: String): String? {
-            val primitive = obj?.get(key) as? JsonPrimitive
-            return primitive?.content
-        }
-        
-        fun getDouble(obj: JsonObject?, key: String): Double? {
-            val primitive = obj?.get(key) as? JsonPrimitive
-            return primitive?.content?.toDoubleOrNull()
-        }
-        
-        val oscillators = result["oscillators"] as? JsonObject
-        val movingAverage = result["movingAverage"] as? JsonObject
-        val indicators = result["indicators"] as? JsonObject
-        
-        return com.guidetradeai.domain.model.MarketDataResponse(
-            provider = "SIFTINGIO",
-            market = market.uppercase(),
-            symbol = symbol,
-            name = symbol,
-            timestamp = response.timeframe ?: "",
-            signal = getString(result, "signal") ?: getString(result, "direction") ?: "",
-            score = getDouble(result, "score") ?: getDouble(result, "confidence"),
-            oscillator = getString(result, "oscillator") ?: getString(oscillators, "overall") ?: "",
-            movingAverage = getString(result, "moving_average") ?: getString(movingAverage, "overall") ?: "",
-            rsi = getDouble(result, "rsi") ?: getDouble(indicators, "rsi"),
-            macd = getString(result, "macd") ?: getString(indicators, "macd") ?: "",
-            barStatus = getString(result, "bar_status") ?: getString(result, "barStatus") ?: "",
-            price = getDouble(result, "price") ?: getDouble(result, "last"),
-            change = getDouble(result, "change"),
-            changePercent = getDouble(result, "change_percent") ?: getDouble(result, "changePercent"),
-        )
     }
 
     fun startVoiceInput() {
@@ -324,12 +258,6 @@ class ChatViewModel(
 
     private fun speakResponse(text: String) {
         viewModelScope.launch {
-            val autoSpeak = AppModule.appPreferences.autoSpeak.first()
-            val voiceEnabled = AppModule.appPreferences.voiceEnabled.first()
-            if (!autoSpeak || !voiceEnabled) {
-                _isSpeaking.value = false
-                return@launch
-            }
             _isSpeaking.value = true
             voiceManager.speak(
                 text = text,
@@ -344,10 +272,6 @@ class ChatViewModel(
         _isSpeaking.value = false
     }
 
-
-    suspend fun loadSymbols(provider: String, market: String): Result<List<SymbolItem>> {
-        return marketIntelligenceRepository.listSymbols(provider, market)
-    }
     fun deleteSession(sessionId: String) {
         viewModelScope.launch {
             val userId = authRepository.getCurrentUser()?.id ?: return@launch
