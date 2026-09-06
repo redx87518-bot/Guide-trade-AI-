@@ -90,3 +90,53 @@ data class MarketIntelligenceResponse(
     val timeframe: String? = null,
     val result: JsonObject? = null,
 )
+
+data class MarketDataResponse(
+    val provider: String,
+    val market: String,
+    val symbol: String,
+    val name: String = "",
+    val timestamp: String = "",
+    val price: Double? = null,
+    val change: Double? = null,
+    val changePercent: Double? = null,
+    val high: Double? = null,
+    val low: Double? = null,
+    val signal: String = "",
+    val score: Double? = null,
+    val oscillator: String = "",
+    val movingAverage: String = "",
+    val rsi: Double? = null,
+    val macd: String = "",
+    val stochastic: String = "",
+    val cci: Double? = null,
+    val williamsR: Double? = null,
+    val momentum: String = "",
+    val sma: Double? = null,
+    val ema: Double? = null,
+    val barStatus: String = "",
+    val sentiment: String = "",
+    val trend: String = "",
+    val news: List<NewsItem> = emptyList(),
+    val chartData: List<ChartPoint> = emptyList(),
+    val metadata: Map<String, String> = emptyMap(),
+)
+
+data class NewsItem(
+    val title: String,
+    val summary: String = "",
+    val timestamp: String = "",
+    val source: String = "",
+)
+
+data class ChartPoint(
+    val timestamp: String,
+    val value: Double,
+    val volume: Double? = null,
+)
+
+data class SymbolItem(
+    val symbol: String,
+    val name: String = "",
+    val market: String = "",
+)

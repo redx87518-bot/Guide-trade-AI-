@@ -264,6 +264,12 @@ class ChatViewModel(
 
     private fun speakResponse(text: String) {
         viewModelScope.launch {
+            val autoSpeak = AppModule.appPreferences.autoSpeak.first()
+            val voiceEnabled = AppModule.appPreferences.voiceEnabled.first()
+            if (!autoSpeak || !voiceEnabled) {
+                _isSpeaking.value = false
+                return@launch
+            }
             _isSpeaking.value = true
             voiceManager.speak(
                 text = text,
