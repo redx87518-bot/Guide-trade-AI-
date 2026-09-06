@@ -116,9 +116,11 @@ class VoiceManager(
             Log.d("VoiceManager", "TTS response: $data")
             val json = Json.parseToJsonElement(data).jsonObject
 
-            if (json["error"]?.jsonPrimitive?.content == "VOICE_DISABLED") {
-                Log.w("VoiceManager", "Voice disabled in settings")
-                onDone(); return
+            val error = json["error"]?.jsonPrimitive?.content
+            if (error != null) {
+                Log.e("VoiceManager", "TTS error from Edge Function: $error")
+                onError()
+                return
             }
 
             val audioBase64 = json["audio"]?.jsonPrimitive?.content

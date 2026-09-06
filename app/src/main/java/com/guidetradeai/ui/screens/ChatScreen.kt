@@ -36,6 +36,9 @@ import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material.icons.filled.Send
 import androidx.compose.material.icons.filled.Settings
+import androidx.compose.material.icons.filled.ArrowDropDown
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Divider
 import androidx.compose.material3.DrawerState
 import androidx.compose.material3.DrawerValue
@@ -94,6 +97,139 @@ import java.time.ZoneId
 import java.time.format.DateTimeFormatter
 
 @Composable
+
+@Composable
+fun ProviderSelectorRow(
+    selectedProvider: String,
+    selectedFeature: String,
+    selectedMarket: String?,
+    selectedSymbol: String?,
+    selectedTimeframe: String,
+    onProviderChange: (String) -> Unit,
+    onFeatureChange: (String) -> Unit,
+    onMarketChange: (String) -> Unit,
+    onSymbolChange: (String) -> Unit,
+    onTimeframeChange: (String) -> Unit,
+) {
+    val models = listOf("StockUp", "SiftingIO", "Guavy", "Combined")
+    val features = when (selectedProvider) {
+        "SiftingIO" -> listOf("Technical Signal", "Live Price", "Signal History", "RSI", "MACD", "Market Status")
+        "Guavy" -> listOf("Full Analysis", "Instrument Analysis", "Scorecard", "Sentiment", "Technical Indicators", "Price History", "News")
+        "Combined" -> listOf("Full Analysis", "Research", "Technical Signal", "Sentiment")
+        else -> listOf("Chat")
+    }
+    val markets = listOf("Crypto", "Forex", "Commodities", "Stocks")
+    val timeframes = listOf("1m", "5m", "15m", "1h", "4h", "1d")
+
+    val showAdvanced = selectedProvider != "StockUp"
+
+    if (showAdvanced) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 12.dp, vertical = 8.dp),
+            horizontalArrangement = Arrangement.spacedBy(8.dp),
+        ) {
+            SimpleDropdown(
+                label = "Model",
+                options = models,
+                selectedOption = selectedProvider,
+                onOptionSelected = onProviderChange,
+                modifier = Modifier.weight(1f),
+            )
+            SimpleDropdown(
+                label = "Feature",
+                options = features,
+                selectedOption = selectedFeature,
+                onOptionSelected = onFeatureChange,
+                modifier = Modifier.weight(1f),
+            )
+        }
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 12.dp, vertical = 4.dp),
+            horizontalArrangement = Arrangement.spacedBy(8.dp),
+        ) {
+            SimpleDropdown(
+                label = "Market",
+                options = markets,
+                selectedOption = selectedMarket ?: "Market",
+                onOptionSelected = onMarketChange,
+                modifier = Modifier.weight(1f),
+            )
+            SimpleDropdown(
+                label = "Asset",
+                options = listOf(selectedSymbol ?: "Symbol"),
+                selectedOption = selectedSymbol ?: "Asset",
+                onOptionSelected = onSymbolChange,
+                modifier = Modifier.weight(1f),
+                enabled = selectedMarket != null,
+            )
+            SimpleDropdown(
+                label = "Timeframe",
+                options = timeframes,
+                selectedOption = selectedTimeframe,
+                onOptionSelected = onTimeframeChange,
+                modifier = Modifier.weight(1f),
+            )
+        }
+        Divider(color = DividerColor, modifier = Modifier.padding(vertical = 4.dp))
+    }
+}
+
+@Composable
+fun SimpleDropdown(
+    label: String,
+    options: List<String>,
+    selectedOption: String,
+    onOptionSelected: (String) -> Unit,
+    modifier: Modifier = Modifier,
+    enabled: Boolean = true,
+) {
+    var expanded by remember { mutableStateOf(false) }
+    Box(modifier = modifier) {
+        Surface(
+            onClick = { if (enabled) expanded = true },
+            shape = RoundedCornerShape(8.dp),
+            color = if (enabled) SurfaceMid else SurfaceMid.copy(alpha = 0.5f),
+        ) {
+            Row(
+                modifier = Modifier.padding(horizontal = 12.dp, vertical = 10.dp),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(4.dp),
+            ) {
+                Text(
+                    text = selectedOption.ifBlank { label },
+                    color = if (enabled) TextPrimary else TextSecondary,
+                    fontSize = 12.sp,
+                    maxLines = 1,
+                )
+                Icon(
+                    imageVector = Icons.Default.ArrowDropDown,
+                    contentDescription = null,
+                    tint = TextSecondary,
+                    modifier = Modifier.size(16.dp),
+                )
+            }
+        }
+        DropdownMenu(
+            expanded = expanded,
+            onDismissRequest = { expanded = false },
+        ) {
+            options.forEach { option ->
+                DropdownMenuItem(
+                    text = { Text(text = option, fontSize = 14.sp) },
+                    onClick = {
+                        onOptionSelected(option)
+                        expanded = false
+                    }
+                )
+            }
+        }
+    }
+}
+
 fun ChatScreen(
     navController: NavHostController,
     sessionId: String? = null,
@@ -123,6 +259,17 @@ fun ChatScreen(
 
     LaunchedEffect(Unit) {
         chatViewModel.initialize()
+    }
+
+    LaunchedEffect(selectedProvider) {
+        selectedFeature = when (selectedProvider) {
+            "SiftingIO" -> "Technical Signal"
+            "Guavy" -> "Full Analysis"
+            "Combined" -> "Full Analysis"
+            else -> "Chat"
+        }
+        selectedMarket = null
+        selectedSymbol = null
     }
 
     LaunchedEffect(authViewModel.isLoggedIn) {
@@ -292,6 +439,19 @@ fun ChatScreen(
                     }
                 }
             }
+
+            ProviderSelectorRow(
+                selectedProvider = selectedProvider,
+                selectedFeature = selectedFeature,
+                selectedMarket = selectedMarket,
+                selectedSymbol = selectedSymbol,
+                selectedTimeframe = selectedTimeframe,
+                onProviderChange = { selectedProvider = it },
+                onFeatureChange = { selectedFeature = it },
+                onMarketChange = { selectedMarket = it },
+                onSymbolChange = { selectedSymbol = it },
+                onTimeframeChange = { selectedTimeframe = it },
+            )
 
             Box(modifier = Modifier.weight(1f)) {
                 if (messages.isEmpty() && !isLoading) {

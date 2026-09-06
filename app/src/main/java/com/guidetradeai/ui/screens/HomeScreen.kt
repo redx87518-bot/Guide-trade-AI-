@@ -149,7 +149,7 @@ fun HomeScreen(
                     modifier = Modifier.size(160.dp),
                     onClick = { 
                         if (!isListening && !isSpeaking) {
-                            chatViewModel.startVoiceLoop()
+                            chatViewModel.startVoiceInput()
                         }
                     },
                 )

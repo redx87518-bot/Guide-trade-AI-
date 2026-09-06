@@ -9,6 +9,8 @@ import com.guidetradeai.di.AppModule
 import com.guidetradeai.domain.Result
 import com.guidetradeai.domain.model.ChatMessage
 import com.guidetradeai.domain.model.ChatSession
+import com.guidetradeai.audio.VoiceManager
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -70,7 +72,7 @@ class ChatViewModel(
         viewModelScope.launch {
             val userId = authRepository.getCurrentUser()?.id ?: return@launch
             val result = chatRepository.createSession(userId)
-            if (result.isSuccess) {
+            if (result is Result.Success) {
                 _currentSessionId.value = result.data
                 _messages.value = emptyList()
                 _currentSessionTitle.value = "New Chat"
@@ -86,7 +88,7 @@ class ChatViewModel(
             _currentSessionTitle.value = session.title
             isFirstMessage = false
             val result = chatRepository.getMessages(session.id)
-            if (result.isSuccess) _messages.value = result.data!!
+            if (result is Result.Success) _messages.value = result.data
             AppModule.appPreferences.saveLastSessionId(session.id)
         }
     }
@@ -124,11 +126,11 @@ class ChatViewModel(
 
             val userMsg = ChatMessage(
                 id = UUID.randomUUID().toString(),
-                session_id = sessionId,
-                user_id = userId,
+                sessionId = sessionId,
+                userId = userId,
                 role = "user",
                 content = text,
-                created_at = Instant.now().toString()
+                createdAt = Instant.now().toString()
             )
             _messages.value = _messages.value + userMsg
 
@@ -140,20 +142,29 @@ class ChatViewModel(
                 loadSessions(userId)
             }
 
+            val routing = routeIntent(text)
+            if (routing != null) {
+                selectedProvider = routing.provider
+                selectedFeature = routing.feature
+                selectedMarket = routing.market
+                selectedSymbol = routing.symbol
+                selectedTimeframe = routing.timeframe ?: "1h"
+            }
+
             val result = chatRepository.sendMessage(sessionId, text)
-            if (result.isSuccess) {
+            if (result is Result.Success) {
                 val aiMsg = ChatMessage(
                     id = UUID.randomUUID().toString(),
-                    session_id = sessionId,
-                    user_id = userId,
+                    sessionId = sessionId,
+                    userId = userId,
                     role = "assistant",
-                    content = result.data!!,
-                    created_at = Instant.now().toString()
+                    content = result.data,
+                    createdAt = Instant.now().toString()
                 )
                 _messages.value = _messages.value + aiMsg
                 speakResponse(result.data)
             } else {
-                _error.value = result.error
+                _error.value = result.messageOrNull()
             }
             _isLoading.value = false
         }
@@ -206,7 +217,7 @@ class ChatViewModel(
     private fun loadSessions(userId: String) {
         viewModelScope.launch {
             val result = chatRepository.getSessions(userId)
-            if (result.isSuccess) _sessions.value = result.data!!
+            if (result is Result.Success) _sessions.value = result.data
         }
     }
 }

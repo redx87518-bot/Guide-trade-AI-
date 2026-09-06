@@ -28,7 +28,7 @@ class MarketIntelligenceRepository(
             }
             val response = supabase.functions.invoke("market-intelligence", body = body)
             val data = response.bodyAsText()
-            val jsonObject = Json.parseToJsonString(data).let { Json.parseToJsonElement(it) }.jsonObject
+            val jsonObject = Json.parseToJsonElement(data).jsonObject
             val error = jsonObject["error"]?.jsonPrimitive?.content
             if (error != null) {
                 return Result.error(error)

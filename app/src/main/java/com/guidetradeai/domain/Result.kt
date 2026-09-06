@@ -10,3 +10,5 @@ sealed class Result<out T> {
         fun <T> loading(): Result<T> = Loading
     }
 }
+
+fun <T> Result<T>.messageOrNull(): String? = (this as? Result.Error)?.message

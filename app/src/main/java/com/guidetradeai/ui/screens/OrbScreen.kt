@@ -84,12 +84,12 @@ fun OrbScreen(
     }
 
     LaunchedEffect(Unit) {
-        chatViewModel.startVoiceLoop()
+        chatViewModel.startVoiceInput()
     }
 
     androidx.compose.runtime.DisposableEffect(Unit) {
         onDispose {
-            chatViewModel.stopVoiceLoop()
+            chatViewModel.stopVoiceInput()
         }
     }
 
