@@ -7,6 +7,7 @@ import com.guidetradeai.data.repository.ChatRepository
 import com.guidetradeai.data.local.AppPreferences
 import com.guidetradeai.di.AppModule
 import com.guidetradeai.domain.Result
+import com.guidetradeai.domain.messageOrNull
 import com.guidetradeai.domain.model.ChatMessage
 import com.guidetradeai.domain.model.ChatSession
 import com.guidetradeai.audio.VoiceManager

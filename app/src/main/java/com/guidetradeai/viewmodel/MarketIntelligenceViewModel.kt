@@ -4,7 +4,8 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.guidetradeai.data.repository.MarketIntelligenceRepository
 import com.guidetradeai.di.AppModule
-import com.guidetradeai.domain.MarketIntelligenceRequest
+import com.guidetradeai.domain.model.MarketIntelligenceRequest
+import com.guidetradeai.domain.model.MarketIntelligenceResponse
 import com.guidetradeai.domain.Result
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -31,6 +32,7 @@ class MarketIntelligenceViewModel(
             when (val result = marketIntelligenceRepository.queryProvider(request)) {
                 is Result.Success -> _uiState.value = MarketIntelligenceUiState.Success(result.data)
                 is Result.Error -> _uiState.value = MarketIntelligenceUiState.Error(result.message)
+                else -> _uiState.value = MarketIntelligenceUiState.Error("Unknown error")
             }
         }
     }
