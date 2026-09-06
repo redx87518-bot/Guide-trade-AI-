@@ -940,7 +940,7 @@ fun ModelSelectionBottomSheet(
                         verticalAlignment = Alignment.CenterVertically,
                     ) {
                         Text(
-                            text = model,
+                            text = model.name,
                             color = if (model == selectedProvider) AccentCyan else TextPrimary,
                             fontWeight = if (model == selectedProvider) FontWeight.Bold else FontWeight.Normal,
                             fontSize = 15.sp,

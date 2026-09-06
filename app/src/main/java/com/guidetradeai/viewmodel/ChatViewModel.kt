@@ -14,6 +14,7 @@ import com.guidetradeai.domain.model.ChatMessage
 import com.guidetradeai.domain.model.ChatSession
 import com.guidetradeai.domain.messageOrNull
 import com.guidetradeai.audio.VoiceManager
+import kotlinx.serialization.json.JsonObject
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
