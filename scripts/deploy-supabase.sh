@@ -28,6 +28,8 @@ supabase functions deploy ai-chat --file supabase/functions/ai-chat/index.ts
 supabase functions deploy telegram-send --file supabase/functions/telegram-send/index.ts
 supabase functions deploy telegram-test --file supabase/functions/telegram-test/index.ts
 supabase functions deploy text-to-speech --file supabase/functions/text-to-speech/index.ts
+supabase functions deploy siftingio-market --file supabase/functions/siftingio-market/index.ts
+supabase functions deploy market-intelligence --file supabase/functions/market-intelligence/index.ts
 
 echo "Setting edge function secrets..."
 supabase secrets set \
@@ -38,6 +40,8 @@ supabase secrets set \
   ELEVENLABS_VOICE_ID="${ELEVENLABS_VOICE_ID}" \
   ELEVENLABS_MODEL_ID="${ELEVENLABS_MODEL_ID:-eleven_turbo_v2}" \
   TELEGRAM_BOT_API_URL="${TELEGRAM_BOT_API_URL:-https://api.telegram.org}" \
-  ENCRYPTION_KEY="${ENCRYPTION_KEY}"
+  ENCRYPTION_KEY="${ENCRYPTION_KEY}" \
+  SIFTINGIO_API_KEY="${SIFTINGIO_API_KEY:-}" \
+  SIFTINGIO_BASE_URL="${SIFTINGIO_BASE_URL:-https://api.sifting.io}"
 
 echo "Done."

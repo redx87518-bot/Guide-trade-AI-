@@ -21,6 +21,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import java.time.Instant
 import java.util.UUID
+import android.util.Log
 
 class ChatViewModel(
     private val chatRepository: ChatRepository = AppModule.chatRepository,
@@ -186,15 +187,22 @@ class ChatViewModel(
             }
 
             val provider = _selectedProvider.value
+            Log.d("ChatViewModel", "Provider selected: $provider")
+            Log.d("ChatViewModel", "Market: ${_selectedMarket.value}")
+            Log.d("ChatViewModel", "Symbol: ${_selectedSymbol.value}")
+            Log.d("ChatViewModel", "Timeframe: ${_selectedTimeframe.value}")
+            Log.d("ChatViewModel", "Analysis: ${_selectedFeature.value}")
             val result = when (provider) {
                 AIProvider.STOCKUP -> {
+                    Log.d("ChatViewModel", "Edge Function: ai-chat")
                     val res = stockupRepository.sendMessage(sessionId, text)
                     if (res is Result.Success) Result.success(res.data) else Result.error(res.messageOrNull() ?: "StockUp failed")
                 }
                 AIProvider.SIFTING_IO -> {
+                    Log.d("ChatViewModel", "Edge Function: siftingio-market")
                     when (val miResult = siftingIORepository.query(
                         market = _selectedMarket.value?.lowercase() ?: "crypto",
-                        symbol = _selectedSymbol.value ?: "BTC",
+                        symbol = _selectedSymbol.value ?: "BTCUSD",
                         timeframe = _selectedTimeframe.value,
                         feature = _selectedFeature.value.lowercase().replace(" ", "_"),
                         query = text,

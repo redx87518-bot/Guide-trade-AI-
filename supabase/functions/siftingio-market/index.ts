@@ -36,25 +36,20 @@ function resolveSiftingIOEndpoint(feature: string, market: string, symbol: strin
   const venue = market.toLowerCase()
 
   const endpointMap: Record<string, { url: string; gzip: boolean; venues?: string[] }> = {
-    // Live
     live_trade: { url: `/v1/last/trade/${venue}/${symbol}`, gzip: false, venues: ['stocks', 'crypto', 'forex', 'dex'] },
     live_quote: { url: `/v1/last/quote/${venue}/${symbol}`, gzip: false, venues: ['stocks', 'crypto', 'forex', 'dex'] },
     previous_close: { url: `/v1/last/close/${venue}/${symbol}`, gzip: false, venues: ['stocks', 'crypto', 'forex', 'commodities'] },
     snapshot: { url: `/v1/snapshot/${venue}`, gzip: true, venues: ['stocks', 'crypto', 'forex', 'dex'] },
 
-    // Signals
     technical_signal: { url: `/v1/last/signals/${venue}/${symbol}?interval=${tf}`, gzip: false, venues: ['stocks', 'crypto', 'forex', 'commodities'] },
     signal_history: { url: `/v1/hist/${venue}/${symbol}/signals?interval=${tf}`, gzip: false, venues: ['stocks', 'crypto', 'forex', 'commodities'] },
     full_analysis: { url: `/v1/last/signals/${venue}/${symbol}?interval=${tf}`, gzip: false, venues: ['stocks', 'crypto', 'forex', 'commodities'] },
 
-    // Historical bars
     historical_price: { url: `/v1/hist/${venue}/${symbol}/bars?interval=${tf}`, gzip: true },
     historical_ohlcv: { url: `/v1/hist/${venue}/${symbol}/bars?interval=${tf}`, gzip: true },
 
-    // Convert
     convert: { url: `/v1/convert/${symbol}/USD`, gzip: false },
 
-    // Stocks fundamentals
     search_stocks: { url: `/v1/fnd/stocks/search?q=${symbol}`, gzip: false },
     company_profile: { url: `/v1/fnd/stocks/${symbol}/profile`, gzip: false },
     financials: { url: `/v1/fnd/stocks/${symbol}/financials`, gzip: true },
@@ -63,7 +58,6 @@ function resolveSiftingIOEndpoint(feature: string, market: string, symbol: strin
     ownership: { url: `/v1/fnd/stocks/${symbol}/ownership`, gzip: false },
     filings: { url: `/v1/fnd/stocks/${symbol}/filings`, gzip: false },
 
-    // Markets
     market_status: { url: `/v1/fnd/markets/${venue}/status`, gzip: false },
     market_hours: { url: `/v1/fnd/markets/${venue}/hours`, gzip: false },
     market_calendar: { url: `/v1/fnd/markets/${venue}/calendar`, gzip: false },
@@ -122,7 +116,12 @@ Deno.serve(async (req) => {
     if (!response.ok) {
       const text = await response.text()
       console.error('SiftingIO error:', response.status, text)
-      const errorBody = text ? JSON.parse(text) : {}
+      let errorBody: any = {}
+      try {
+        errorBody = text ? JSON.parse(text) : {}
+      } catch (e) {
+        errorBody = { message: text.substring(0, 500) }
+      }
       return jsonResponse({
         error: errorBody.error || `SIFTINGIO_ERROR_${response.status}`,
         message: errorBody.message || text.substring(0, 500),

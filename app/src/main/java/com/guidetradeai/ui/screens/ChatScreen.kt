@@ -91,6 +91,7 @@ import com.guidetradeai.ui.theme.TextPrimary
 import com.guidetradeai.ui.theme.TextSecondary
 import com.guidetradeai.ui.theme.UserBubble
 import com.guidetradeai.viewmodel.ChatViewModel
+import com.guidetradeai.domain.model.AIProvider
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import java.time.Instant
@@ -360,6 +361,7 @@ fun ChatScreen(
                     selectedProvider = selectedProvider,
                     onProviderSelected = { 
                         selectedProvider = it
+                        chatViewModel.setProvider(it)
                         selectedFeature = when (it) {
                             AIProvider.SIFTING_IO -> "Full Analysis"
                             AIProvider.GUAVY -> "Full Analysis"
@@ -449,10 +451,22 @@ fun ChatScreen(
             market = selectedMarket,
             symbol = selectedSymbol,
             timeframe = selectedTimeframe,
-            onFeatureChange = { selectedFeature = it },
-            onMarketChange = { selectedMarket = it },
-            onSymbolChange = { selectedSymbol = it },
-            onTimeframeChange = { selectedTimeframe = it },
+            onFeatureChange = { 
+                selectedFeature = it
+                chatViewModel.setFeature(it)
+            },
+            onMarketChange = { 
+                selectedMarket = it
+                chatViewModel.setMarket(it)
+            },
+            onSymbolChange = { 
+                selectedSymbol = it
+                chatViewModel.setSymbol(it)
+            },
+            onTimeframeChange = { 
+                selectedTimeframe = it
+                chatViewModel.setTimeframe(it)
+            },
         )
     }
 
@@ -950,7 +964,7 @@ fun ModelSelectionBottomSheet(
 
 @Composable
 fun DynamicProviderControls(
-    provider: String,
+    provider: AIProvider,
     feature: String,
     market: String?,
     symbol: String?,
@@ -964,9 +978,9 @@ fun DynamicProviderControls(
     val timeframes = listOf("1m", "5m", "15m", "30m", "1h", "1d", "1w", "1mo")
     
     val features = when (provider) {
-        "SiftingIO" -> listOf("Full Analysis", "Technical Signal", "Signal History", "Live Price", "RSI", "MACD", "Market Status")
-        "Guavy" -> listOf("Full Analysis", "Instrument Analysis", "Scorecard", "Sentiment", "Technical Indicators", "Price History", "News", "Current Action", "Current Trend", "Market Summary")
-        "Combined" -> listOf("Full Analysis", "Research", "Technical Signal", "Sentiment")
+        AIProvider.SIFTING_IO -> listOf("Full Analysis", "Technical Signal", "Signal History", "Live Price", "RSI", "MACD", "Market Status")
+        AIProvider.GUAVY -> listOf("Full Analysis", "Instrument Analysis", "Scorecard", "Sentiment", "Technical Indicators", "Price History", "News", "Current Action", "Current Trend", "Market Summary")
+        AIProvider.COMBINED -> listOf("Full Analysis", "Research", "Technical Signal", "Sentiment")
         else -> emptyList()
     }
 
