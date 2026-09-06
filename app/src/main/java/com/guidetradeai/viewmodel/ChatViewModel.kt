@@ -270,8 +270,17 @@ class ChatViewModel(
         val symbol = response.symbol ?: return null
         val market = response.market ?: return null
         
-        fun JsonObject.str(key: String): String? = this[key]?.jsonPrimitive?.content
-        fun JsonObject.num(key: String): Double? = this[key]?.jsonPrimitive?.content?.toDoubleOrNull()
+        fun getString(obj: JsonObject?, key: String): String? {
+            return obj?.get(key)?.jsonPrimitive?.content
+        }
+        
+        fun getDouble(obj: JsonObject?, key: String): Double? {
+            return obj?.get(key)?.jsonPrimitive?.content?.toDoubleOrNull()
+        }
+        
+        val oscillators = result["oscillators"] as? JsonObject
+        val movingAverage = result["movingAverage"] as? JsonObject
+        val indicators = result["indicators"] as? JsonObject
         
         return com.guidetradeai.domain.model.MarketDataResponse(
             provider = "SIFTINGIO",
@@ -279,16 +288,16 @@ class ChatViewModel(
             symbol = symbol,
             name = symbol,
             timestamp = response.timeframe ?: "",
-            signal = result.str("signal") ?: result.str("direction") ?: "",
-            score = result.num("score") ?: result.num("confidence"),
-            oscillator = result.str("oscillator") ?: result["oscillators"]?.jsonObject?.str("overall"),
-            movingAverage = result.str("moving_average") ?: result["movingAverage"]?.jsonObject?.str("overall"),
-            rsi = result.num("rsi") ?: result["indicators"]?.jsonObject?.num("rsi"),
-            macd = result.str("macd") ?: result["indicators"]?.jsonObject?.str("macd"),
-            barStatus = result.str("bar_status") ?: result.str("barStatus"),
-            price = result.num("price") ?: result.num("last"),
-            change = result.num("change"),
-            changePercent = result.num("change_percent") ?: result.num("changePercent"),
+            signal = getString(result, "signal") ?: getString(result, "direction") ?: "",
+            score = getDouble(result, "score") ?: getDouble(result, "confidence"),
+            oscillator = getString(result, "oscillator") ?: getString(oscillators, "overall"),
+            movingAverage = getString(result, "moving_average") ?: getString(movingAverage, "overall"),
+            rsi = getDouble(result, "rsi") ?: getDouble(indicators, "rsi"),
+            macd = getString(result, "macd") ?: getString(indicators, "macd"),
+            barStatus = getString(result, "bar_status") ?: getString(result, "barStatus"),
+            price = getDouble(result, "price") ?: getDouble(result, "last"),
+            change = getDouble(result, "change"),
+            changePercent = getDouble(result, "change_percent") ?: getDouble(result, "changePercent"),
         )
     }
 
