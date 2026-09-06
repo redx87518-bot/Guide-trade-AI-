@@ -30,7 +30,7 @@ function jsonResponse(body: any, status: number) {
   })
 }
 
-function resolveSiftingIOEndpoint(feature: string, market: string, symbol: string, timeframe: string): string | null {
+function resolveSiftingIOEndpoint(feature: string, market: string, symbol: string, timeframe: string): { url: string; requiresGzip: boolean } | null {
   const venueMap: Record<string, string> = {
     crypto: 'crypto',
     forex: 'forex',
@@ -45,35 +45,33 @@ function resolveSiftingIOEndpoint(feature: string, market: string, symbol: strin
   const featureLower = feature.toLowerCase().replace(/\s+/g, '_')
   const tf = timeframe.toLowerCase()
 
-  const endpointMap: Record<string, string> = {
-    technical_signal: `/v1/last/signals/${venue}/${symbol}`,
-    signal_history: `/v1/hist/${venue}/${symbol}/signals`,
-    full_analysis: `/v1/last/signals/${venue}/${symbol}`,
-    live_price: `/v1/last/price/${venue}/${symbol}`,
-    latest_price: `/v1/last/price/${venue}/${symbol}`,
-    live_trade: `/v1/last/trade/${venue}/${symbol}`,
-    live_quote: `/v1/last/quote/${venue}/${symbol}`,
-    snapshot: `/v1/snapshot/${venue}/${symbol}`,
-    previous_close: `/v1/prev/close/${venue}/${symbol}`,
-    historical_price: `/v1/hist/${venue}/${symbol}/bars?interval=${tf}`,
-    historical_ohlcv: `/v1/hist/${venue}/${symbol}/bars?interval=${tf}`,
-    rsi: `/v1/indicators/rsi/${venue}/${symbol}?interval=${tf}`,
-    macd: `/v1/indicators/macd/${venue}/${symbol}?interval=${tf}`,
-    stochastic: `/v1/indicators/stochastic/${venue}/${symbol}?interval=${tf}`,
-    market_status: `/v1/fnd/markets/${venue}/status`,
-    market_hours: `/v1/fnd/markets/${venue}/hours`,
-    market_calendar: `/v1/fnd/markets/${venue}/calendar`,
-    economic_calendar: `/v1/fnd/economic-calendar`,
-    search_stocks: `/v1/fnd/stocks/search?q=${symbol}`,
-    company_profile: `/v1/fnd/stocks/${symbol}/profile`,
-    financials: `/v1/fnd/stocks/${symbol}/financials`,
-    ratios: `/v1/fnd/stocks/${symbol}/ratios`,
-    insiders: `/v1/fnd/stocks/${symbol}/insiders`,
-    news: `/v1/fnd/news?symbol=${symbol}`,
-    filings: `/v1/fnd/stocks/${symbol}/filings`,
+  const endpointMap: Record<string, { url: string; gzip: boolean }> = {
+    technical_signal: { url: `/v1/last/signals/${venue}/${symbol}?interval=${tf}`, gzip: false },
+    signal_history: { url: `/v1/hist/${venue}/${symbol}/signals?interval=${tf}`, gzip: false },
+    full_analysis: { url: `/v1/last/signals/${venue}/${symbol}?interval=${tf}`, gzip: false },
+    live_trade: { url: `/v1/last/trade/${venue}/${symbol}`, gzip: false },
+    live_quote: { url: `/v1/last/quote/${venue}/${symbol}`, gzip: false },
+    previous_close: { url: `/v1/last/close/${venue}/${symbol}`, gzip: false },
+    snapshot: { url: `/v1/snapshot/${venue}`, gzip: true },
+    historical_price: { url: `/v1/hist/${venue}/${symbol}/bars?interval=${tf}`, gzip: true },
+    historical_ohlcv: { url: `/v1/hist/${venue}/${symbol}/bars?interval=${tf}`, gzip: true },
+    market_status: { url: `/v1/fnd/markets/${venue}/status`, gzip: false },
+    market_hours: { url: `/v1/fnd/markets/${venue}/hours`, gzip: false },
+    market_calendar: { url: `/v1/fnd/markets/${venue}/calendar`, gzip: false },
+    economic_calendar: { url: `/v1/fnd/economic-calendar`, gzip: false },
+    search_stocks: { url: `/v1/fnd/stocks/search?q=${symbol}`, gzip: false },
+    company_profile: { url: `/v1/fnd/stocks/${symbol}/profile`, gzip: false },
+    financials: { url: `/v1/fnd/stocks/${symbol}/financials`, gzip: true },
+    ratios: { url: `/v1/fnd/stocks/${symbol}/ratios`, gzip: false },
+    insiders: { url: `/v1/fnd/stocks/${symbol}/insiders`, gzip: false },
+    news: { url: `/v1/fnd/stocks/${symbol}/events`, gzip: false },
+    filings: { url: `/v1/fnd/stocks/${symbol}/filings`, gzip: false },
+    convert: { url: `/v1/convert/${symbol}/USD`, gzip: false },
   }
 
-  return endpointMap[featureLower] ?? null
+  const mapped = endpointMap[featureLower]
+  if (!mapped) return null
+  return mapped
 }
 
 Deno.serve(async (req) => {
@@ -129,19 +127,25 @@ Deno.serve(async (req) => {
       return jsonResponse({ provider: 'SIFTINGIO', feature, market, symbol, timeframe, result: data }, 200)
     }
 
-    const endpoint = resolveSiftingIOEndpoint(feature, market, symbol, timeframe)
-    if (!endpoint) {
+    const resolved = resolveSiftingIOEndpoint(feature, market, symbol, timeframe)
+    if (!resolved) {
       return jsonResponse({ error: 'UNSUPPORTED_SIFTINGIO_FEATURE', details: feature }, 400)
     }
 
-    const url = `${SIFTINGIO_BASE_URL}${endpoint}`
+    const url = `${SIFTINGIO_BASE_URL}${resolved.url}`
     console.log('SiftingIO request:', url)
 
+    const headers: Record<string, string> = {
+      'x-api-key': SIFTINGIO_API_KEY,
+      'Content-Type': 'application/json',
+    }
+
+    if (resolved.requiresGzip) {
+      headers['Accept-Encoding'] = 'gzip'
+    }
+
     const response = await fetch(url, {
-      headers: {
-        'x-api-key': SIFTINGIO_API_KEY,
-        'Content-Type': 'application/json',
-      },
+      headers,
     })
 
     if (!response.ok) {
