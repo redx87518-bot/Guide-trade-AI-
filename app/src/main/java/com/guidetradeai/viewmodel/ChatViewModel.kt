@@ -184,8 +184,11 @@ class ChatViewModel(
             }
 
             val provider = _selectedProvider.value
-            val result = when (provider) {
-                "StockUp" -> chatRepository.sendMessage(sessionId, text)
+            val (content, marketData) = when (provider) {
+                "StockUp" -> {
+                    val res = chatRepository.sendMessage(sessionId, text)
+                    if (res is Result.Success) Pair(res.data, null) else Pair(res.messageOrNull() ?: "Error", null)
+                }
                 else -> {
                     val request = com.guidetradeai.domain.model.MarketIntelligenceRequest(
                         provider = provider.lowercase(),
@@ -197,50 +200,90 @@ class ChatViewModel(
                     )
                     when (val miResult = marketIntelligenceRepository.queryProvider(request)) {
                         is Result.Success -> {
-                            val content = formatMarketIntelligenceResponse(miResult.data)
-                            Result.success(content)
+                            val formatted = formatMarketIntelligenceResponse(miResult.data)
+                            Pair(formatted.first, formatted.second)
                         }
-                        is Result.Error -> Result.error(miResult.message)
-                        else -> Result.error("Unknown error")
+                        is Result.Error -> Pair(miResult.message, null)
+                        else -> Pair("Unknown error", null)
                     }
                 }
             }
 
-            if (result is Result.Success) {
-                val aiMsg = ChatMessage(
-                    id = UUID.randomUUID().toString(),
-                    sessionId = sessionId,
-                    userId = userId,
-                    role = "assistant",
-                    content = result.data,
-                    createdAt = Instant.now().toString()
-                )
-                _messages.value = _messages.value + aiMsg
-                speakResponse(result.data)
-            } else {
-                _error.value = result.messageOrNull()
-            }
+            val aiMsg = ChatMessage(
+                id = UUID.randomUUID().toString(),
+                sessionId = sessionId,
+                userId = userId,
+                role = "assistant",
+                content = content,
+                createdAt = Instant.now().toString(),
+                marketData = marketData
+            )
+            _messages.value = _messages.value + aiMsg
+            speakResponse(content)
             _isLoading.value = false
         }
     }
 
-    private fun formatMarketIntelligenceResponse(response: com.guidetradeai.domain.model.MarketIntelligenceResponse): String {
-        val provider = response.provider.uppercase()
+    private fun formatMarketIntelligenceResponse(response: com.guidetradeai.domain.model.MarketIntelligenceResponse): Pair<String, com.guidetradeai.domain.model.MarketDataResponse?> {
+        val provider = response.provider.lowercase()
         val symbol = response.symbol ?: response.market ?: "Market"
         val result = response.result
         
-        return buildString {
-            append("**$provider — $symbol**\n\n")
-            if (result != null) {
+        return if (provider == "siftingio") {
+            val marketData = parseSiftingIOToMarketData(response)
+            val text = buildString {
+                append("**SIFTINGIO — $symbol**\n\n")
                 append("Feature: ${response.feature}\n")
                 append("Time: ${response.timeframe ?: "N/A"}\n\n")
-                append("```json\n")
-                append(result.toString().take(500))
-                append("\n```")
-            } else {
-                append("No data available.")
+                if (marketData != null) {
+                    if (marketData.signal.isNotBlank()) append("Signal: ${marketData.signal}\n")
+                    marketData.score?.let { append("Score: ${"%.2f".format(it)}\n") }
+                    if (marketData.oscillator.isNotBlank()) append("Oscillators: ${marketData.oscillator}\n")
+                    if (marketData.movingAverage.isNotBlank()) append("Moving Average: ${marketData.movingAverage}\n")
+                    marketData.rsi?.let { append("RSI: ${"%.1f".format(it)}\n") }
+                    if (marketData.macd.isNotBlank()) append("MACD: ${marketData.macd}\n")
+                    marketData.price?.let { append("Price: $${"%.2f".format(it)}\n") }
+                } else {
+                    append("Raw data returned.\n")
+                }
             }
+            Pair(text, marketData)
+        } else {
+            // Guavy and others: show as normal text
+            val text = buildString {
+                append("**${provider.uppercase()} — $symbol**\n\n")
+                if (result != null) {
+                    append(result.toString().take(800))
+                } else {
+                    append("No data available.")
+                }
+            }
+            Pair(text, null)
         }
+    }
+    
+    private fun parseSiftingIOToMarketData(response: com.guidetradeai.domain.model.MarketIntelligenceResponse): com.guidetradeai.domain.model.MarketDataResponse? {
+        val result = response.result ?: return null
+        val symbol = response.symbol ?: return null
+        val market = response.market ?: return null
+        
+        return com.guidetradeai.domain.model.MarketDataResponse(
+            provider = "SIFTINGIO",
+            market = market.uppercase(),
+            symbol = symbol,
+            name = symbol,
+            timestamp = response.timeframe ?: "",
+            signal = result["signal"]?.jsonPrimitive?.content ?: result["direction"]?.jsonPrimitive?.content ?: "",
+            score = result["score"]?.jsonPrimitive?.content?.toDoubleOrNull() ?: result["confidence"]?.jsonPrimitive?.content?.toDoubleOrNull(),
+            oscillator = result["oscillator"]?.jsonPrimitive?.content ?: result["oscillators"]?.jsonObject?.get("overall")?.jsonPrimitive?.content ?: "",
+            movingAverage = result["moving_average"]?.jsonPrimitive?.content ?: result["movingAverage"]?.jsonObject?.get("overall")?.jsonPrimitive?.content ?: "",
+            rsi = result["rsi"]?.jsonPrimitive?.content?.toDoubleOrNull() ?: result["indicators"]?.jsonObject?.get("rsi")?.jsonPrimitive?.content?.toDoubleOrNull(),
+            macd = result["macd"]?.jsonPrimitive?.content ?: result["indicators"]?.jsonObject?.get("macd")?.jsonPrimitive?.content ?: "",
+            barStatus = result["bar_status"]?.jsonPrimitive?.content ?: result["barStatus"]?.jsonPrimitive?.content ?: "",
+            price = result["price"]?.jsonPrimitive?.content?.toDoubleOrNull() ?: result["last"]?.jsonPrimitive?.content?.toDoubleOrNull(),
+            change = result["change"]?.jsonPrimitive?.content?.toDoubleOrNull(),
+            changePercent = result["change_percent"]?.jsonPrimitive?.content?.toDoubleOrNull() ?: result["changePercent"]?.jsonPrimitive?.content?.toDoubleOrNull(),
+        )
     }
 
     fun startVoiceInput() {

@@ -53,10 +53,18 @@ Deno.serve(async (req) => {
 
     switch (provider) {
       case 'guavy':
-        ({ result, error } = await handleGuavyRequest(feature, market, symbol, timeframe))
+        if (feature === 'list_symbols') {
+          ({ result, error } = await handleGuavySymbolList(market || 'crypto'))
+        } else {
+          ({ result, error } = await handleGuavyRequest(feature, market, symbol, timeframe))
+        }
         break
       case 'siftingio':
-        ({ result, error } = await handleSiftingIORequest(feature, market, symbol, timeframe))
+        if (feature === 'list_symbols') {
+          ({ result, error } = await handleSiftingIOSymbolList(market || 'crypto'))
+        } else {
+          ({ result, error } = await handleSiftingIORequest(feature, market, symbol, timeframe))
+        }
         break
       case 'stockup':
         ({ result, error } = await handleStockupRequest(feature, market, symbol, timeframe, query))
@@ -147,7 +155,8 @@ async function handleSiftingIORequest(feature: string, market: string, symbol: s
     }
 
     const data = await response.json()
-    return { result: data, error: null }
+    const normalized = parseSiftingIOResponse(data, feature, symbol, market || 'crypto')
+    return { result: normalized || data, error: null }
   } catch (e) {
     console.error('SiftingIO request failed:', e)
     return { result: null, error: 'SIFTINGIO_REQUEST_FAILED' }
@@ -194,6 +203,134 @@ async function handleStockupRequest(feature: string, market: string, symbol: str
   } catch (e) {
     return { result: null, error: 'STOCKUP_REQUEST_FAILED' }
   }
+}
+
+
+async function handleGuavySymbolList(market: string) {
+  if (!GUAVY_API_KEY) {
+    return { result: null, error: 'GUAVY_NOT_CONFIGURED' }
+  }
+
+  try {
+    const marketLower = market.toLowerCase()
+    const endpointMap: Record<string, string> = {
+      crypto: '/api/v2/crypto/instruments/list-symbols',
+      forex: '/api/v2/forex/instruments/list-symbols',
+      commodities: '/api/v2/commodities/instruments/list-symbols',
+      stocks: '/api/v2/stocks/instruments/list-symbols',
+    }
+    const endpoint = endpointMap[marketLower]
+    if (!endpoint) {
+      return { result: null, error: 'UNSUPPORTED_MARKET' }
+    }
+
+    const url = `${GUAVY_BASE_URL}${endpoint}`
+    console.log('Guavy symbol list:', url)
+
+    const response = await fetch(url, {
+      headers: {
+        'Authorization': `Bearer ${GUAVY_API_KEY}`,
+        'Content-Type': 'application/json',
+      },
+    })
+
+    if (!response.ok) {
+      const text = await response.text()
+      console.error('Guavy symbol list error:', response.status, text)
+      return { result: null, error: `GUAVY_ERROR_${response.status}` }
+    }
+
+    const data = await response.json()
+    const normalized = parseSiftingIOResponse(data, feature, symbol, market || 'crypto')
+    return { result: normalized || data, error: null }
+  } catch (e) {
+    console.error('Guavy symbol list failed:', e)
+    return { result: null, error: 'GUAVY_REQUEST_FAILED' }
+  }
+}
+
+async function handleSiftingIOSymbolList(market: string) {
+  if (!SIFTINGIO_API_KEY) {
+    return { result: null, error: 'SIFTINGIO_NOT_CONFIGURED' }
+  }
+
+  try {
+    const venueMap: Record<string, string> = {
+      crypto: 'crypto',
+      forex: 'forex',
+      stocks: 'stocks',
+      commodities: 'commodities',
+    }
+    const venue = venueMap[market.toLowerCase()]
+    if (!venue) {
+      return { result: null, error: 'UNSUPPORTED_MARKET' }
+    }
+
+    const url = `${SIFTINGIO_BASE_URL}/v1/${venue}/symbols`
+    console.log('SiftingIO symbol list:', url)
+
+    const response = await fetch(url, {
+      headers: {
+        'x-api-key': SIFTINGIO_API_KEY,
+        'Content-Type': 'application/json',
+      },
+    })
+
+    if (!response.ok) {
+      const text = await response.text()
+      console.error('SiftingIO symbol list error:', response.status, text)
+      return { result: null, error: `SIFTINGIO_ERROR_${response.status}` }
+    }
+
+    const data = await response.json()
+    const normalized = parseSiftingIOResponse(data, feature, symbol, market || 'crypto')
+    return { result: normalized || data, error: null }
+  } catch (e) {
+    console.error('SiftingIO symbol list failed:', e)
+    return { result: null, error: 'SIFTINGIO_REQUEST_FAILED' }
+  }
+}
+
+
+function parseSiftingIOResponse(data: any, feature: string, symbol: string, market: string): any {
+  if (!data) return null
+  
+  const normalized: any = {
+    provider: 'SIFTINGIO',
+    market: market.toUpperCase(),
+    symbol: symbol,
+    feature: feature,
+    timestamp: new Date().toISOString(),
+  }
+
+  if (feature === 'technical_signal' || feature === 'signal') {
+    normalized.signal = data.signal || data.direction || data.recommendation || 'N/A'
+    normalized.score = data.score || data.confidence || null
+    normalized.oscillator = data.oscillator || data.oscillators?.overall || 'N/A'
+    normalized.movingAverage = data.moving_average || data.movingAverage?.overall || data.ma?.overall || 'N/A'
+    normalized.rsi = data.rsi || data.indicators?.rsi || null
+    normalized.macd = data.macd || data.indicators?.macd || 'N/A'
+    normalized.stochastic = data.stochastic || data.indicators?.stochastic || 'N/A'
+    normalized.barStatus = data.bar_status || data.barStatus || 'N/A'
+    normalized.timestamp = data.timestamp || data.time || normalized.timestamp
+  } else if (feature === 'live_price' || feature === 'price') {
+    normalized.price = data.price || data.last || data.close || null
+    normalized.change = data.change || data.delta || null
+    normalized.changePercent = data.change_percent || data.changePercent || data.percent_change || null
+    normalized.high = data.high || data.day_high || null
+    normalized.low = data.low || data.day_low || null
+  } else if (feature === 'signal_history') {
+    normalized.history = data.history || data.signals || data.data || []
+  } else if (feature === 'market_status' || feature === 'market_hours') {
+    normalized.status = data.status || data.state || 'N/A'
+    normalized.market = data.market || data.exchange || market.toUpperCase()
+  } else if (feature === 'rsi' || feature === 'macd' || feature === 'stochastic') {
+    normalized.indicator = feature.toUpperCase()
+    normalized.value = data.value || data.current || data.result || null
+    normalized.signal = data.signal || data.recommendation || 'N/A'
+  }
+
+  return normalized
 }
 
 function resolveGuavyEndpoint(feature: string, market: string, symbol: string, timeframe: string): string | null {

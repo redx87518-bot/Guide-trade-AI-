@@ -41,6 +41,7 @@ import androidx.compose.material3.DrawerState
 import androidx.compose.material3.DrawerValue
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalNavigationDrawer
 import androidx.compose.material3.Surface
@@ -75,6 +76,7 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import com.guidetradeai.ui.components.MarkdownText
+import com.guidetradeai.ui.components.MarketCard
 import com.guidetradeai.ui.components.BottomBar
 import com.guidetradeai.ui.theme.AccentCyan
 import com.guidetradeai.ui.theme.AccentPurple
@@ -609,7 +611,7 @@ fun UserMessageBubble(content: String, timestamp: String) {
 }
 
 @Composable
-fun AiMessageBubble(content: String, timestamp: String) {
+fun AiMessageBubble(content: String, timestamp: String, marketData: com.guidetradeai.domain.model.MarketDataResponse? = null) {
     val formattedTime = remember(timestamp) {
         try {
             val instant = Instant.parse(timestamp)
@@ -666,10 +668,14 @@ fun AiMessageBubble(content: String, timestamp: String) {
                 shape = RoundedCornerShape(20.dp),
             ) {
                 Column(modifier = Modifier.padding(horizontal = 16.dp, vertical = 10.dp)) {
-                    MarkdownText(
-                        text = content,
-                        color = TextPrimary,
-                    )
+                    if (marketData != null) {
+                        com.guidetradeai.ui.components.MarketCard(data = marketData)
+                    } else {
+                        MarkdownText(
+                            text = content,
+                            color = TextPrimary,
+                        )
+                    }
                 }
             }
             if (formattedTime.isNotBlank()) {
@@ -876,40 +882,45 @@ fun ModelSelectionBottomSheet(
         onDismissRequest = onDismiss,
         sheetState = bottomSheetState,
         containerColor = SurfaceDark,
+        shape = RoundedCornerShape(topStart = 24.dp, topEnd = 24.dp),
     ) {
         Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(16.dp),
+                .padding(20.dp),
         ) {
             Text(
                 text = "SELECT MODEL",
                 style = MaterialTheme.typography.labelLarge,
                 color = TextSecondary,
-                modifier = Modifier.padding(bottom = 12.dp),
+                fontWeight = FontWeight.Bold,
+                letterSpacing = 1.sp,
+                modifier = Modifier.padding(bottom = 16.dp),
             )
             models.forEach { model ->
                 Surface(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(vertical = 4.dp)
-                        .clip(RoundedCornerShape(12.dp))
+                        .padding(vertical = 6.dp)
+                        .clip(RoundedCornerShape(16.dp))
                         .clickable { 
                             onProviderSelected(model)
                             onDismiss()
                         },
-                    color = if (model == selectedProvider) AccentCyan.copy(alpha = 0.15f) else SurfaceMid,
+                    color = if (model == selectedProvider) AccentCyan.copy(alpha = 0.2f) else SurfaceMid,
+                    shadowElevation = if (model == selectedProvider) 4.dp else 0.dp,
                 ) {
                     Row(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .padding(horizontal = 16.dp, vertical = 14.dp),
+                            .padding(horizontal = 18.dp, vertical = 16.dp),
                         verticalAlignment = Alignment.CenterVertically,
                     ) {
                         Text(
                             text = model,
                             color = if (model == selectedProvider) AccentCyan else TextPrimary,
                             fontWeight = if (model == selectedProvider) FontWeight.Bold else FontWeight.Normal,
+                            fontSize = 15.sp,
                         )
                         if (model == selectedProvider) {
                             Spacer(modifier = Modifier.weight(1f))
@@ -917,13 +928,13 @@ fun ModelSelectionBottomSheet(
                                 imageVector = Icons.Default.CheckCircle,
                                 contentDescription = null,
                                 tint = AccentCyan,
-                                modifier = Modifier.size(20.dp),
+                                modifier = Modifier.size(22.dp),
                             )
                         }
                     }
                 }
             }
-            Spacer(modifier = Modifier.height(16.dp))
+            Spacer(modifier = Modifier.height(24.dp))
         }
     }
 }
@@ -1017,35 +1028,47 @@ fun SimpleDropdown(
     Box(modifier = modifier) {
         Surface(
             onClick = { if (enabled) expanded = true },
-            shape = RoundedCornerShape(8.dp),
+            shape = RoundedCornerShape(12.dp),
             color = if (enabled) SurfaceMid else SurfaceMid.copy(alpha = 0.5f),
+            shadowElevation = 2.dp,
         ) {
             Row(
-                modifier = Modifier.padding(horizontal = 12.dp, vertical = 10.dp),
+                modifier = Modifier.padding(horizontal = 14.dp, vertical = 12.dp),
                 verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.spacedBy(4.dp),
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
             ) {
                 Text(
                     text = selectedOption.ifBlank { label },
                     color = if (enabled) TextPrimary else TextSecondary,
-                    fontSize = 12.sp,
+                    fontSize = 13.sp,
+                    fontWeight = if (selectedOption.isNotBlank() && selectedOption != label) FontWeight.SemiBold else FontWeight.Normal,
                     maxLines = 1,
+                    modifier = Modifier.weight(1f),
                 )
                 Icon(
                     imageVector = Icons.Default.ArrowDropDown,
                     contentDescription = null,
-                    tint = TextSecondary,
-                    modifier = Modifier.size(16.dp),
+                    tint = if (expanded) AccentCyan else TextSecondary,
+                    modifier = Modifier.size(18.dp),
                 )
             }
         }
-        DropdownMenu(
+        androidx.compose.material3.DropdownMenu(
             expanded = expanded,
             onDismissRequest = { expanded = false },
+            containerColor = SurfaceDark,
+            shadowElevation = 8.dp,
         ) {
             options.forEach { option ->
                 DropdownMenuItem(
-                    text = { Text(text = option, fontSize = 14.sp) },
+                    text = {
+                        Text(
+                            text = option,
+                            fontSize = 14.sp,
+                            color = if (option == selectedOption) AccentCyan else TextPrimary,
+                            fontWeight = if (option == selectedOption) FontWeight.Bold else FontWeight.Normal,
+                        )
+                    },
                     onClick = {
                         onOptionSelected(option)
                         expanded = false

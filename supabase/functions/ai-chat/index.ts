@@ -123,6 +123,7 @@ Deno.serve(async (req) => {
       const errorText = await quanResponse.text()
 <<<<<<< ours
 <<<<<<< ours
+<<<<<<< ours
       if (quanResponse.status === 429) {
         return jsonResponse({ error: 'RATE_LIMITED' }, 429)
       }
@@ -161,6 +162,19 @@ Deno.serve(async (req) => {
 
     const quanData = await quanResponse.json()
 >>>>>>> theirs
+=======
+      console.error('Quan API error:', quanResponse.status, errorText)
+      return jsonResponse({
+        error: 'QUAN_ERROR',
+        details: {
+          status: quanResponse.status,
+          body: errorText.substring(0, 500),
+        }
+      }, 502)
+    }
+
+    const quanData = await quanResponse.json()
+>>>>>>> theirs
     console.log('Quan API response keys:', Object.keys(quanData))
 
     const aiResponse = quanData?.candidates?.[0]?.content?.parts?.[0]?.text
@@ -177,6 +191,9 @@ Deno.serve(async (req) => {
         }
       }, 502)
 <<<<<<< ours
+<<<<<<< ours
+>>>>>>> theirs
+=======
 >>>>>>> theirs
 =======
 >>>>>>> theirs
