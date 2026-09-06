@@ -31,42 +31,46 @@ function jsonResponse(body: any, status: number) {
 }
 
 function resolveSiftingIOEndpoint(feature: string, market: string, symbol: string, timeframe: string): { url: string; requiresGzip: boolean } | null {
-  const venueMap: Record<string, string> = {
-    crypto: 'crypto',
-    forex: 'forex',
-    stocks: 'stocks',
-    commodities: 'commodities',
-    dex: 'dex',
-  }
-
-  const venue = venueMap[market.toLowerCase()]
-  if (!venue) return null
-
   const featureLower = feature.toLowerCase().replace(/\s+/g, '_')
   const tf = timeframe.toLowerCase()
 
   const endpointMap: Record<string, { url: string; gzip: boolean }> = {
-    technical_signal: { url: `/v1/last/signals/${venue}/${symbol}?interval=${tf}`, gzip: false },
-    signal_history: { url: `/v1/hist/${venue}/${symbol}/signals?interval=${tf}`, gzip: false },
-    full_analysis: { url: `/v1/last/signals/${venue}/${symbol}?interval=${tf}`, gzip: false },
-    live_trade: { url: `/v1/last/trade/${venue}/${symbol}`, gzip: false },
-    live_quote: { url: `/v1/last/quote/${venue}/${symbol}`, gzip: false },
-    previous_close: { url: `/v1/last/close/${venue}/${symbol}`, gzip: false },
-    snapshot: { url: `/v1/snapshot/${venue}`, gzip: true },
-    historical_price: { url: `/v1/hist/${venue}/${symbol}/bars?interval=${tf}`, gzip: true },
-    historical_ohlcv: { url: `/v1/hist/${venue}/${symbol}/bars?interval=${tf}`, gzip: true },
-    market_status: { url: `/v1/fnd/markets/${venue}/status`, gzip: false },
-    market_hours: { url: `/v1/fnd/markets/${venue}/hours`, gzip: false },
-    market_calendar: { url: `/v1/fnd/markets/${venue}/calendar`, gzip: false },
-    economic_calendar: { url: `/v1/fnd/economic-calendar`, gzip: false },
+    // Live
+    live_trade: { url: `/v1/last/trade/${market}/${symbol}`, gzip: false },
+    live_quote: { url: `/v1/last/quote/${market}/${symbol}`, gzip: false },
+    previous_close: { url: `/v1/last/close/${market}/${symbol}`, gzip: false },
+    snapshot: { url: `/v1/snapshot/${market}`, gzip: true },
+
+    // Signals
+    technical_signal: { url: `/v1/last/signals/${market}/${symbol}?interval=${tf}`, gzip: false },
+    signal_history: { url: `/v1/hist/${market}/${symbol}/signals?interval=${tf}`, gzip: false },
+    full_analysis: { url: `/v1/last/signals/${market}/${symbol}?interval=${tf}`, gzip: false },
+
+    // Historical bars
+    historical_price: { url: `/v1/hist/${market}/${symbol}/bars?interval=${tf}`, gzip: true },
+    historical_ohlcv: { url: `/v1/hist/${market}/${symbol}/bars?interval=${tf}`, gzip: true },
+
+    // DEX
+    dex_tvl: { url: `/v1/last/tvl/${market}/${symbol}`, gzip: false },
+    dex_wallet: { url: `/v1/fnd/dex/wallet/${market}/${symbol}`, gzip: false },
+
+    // Convert
+    convert: { url: `/v1/convert/${symbol}/USD`, gzip: false },
+
+    // Stocks fundamentals
     search_stocks: { url: `/v1/fnd/stocks/search?q=${symbol}`, gzip: false },
     company_profile: { url: `/v1/fnd/stocks/${symbol}/profile`, gzip: false },
     financials: { url: `/v1/fnd/stocks/${symbol}/financials`, gzip: true },
     ratios: { url: `/v1/fnd/stocks/${symbol}/ratios`, gzip: false },
     insiders: { url: `/v1/fnd/stocks/${symbol}/insiders`, gzip: false },
-    news: { url: `/v1/fnd/stocks/${symbol}/events`, gzip: false },
+    ownership: { url: `/v1/fnd/stocks/${symbol}/ownership`, gzip: false },
     filings: { url: `/v1/fnd/stocks/${symbol}/filings`, gzip: false },
-    convert: { url: `/v1/convert/${symbol}/USD`, gzip: false },
+
+    // Markets
+    market_status: { url: `/v1/fnd/markets/${market}/status`, gzip: false },
+    market_hours: { url: `/v1/fnd/markets/${market}/hours`, gzip: false },
+    market_calendar: { url: `/v1/fnd/markets/${market}/calendar`, gzip: false },
+    economic_calendar: { url: `/v1/fnd/economic-calendar`, gzip: false },
   }
 
   const mapped = endpointMap[featureLower]
@@ -95,19 +99,7 @@ Deno.serve(async (req) => {
     console.log('SiftingIO request:', JSON.stringify({ provider, feature, market, symbol, timeframe, query }))
 
     if (feature === 'list_symbols') {
-      const venueMap: Record<string, string> = {
-        crypto: 'crypto',
-        forex: 'forex',
-        stocks: 'stocks',
-        commodities: 'commodities',
-        dex: 'dex',
-      }
-      const venue = venueMap[market.toLowerCase()]
-      if (!venue) {
-        return jsonResponse({ error: 'UNSUPPORTED_MARKET', details: market }, 400)
-      }
-
-      const url = `${SIFTINGIO_BASE_URL}/v1/${venue}/symbols`
+      const url = `${SIFTINGIO_BASE_URL}/v1/${market}/symbols`
       console.log('SiftingIO symbol list:', url)
 
       const response = await fetch(url, {
@@ -151,7 +143,12 @@ Deno.serve(async (req) => {
     if (!response.ok) {
       const text = await response.text()
       console.error('SiftingIO error:', response.status, text)
-      return jsonResponse({ error: `SIFTINGIO_ERROR_${response.status}`, details: text.substring(0, 500) }, response.status)
+      const errorBody = text ? JSON.parse(text) : {}
+      return jsonResponse({
+        error: errorBody.error || `SIFTINGIO_ERROR_${response.status}`,
+        message: errorBody.message || text.substring(0, 500),
+        status: response.status,
+      }, response.status)
     }
 
     const data = await response.json()
