@@ -181,7 +181,9 @@ fun ChatScreen(
                         onClick = {
                             chatViewModel.startNewSession()
                             kotlinx.coroutines.GlobalScope.launch(kotlinx.coroutines.Dispatchers.Main) {
-                                drawerState.close()
+                                kotlinx.coroutines.GlobalScope.launch(kotlinx.coroutines.Dispatchers.Main) {
+                                    drawerState.close()
+                                }
                             }
                         },
                         modifier = Modifier.fillMaxWidth(),
@@ -205,7 +207,9 @@ fun ChatScreen(
                                     .fillMaxWidth()
                                     .clickable {
                                         chatViewModel.switchSession(session)
-                                        drawerState.close()
+                                        kotlinx.coroutines.GlobalScope.launch(kotlinx.coroutines.Dispatchers.Main) {
+                                    drawerState.close()
+                                }
                                     }
                                     .background(
                                         if (isActive) AccentGlow else Color.Transparent
@@ -276,7 +280,11 @@ fun ChatScreen(
                         .padding(horizontal = 12.dp, vertical = 12.dp),
                     verticalAlignment = Alignment.CenterVertically,
                 ) {
-                    IconButton(onClick = { drawerState.open() }) {
+                    IconButton(onClick = {
+                        kotlinx.coroutines.GlobalScope.launch(kotlinx.coroutines.Dispatchers.Main) {
+                            drawerState.open()
+                        }
+                    }) {
                         Icon(Icons.Default.Menu, contentDescription = "Menu", tint = TextPrimary)
                     }
                     Text(
