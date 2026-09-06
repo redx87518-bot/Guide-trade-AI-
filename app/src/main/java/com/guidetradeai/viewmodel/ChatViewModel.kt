@@ -4,12 +4,14 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.guidetradeai.data.repository.AuthRepository
 import com.guidetradeai.data.repository.ChatRepository
+import com.guidetradeai.data.repository.MarketIntelligenceRepository
 import com.guidetradeai.data.local.AppPreferences
 import com.guidetradeai.di.AppModule
 import com.guidetradeai.domain.Result
-import com.guidetradeai.domain.messageOrNull
 import com.guidetradeai.domain.model.ChatMessage
 import com.guidetradeai.domain.model.ChatSession
+import com.guidetradeai.domain.model.MarketIntelligenceRequest
+import com.guidetradeai.domain.messageOrNull
 import com.guidetradeai.audio.VoiceManager
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -23,6 +25,7 @@ class ChatViewModel(
     private val chatRepository: ChatRepository = AppModule.chatRepository,
     private val authRepository: AuthRepository = AppModule.authRepository,
     private val voiceManager: VoiceManager = AppModule.voiceManager,
+    private val marketIntelligenceRepository: MarketIntelligenceRepository = MarketIntelligenceRepository(AppModule.supabaseClient),
 ) : ViewModel() {
 
     private val _messages = MutableStateFlow<List<ChatMessage>>(emptyList())
@@ -49,12 +52,22 @@ class ChatViewModel(
     private val _currentSessionTitle = MutableStateFlow("New Chat")
     val currentSessionTitle: StateFlow<String> = _currentSessionTitle.asStateFlow()
 
+    private val _selectedProvider = MutableStateFlow("StockUp")
+    val selectedProvider: StateFlow<String> = _selectedProvider.asStateFlow()
+
+    private val _selectedFeature = MutableStateFlow("Chat")
+    val selectedFeature: StateFlow<String> = _selectedFeature.asStateFlow()
+
+    private val _selectedMarket = MutableStateFlow<String?>(null)
+    val selectedMarket: StateFlow<String?> = _selectedMarket.asStateFlow()
+
+    private val _selectedSymbol = MutableStateFlow<String?>(null)
+    val selectedSymbol: StateFlow<String?> = _selectedSymbol.asStateFlow()
+
+    private val _selectedTimeframe = MutableStateFlow("1h")
+    val selectedTimeframe: StateFlow<String> = _selectedTimeframe.asStateFlow()
+
     private var isFirstMessage = true
-    private var selectedProvider = "stockup"
-    private var selectedFeature = "chat"
-    private var selectedMarket: String? = null
-    private var selectedSymbol: String? = null
-    private var selectedTimeframe = "1h"
 
     fun initialize() {
         viewModelScope.launch {
@@ -94,6 +107,23 @@ class ChatViewModel(
         }
     }
 
+    fun setProvider(provider: String) {
+        _selectedProvider.value = provider
+        _selectedFeature.value = when (provider) {
+            "SiftingIO" -> "Full Analysis"
+            "Guavy" -> "Full Analysis"
+            "Combined" -> "Full Analysis"
+            else -> "Chat"
+        }
+        _selectedMarket.value = null
+        _selectedSymbol.value = null
+    }
+
+    fun setFeature(feature: String) { _selectedFeature.value = feature }
+    fun setMarket(market: String?) { _selectedMarket.value = market }
+    fun setSymbol(symbol: String?) { _selectedSymbol.value = symbol }
+    fun setTimeframe(timeframe: String) { _selectedTimeframe.value = timeframe }
+
     data class IntentRoute(
         val provider: String,
         val feature: String,
@@ -104,15 +134,16 @@ class ChatViewModel(
 
     private fun routeIntent(text: String): IntentRoute? {
         val lower = text.lowercase()
+        val activeProvider = _selectedProvider.value
         return when {
-            lower.contains("btc") || lower.contains("bitcoin") -> IntentRoute("guavy", "instrument_analysis", "crypto", "BTC")
-            lower.contains("eth") || lower.contains("ethereum") -> IntentRoute("guavy", "instrument_analysis", "crypto", "ETH")
-            lower.contains("eur") && lower.contains("usd") -> IntentRoute("guavy", "sentiment_history", "forex", "EURUSD")
-            lower.contains("xau") || lower.contains("gold") -> IntentRoute("guavy", "instrument_analysis", "commodities", "XAUUSD")
-            lower.contains("aapl") || lower.contains("apple") -> IntentRoute("guavy", "instrument_analysis", "stocks", "AAPL")
-            lower.contains("signal") || lower.contains("technical") -> IntentRoute("siftingio", "technical_signal", "crypto", "BTCUSD")
-            lower.contains("sentiment") -> IntentRoute("guavy", "sentiment_history", "crypto", "BTC")
-            lower.contains("news") -> IntentRoute("guavy", "recent_briefs", "crypto", "BTC")
+            lower.contains("btc") || lower.contains("bitcoin") -> IntentRoute(activeProvider, "Full Analysis", "crypto", "BTC")
+            lower.contains("eth") || lower.contains("ethereum") -> IntentRoute(activeProvider, "Full Analysis", "crypto", "ETH")
+            lower.contains("eur") && lower.contains("usd") -> IntentRoute(activeProvider, "Sentiment", "forex", "EURUSD")
+            lower.contains("xau") || lower.contains("gold") -> IntentRoute(activeProvider, "Full Analysis", "commodities", "XAUUSD")
+            lower.contains("aapl") || lower.contains("apple") -> IntentRoute(activeProvider, "Full Analysis", "stocks", "AAPL")
+            lower.contains("signal") || lower.contains("technical") -> IntentRoute(activeProvider, "Technical Signal", "crypto", "BTCUSD")
+            lower.contains("sentiment") -> IntentRoute(activeProvider, "Sentiment", "crypto", "BTC")
+            lower.contains("news") -> IntentRoute(activeProvider, "News", "crypto", "BTC")
             else -> null
         }
     }
@@ -145,14 +176,36 @@ class ChatViewModel(
 
             val routing = routeIntent(text)
             if (routing != null) {
-                selectedProvider = routing.provider
-                selectedFeature = routing.feature
-                selectedMarket = routing.market
-                selectedSymbol = routing.symbol
-                selectedTimeframe = routing.timeframe ?: "1h"
+                _selectedProvider.value = routing.provider
+                _selectedFeature.value = routing.feature
+                _selectedMarket.value = routing.market
+                _selectedSymbol.value = routing.symbol
+                routing.timeframe?.let { _selectedTimeframe.value = it }
             }
 
-            val result = chatRepository.sendMessage(sessionId, text)
+            val provider = _selectedProvider.value
+            val result = when (provider) {
+                "StockUp" -> chatRepository.sendMessage(sessionId, text)
+                else -> {
+                    val request = com.guidetradeai.domain.model.MarketIntelligenceRequest(
+                        provider = provider.lowercase(),
+                        feature = _selectedFeature.value.lowercase().replace(" ", "_"),
+                        market = _selectedMarket.value?.lowercase(),
+                        symbol = _selectedSymbol.value,
+                        timeframe = _selectedTimeframe.value,
+                        query = text,
+                    )
+                    when (val miResult = marketIntelligenceRepository.queryProvider(request)) {
+                        is Result.Success -> {
+                            val content = formatMarketIntelligenceResponse(miResult.data)
+                            Result.success(content)
+                        }
+                        is Result.Error -> Result.error(miResult.message)
+                        else -> Result.error("Unknown error")
+                    }
+                }
+            }
+
             if (result is Result.Success) {
                 val aiMsg = ChatMessage(
                     id = UUID.randomUUID().toString(),
@@ -168,6 +221,25 @@ class ChatViewModel(
                 _error.value = result.messageOrNull()
             }
             _isLoading.value = false
+        }
+    }
+
+    private fun formatMarketIntelligenceResponse(response: com.guidetradeai.domain.model.MarketIntelligenceResponse): String {
+        val provider = response.provider.uppercase()
+        val symbol = response.symbol ?: response.market ?: "Market"
+        val result = response.result
+        
+        return buildString {
+            append("**$provider — $symbol**\n\n")
+            if (result != null) {
+                append("Feature: ${response.feature}\n")
+                append("Time: ${response.timeframe ?: "N/A"}\n\n")
+                append("```json\n")
+                append(result.toString().take(500))
+                append("\n```")
+            } else {
+                append("No data available.")
+            }
         }
     }
 

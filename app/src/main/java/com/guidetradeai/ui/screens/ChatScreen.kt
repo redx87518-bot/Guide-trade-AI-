@@ -31,14 +31,11 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.Mic
-import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material.icons.filled.Send
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.icons.filled.ArrowDropDown
-import androidx.compose.material3.DropdownMenu
-import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material3.Divider
 import androidx.compose.material3.DrawerState
 import androidx.compose.material3.DrawerValue
@@ -49,6 +46,9 @@ import androidx.compose.material3.ModalNavigationDrawer
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
@@ -75,6 +75,7 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import com.guidetradeai.ui.components.MarkdownText
+import com.guidetradeai.ui.components.BottomBar
 import com.guidetradeai.ui.theme.AccentCyan
 import com.guidetradeai.ui.theme.AccentPurple
 import com.guidetradeai.ui.theme.AccentGlow
@@ -87,7 +88,6 @@ import com.guidetradeai.ui.theme.SurfaceMid
 import com.guidetradeai.ui.theme.TextPrimary
 import com.guidetradeai.ui.theme.TextSecondary
 import com.guidetradeai.ui.theme.UserBubble
-import com.guidetradeai.viewmodel.AuthViewModel
 import com.guidetradeai.viewmodel.ChatViewModel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -97,142 +97,9 @@ import java.time.ZoneId
 import java.time.format.DateTimeFormatter
 
 @Composable
-fun ProviderSelectorRow(
-    selectedProvider: String,
-    selectedFeature: String,
-    selectedMarket: String?,
-    selectedSymbol: String?,
-    selectedTimeframe: String,
-    onProviderChange: (String) -> Unit,
-    onFeatureChange: (String) -> Unit,
-    onMarketChange: (String) -> Unit,
-    onSymbolChange: (String) -> Unit,
-    onTimeframeChange: (String) -> Unit,
-) {
-    val models = listOf("StockUp", "SiftingIO", "Guavy", "Combined")
-    val features = when (selectedProvider) {
-        "SiftingIO" -> listOf("Technical Signal", "Live Price", "Signal History", "RSI", "MACD", "Market Status")
-        "Guavy" -> listOf("Full Analysis", "Instrument Analysis", "Scorecard", "Sentiment", "Technical Indicators", "Price History", "News")
-        "Combined" -> listOf("Full Analysis", "Research", "Technical Signal", "Sentiment")
-        else -> listOf("Chat")
-    }
-    val markets = listOf("Crypto", "Forex", "Commodities", "Stocks")
-    val timeframes = listOf("1m", "5m", "15m", "1h", "4h", "1d")
-
-    val showAdvanced = selectedProvider != "StockUp"
-
-    if (showAdvanced) {
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 12.dp, vertical = 8.dp),
-            horizontalArrangement = Arrangement.spacedBy(8.dp),
-        ) {
-            SimpleDropdown(
-                label = "Model",
-                options = models,
-                selectedOption = selectedProvider,
-                onOptionSelected = onProviderChange,
-                modifier = Modifier.weight(1f),
-            )
-            SimpleDropdown(
-                label = "Feature",
-                options = features,
-                selectedOption = selectedFeature,
-                onOptionSelected = onFeatureChange,
-                modifier = Modifier.weight(1f),
-            )
-        }
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 12.dp, vertical = 4.dp),
-            horizontalArrangement = Arrangement.spacedBy(8.dp),
-        ) {
-            SimpleDropdown(
-                label = "Market",
-                options = markets,
-                selectedOption = selectedMarket ?: "Market",
-                onOptionSelected = onMarketChange,
-                modifier = Modifier.weight(1f),
-            )
-            SimpleDropdown(
-                label = "Asset",
-                options = listOf(selectedSymbol ?: "Symbol"),
-                selectedOption = selectedSymbol ?: "Asset",
-                onOptionSelected = onSymbolChange,
-                modifier = Modifier.weight(1f),
-                enabled = selectedMarket != null,
-            )
-            SimpleDropdown(
-                label = "Timeframe",
-                options = timeframes,
-                selectedOption = selectedTimeframe,
-                onOptionSelected = onTimeframeChange,
-                modifier = Modifier.weight(1f),
-            )
-        }
-        Divider(color = DividerColor, modifier = Modifier.padding(vertical = 4.dp))
-    }
-}
-
-@Composable
-fun SimpleDropdown(
-    label: String,
-    options: List<String>,
-    selectedOption: String,
-    onOptionSelected: (String) -> Unit,
-    modifier: Modifier = Modifier,
-    enabled: Boolean = true,
-) {
-    var expanded by remember { mutableStateOf(false) }
-    Box(modifier = modifier) {
-        Surface(
-            onClick = { if (enabled) expanded = true },
-            shape = RoundedCornerShape(8.dp),
-            color = if (enabled) SurfaceMid else SurfaceMid.copy(alpha = 0.5f),
-        ) {
-            Row(
-                modifier = Modifier.padding(horizontal = 12.dp, vertical = 10.dp),
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.spacedBy(4.dp),
-            ) {
-                Text(
-                    text = selectedOption.ifBlank { label },
-                    color = if (enabled) TextPrimary else TextSecondary,
-                    fontSize = 12.sp,
-                    maxLines = 1,
-                )
-                Icon(
-                    imageVector = Icons.Default.ArrowDropDown,
-                    contentDescription = null,
-                    tint = TextSecondary,
-                    modifier = Modifier.size(16.dp),
-                )
-            }
-        }
-        DropdownMenu(
-            expanded = expanded,
-            onDismissRequest = { expanded = false },
-        ) {
-            options.forEach { option ->
-                DropdownMenuItem(
-                    text = { Text(text = option, fontSize = 14.sp) },
-                    onClick = {
-                        onOptionSelected(option)
-                        expanded = false
-                    }
-                )
-            }
-        }
-    }
-}
-
-@Composable
 fun ChatScreen(
     navController: NavHostController,
     sessionId: String? = null,
-    authViewModel: AuthViewModel = viewModel(),
     chatViewModel: ChatViewModel = viewModel(),
 ) {
     val messages by chatViewModel.messages.collectAsState()
@@ -247,42 +114,28 @@ fun ChatScreen(
     var messageText by rememberSaveable { mutableStateOf("") }
     var showDeleteDialog by remember { mutableStateOf(false) }
     var sessionToDelete by remember { mutableStateOf<String?>(null) }
-    var selectedProvider by rememberSaveable { mutableStateOf("stockup") }
-    var selectedFeature by rememberSaveable { mutableStateOf("chat") }
+    var selectedProvider by rememberSaveable { mutableStateOf("StockUp") }
+    var selectedFeature by rememberSaveable { mutableStateOf("Chat") }
     var selectedMarket by rememberSaveable { mutableStateOf<String?>(null) }
     var selectedSymbol by rememberSaveable { mutableStateOf<String?>(null) }
     var selectedTimeframe by rememberSaveable { mutableStateOf("1h") }
+    var showModelSheet by remember { mutableStateOf(false) }
+    var showFeatureSheet by remember { mutableStateOf(false) }
+    var showMarketSheet by remember { mutableStateOf(false) }
+    var showAssetSheet by remember { mutableStateOf(false) }
+    var showTimeframeSheet by remember { mutableStateOf(false) }
 
     val listState = rememberLazyListState()
     val drawerState = remember { DrawerState(DrawerValue.Closed) }
-
-    LaunchedEffect(Unit) {
-        chatViewModel.initialize()
-    }
-
-    LaunchedEffect(selectedProvider) {
-        selectedFeature = when (selectedProvider) {
-            "SiftingIO" -> "Technical Signal"
-            "Guavy" -> "Full Analysis"
-            "Combined" -> "Full Analysis"
-            else -> "Chat"
-        }
-        selectedMarket = null
-        selectedSymbol = null
-    }
-
-    LaunchedEffect(authViewModel.isLoggedIn) {
-        if (!authViewModel.isLoggedIn) {
-            navController.navigate("login") {
-                popUpTo(0) { inclusive = true }
-            }
-        }
-    }
 
     LaunchedEffect(messages.size) {
         if (messages.isNotEmpty()) {
             listState.animateScrollToItem(messages.size)
         }
+    }
+
+    LaunchedEffect(Unit) {
+        chatViewModel.initialize()
     }
 
     LaunchedEffect(currentSessionId) {
@@ -292,8 +145,7 @@ fun ChatScreen(
     }
 
     LaunchedEffect(error) {
-        val errorMessage = error
-        if (errorMessage != null) {
+        if (error != null) {
             delay(4000)
         }
     }
@@ -328,6 +180,7 @@ fun ChatScreen(
                     TextButton(
                         onClick = {
                             chatViewModel.startNewSession()
+                            drawerState.close()
                         },
                         modifier = Modifier.fillMaxWidth(),
                         shape = RoundedCornerShape(12.dp),
@@ -350,6 +203,7 @@ fun ChatScreen(
                                     .fillMaxWidth()
                                     .clickable {
                                         chatViewModel.switchSession(session)
+                                        drawerState.close()
                                     }
                                     .background(
                                         if (isActive) AccentGlow else Color.Transparent
@@ -420,8 +274,8 @@ fun ChatScreen(
                         .padding(horizontal = 12.dp, vertical = 12.dp),
                     verticalAlignment = Alignment.CenterVertically,
                 ) {
-                    IconButton(onClick = { navController.popBackStack() }) {
-                        Icon(Icons.Default.ArrowBack, contentDescription = "Back", tint = TextPrimary)
+                    IconButton(onClick = { drawerState.open() }) {
+                        Icon(Icons.Default.Menu, contentDescription = "Menu", tint = TextPrimary)
                     }
                     Text(
                         text = currentTitle.ifBlank { "New Chat" },
@@ -438,19 +292,6 @@ fun ChatScreen(
                     }
                 }
             }
-
-            ProviderSelectorRow(
-                selectedProvider = selectedProvider,
-                selectedFeature = selectedFeature,
-                selectedMarket = selectedMarket,
-                selectedSymbol = selectedSymbol,
-                selectedTimeframe = selectedTimeframe,
-                onProviderChange = { selectedProvider = it },
-                onFeatureChange = { selectedFeature = it },
-                onMarketChange = { selectedMarket = it },
-                onSymbolChange = { selectedSymbol = it },
-                onTimeframeChange = { selectedTimeframe = it },
-            )
 
             Box(modifier = Modifier.weight(1f)) {
                 if (messages.isEmpty() && !isLoading) {
@@ -486,8 +327,7 @@ fun ChatScreen(
                 }
             }
 
-            val currentError = error
-            if (currentError != null) {
+            if (error != null) {
                 Surface(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -496,12 +336,30 @@ fun ChatScreen(
                     shape = RoundedCornerShape(12.dp),
                 ) {
                     Text(
-                        text = currentError,
+                        text = error,
                         color = ErrorColor,
                         modifier = Modifier.padding(12.dp),
                         fontSize = 13.sp,
                     )
                 }
+            }
+
+            if (showModelSheet) {
+                ModelSelectionBottomSheet(
+                    selectedProvider = selectedProvider,
+                    onProviderSelected = { 
+                        selectedProvider = it
+                        selectedFeature = when (it) {
+                            "SiftingIO" -> "Full Analysis"
+                            "Guavy" -> "Full Analysis"
+                            "Combined" -> "Full Analysis"
+                            else -> "Chat"
+                        }
+                        selectedMarket = null
+                        selectedSymbol = null
+                    },
+                    onDismiss = { showModelSheet = false },
+                )
             }
 
             Surface(
@@ -517,16 +375,20 @@ fun ChatScreen(
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.spacedBy(8.dp),
                 ) {
-                    OrbButton(
-                        isListening = isListening,
-                        isSpeaking = isSpeaking,
-                        onIdleClick = {
-                            if (isSpeaking) chatViewModel.stopSpeaking()
-                            else chatViewModel.startVoiceInput()
-                        },
-                        onListeningClick = { chatViewModel.stopVoiceInput() },
-                        onSpeakingClick = { chatViewModel.stopSpeaking() },
-                    )
+                    Surface(
+                        modifier = Modifier.size(48.dp),
+                        shape = CircleShape,
+                        color = SurfaceMid,
+                        onClick = { showModelSheet = true },
+                    ) {
+                        Box(contentAlignment = Alignment.Center) {
+                            Icon(
+                                imageVector = Icons.Default.Add,
+                                contentDescription = "Model",
+                                tint = AccentCyan,
+                            )
+                        }
+                    }
                     TextField(
                         value = messageText,
                         onValueChange = { messageText = it },
@@ -569,6 +431,21 @@ fun ChatScreen(
             }
         }
     }
+    if (selectedProvider != "StockUp") {
+        DynamicProviderControls(
+            provider = selectedProvider,
+            feature = selectedFeature,
+            market = selectedMarket,
+            symbol = selectedSymbol,
+            timeframe = selectedTimeframe,
+            onFeatureChange = { selectedFeature = it },
+            onMarketChange = { selectedMarket = it },
+            onSymbolChange = { selectedSymbol = it },
+            onTimeframeChange = { selectedTimeframe = it },
+        )
+    }
+
+    BottomBar(navController = navController)
 
     if (showDeleteDialog && sessionToDelete != null) {
         androidx.compose.material3.AlertDialog(
@@ -606,7 +483,7 @@ fun EmptyChatState(onSuggestionClick: (String) -> Unit) {
             modifier = Modifier
                 .size(80.dp)
                 .shadow(
-                    elevation = 24.dp,
+                    radius = 24.dp,
                     shape = CircleShape,
                     spotColor = AccentCyan.copy(alpha = 0.4f),
                 )
@@ -702,11 +579,12 @@ fun UserMessageBubble(content: String, timestamp: String) {
             horizontalAlignment = Alignment.End,
         ) {
             Surface(
-                modifier = Modifier.shadow(
-                    elevation = 4.dp,
-                    shape = RoundedCornerShape(20.dp),
-                    spotColor = UserBubble.copy(alpha = 0.5f),
-                ),
+                modifier = Modifier
+                    .shadow(
+                        elevation = 4.dp,
+                        shape = RoundedCornerShape(20.dp),
+                        spotColor = UserBubble.copy(alpha = 0.5f),
+                    ),
                 color = UserBubble,
                 shape = RoundedCornerShape(20.dp),
             ) {
@@ -778,11 +656,12 @@ fun AiMessageBubble(content: String, timestamp: String) {
             modifier = Modifier.widthIn(max = 280.dp),
         ) {
             Surface(
-                modifier = Modifier.shadow(
-                    elevation = 4.dp,
-                    shape = RoundedCornerShape(20.dp),
-                    spotColor = AiBubble.copy(alpha = 0.5f),
-                ),
+                modifier = Modifier
+                    .shadow(
+                        elevation = 4.dp,
+                        shape = RoundedCornerShape(20.dp),
+                        spotColor = AiBubble.copy(alpha = 0.5f),
+                    ),
                 color = AiBubble,
                 shape = RoundedCornerShape(20.dp),
             ) {
@@ -928,7 +807,7 @@ fun OrbButton(
             }
             else -> {
                 Icon(
-                    imageVector = Icons.Default.Mic,
+                    imageVector = androidx.compose.material.icons.filled.Mic,
                     contentDescription = "Voice",
                     tint = Color.White,
                     modifier = Modifier.size(22.dp),
@@ -980,5 +859,199 @@ fun formatDate(iso: String): String {
         }
     } catch (e: Exception) {
         ""
+    }
+}
+
+
+@Composable
+fun ModelSelectionBottomSheet(
+    selectedProvider: String,
+    onProviderSelected: (String) -> Unit,
+    onDismiss: () -> Unit,
+) {
+    val models = listOf("StockUp", "SiftingIO", "Guavy", "Combined")
+    val bottomSheetState = androidx.compose.material3.rememberModalBottomSheetState(skipPartiallyExpanded = true)
+    
+    androidx.compose.material3.ModalBottomSheet(
+        onDismissRequest = onDismiss,
+        sheetState = bottomSheetState,
+        containerColor = SurfaceDark,
+    ) {
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(16.dp),
+        ) {
+            Text(
+                text = "SELECT MODEL",
+                style = MaterialTheme.typography.labelLarge,
+                color = TextSecondary,
+                modifier = Modifier.padding(bottom = 12.dp),
+            )
+            models.forEach { model ->
+                Surface(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(vertical = 4.dp)
+                        .clip(RoundedCornerShape(12.dp))
+                        .clickable { 
+                            onProviderSelected(model)
+                            onDismiss()
+                        },
+                    color = if (model == selectedProvider) AccentCyan.copy(alpha = 0.15f) else SurfaceMid,
+                ) {
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 16.dp, vertical = 14.dp),
+                        verticalAlignment = Alignment.CenterVertically,
+                    ) {
+                        Text(
+                            text = model,
+                            color = if (model == selectedProvider) AccentCyan else TextPrimary,
+                            fontWeight = if (model == selectedProvider) FontWeight.Bold else FontWeight.Normal,
+                        )
+                        if (model == selectedProvider) {
+                            Spacer(modifier = Modifier.weight(1f))
+                            Icon(
+                                imageVector = Icons.Default.CheckCircle,
+                                contentDescription = null,
+                                tint = AccentCyan,
+                                modifier = Modifier.size(20.dp),
+                            )
+                        }
+                    }
+                }
+            }
+            Spacer(modifier = Modifier.height(16.dp))
+        }
+    }
+}
+
+@Composable
+fun DynamicProviderControls(
+    provider: String,
+    feature: String,
+    market: String?,
+    symbol: String?,
+    timeframe: String,
+    onFeatureChange: (String) -> Unit,
+    onMarketChange: (String) -> Unit,
+    onSymbolChange: (String) -> Unit,
+    onTimeframeChange: (String) -> Unit,
+) {
+    val markets = listOf("Crypto", "Forex", "Commodities", "Stocks")
+    val timeframes = listOf("1m", "5m", "15m", "30m", "1h", "1d", "1w", "1mo")
+    
+    val features = when (provider) {
+        "SiftingIO" -> listOf("Full Analysis", "Technical Signal", "Signal History", "Live Price", "RSI", "MACD", "Market Status")
+        "Guavy" -> listOf("Full Analysis", "Instrument Analysis", "Scorecard", "Sentiment", "Technical Indicators", "Price History", "News", "Current Action", "Current Trend", "Market Summary")
+        "Combined" -> listOf("Full Analysis", "Research", "Technical Signal", "Sentiment")
+        else -> emptyList()
+    }
+
+    if (features.isEmpty()) return
+
+    Surface(
+        modifier = Modifier.fillMaxWidth(),
+        color = SurfaceDark,
+    ) {
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 12.dp, vertical = 8.dp),
+        ) {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
+            ) {
+                SimpleDropdown(
+                    label = "Feature",
+                    options = features,
+                    selectedOption = feature,
+                    onOptionSelected = onFeatureChange,
+                    modifier = Modifier.weight(1f),
+                )
+                SimpleDropdown(
+                    label = "Market",
+                    options = markets,
+                    selectedOption = market ?: "Market",
+                    onOptionSelected = onMarketChange,
+                    modifier = Modifier.weight(1f),
+                )
+            }
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
+            ) {
+                SimpleDropdown(
+                    label = "Asset",
+                    options = listOf(symbol ?: "Search..."),
+                    selectedOption = symbol ?: "Asset",
+                    onOptionSelected = onSymbolChange,
+                    modifier = Modifier.weight(1f),
+                    enabled = market != null,
+                )
+                SimpleDropdown(
+                    label = "Timeframe",
+                    options = timeframes,
+                    selectedOption = timeframe,
+                    onOptionSelected = onTimeframeChange,
+                    modifier = Modifier.weight(1f),
+                )
+            }
+        }
+    }
+}
+
+@Composable
+fun SimpleDropdown(
+    label: String,
+    options: List<String>,
+    selectedOption: String,
+    onOptionSelected: (String) -> Unit,
+    modifier: Modifier = Modifier,
+    enabled: Boolean = true,
+) {
+    var expanded by remember { mutableStateOf(false) }
+    Box(modifier = modifier) {
+        Surface(
+            onClick = { if (enabled) expanded = true },
+            shape = RoundedCornerShape(8.dp),
+            color = if (enabled) SurfaceMid else SurfaceMid.copy(alpha = 0.5f),
+        ) {
+            Row(
+                modifier = Modifier.padding(horizontal = 12.dp, vertical = 10.dp),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(4.dp),
+            ) {
+                Text(
+                    text = selectedOption.ifBlank { label },
+                    color = if (enabled) TextPrimary else TextSecondary,
+                    fontSize = 12.sp,
+                    maxLines = 1,
+                )
+                Icon(
+                    imageVector = Icons.Default.ArrowDropDown,
+                    contentDescription = null,
+                    tint = TextSecondary,
+                    modifier = Modifier.size(16.dp),
+                )
+            }
+        }
+        DropdownMenu(
+            expanded = expanded,
+            onDismissRequest = { expanded = false },
+        ) {
+            options.forEach { option ->
+                DropdownMenuItem(
+                    text = { Text(text = option, fontSize = 14.sp) },
+                    onClick = {
+                        onOptionSelected(option)
+                        expanded = false
+                    }
+                )
+            }
+        }
     }
 }
