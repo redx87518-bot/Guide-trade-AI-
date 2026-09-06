@@ -180,7 +180,9 @@ fun ChatScreen(
                     TextButton(
                         onClick = {
                             chatViewModel.startNewSession()
-                            drawerState.close()
+                            kotlinx.coroutines.GlobalScope.launch(kotlinx.coroutines.Dispatchers.Main) {
+                                drawerState.close()
+                            }
                         },
                         modifier = Modifier.fillMaxWidth(),
                         shape = RoundedCornerShape(12.dp),
@@ -327,7 +329,8 @@ fun ChatScreen(
                 }
             }
 
-            if (error != null) {
+            val currentError = error
+            if (currentError != null) {
                 Surface(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -336,7 +339,7 @@ fun ChatScreen(
                     shape = RoundedCornerShape(12.dp),
                 ) {
                     Text(
-                        text = error,
+                        text = currentError,
                         color = ErrorColor,
                         modifier = Modifier.padding(12.dp),
                         fontSize = 13.sp,
@@ -483,7 +486,7 @@ fun EmptyChatState(onSuggestionClick: (String) -> Unit) {
             modifier = Modifier
                 .size(80.dp)
                 .shadow(
-                    radius = 24.dp,
+                    elevation = 24.dp,
                     shape = CircleShape,
                     spotColor = AccentCyan.copy(alpha = 0.4f),
                 )
@@ -749,99 +752,6 @@ fun TypingIndicator() {
                     )
                 }
             }
-        }
-    }
-}
-
-@Composable
-fun OrbButton(
-    isListening: Boolean,
-    isSpeaking: Boolean,
-    onIdleClick: () -> Unit,
-    onListeningClick: () -> Unit,
-    onSpeakingClick: () -> Unit,
-) {
-    val scale by androidx.compose.animation.core.animateFloatAsState(
-        targetValue = if (isListening) 1.15f else 1f,
-        animationSpec = tween(200),
-        label = "orb_scale",
-    )
-
-    val color = when {
-        isListening -> AccentPurple
-        isSpeaking -> AccentCyan
-        else -> AccentCyan
-    }
-
-    Box(
-        modifier = Modifier
-            .size(48.dp)
-            .scale(scale)
-            .shadow(
-                elevation = 12.dp,
-                shape = CircleShape,
-                spotColor = color.copy(alpha = 0.5f),
-            )
-            .clip(CircleShape)
-            .background(color)
-            .clickable {
-                when {
-                    isListening -> onListeningClick()
-                    isSpeaking -> onSpeakingClick()
-                    else -> onIdleClick()
-                }
-            },
-        contentAlignment = Alignment.Center,
-    ) {
-        when {
-            isListening -> {
-                Icon(
-                    imageVector = Icons.Default.Send,
-                    contentDescription = "Stop",
-                    tint = Color.White,
-                    modifier = Modifier.size(22.dp),
-                )
-            }
-            isSpeaking -> {
-                WaveIcon()
-            }
-            else -> {
-                Icon(
-                    imageVector = androidx.compose.material.icons.filled.Mic,
-                    contentDescription = "Voice",
-                    tint = Color.White,
-                    modifier = Modifier.size(22.dp),
-                )
-            }
-        }
-    }
-}
-
-@Composable
-fun WaveIcon() {
-    Row(
-        horizontalArrangement = Arrangement.spacedBy(3.dp),
-        verticalAlignment = Alignment.CenterVertically,
-        modifier = Modifier.height(24.dp),
-    ) {
-        listOf(0.6f, 1f, 0.6f).forEach { height ->
-            val infiniteTransition = rememberInfiniteTransition(label = "wave")
-            val animatedHeight by infiniteTransition.animateFloat(
-                initialValue = 4f,
-                targetValue = 18f,
-                animationSpec = infiniteRepeatable(
-                    animation = tween(600, easing = LinearEasing),
-                    repeatMode = RepeatMode.Reverse,
-                ),
-                label = "wave_height",
-            )
-            Box(
-                modifier = Modifier
-                    .width(3.dp)
-                    .height(animatedHeight.dp)
-                    .clip(RoundedCornerShape(2.dp))
-                    .background(Color.White),
-            )
         }
     }
 }
