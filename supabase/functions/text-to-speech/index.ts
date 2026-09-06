@@ -9,7 +9,7 @@ const supabaseAdmin = createClient(supabaseUrl, supabaseServiceRole, {
 
 const elevenLabsApiKey = Deno.env.get('ELEVENLABS_API_KEY') ?? ''
 const elevenLabsVoiceId = Deno.env.get('ELEVENLABS_VOICE_ID') ?? 'wBXNqKUATyqu0RtYt25i'
-const elevenLabsModelId = Deno.env.get('ELEVENLABS_MODEL_ID') ?? 'eleven_turbo_v2'
+const elevenLabsModelId = Deno.env.get('ELEVENLABS_MODEL_ID') ?? 'eleven_flash_v2_5'
 
 const ELEVENLABS_BASE_URL = 'https://api.elevenlabs.io/v1'
 
