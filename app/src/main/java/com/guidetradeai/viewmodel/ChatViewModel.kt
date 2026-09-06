@@ -5,6 +5,7 @@ import androidx.lifecycle.viewModelScope
 import com.guidetradeai.data.repository.AuthRepository
 import com.guidetradeai.data.repository.ChatRepository
 import com.guidetradeai.data.repository.MarketIntelligenceRepository
+import com.guidetradeai.domain.model.SymbolItem
 import com.guidetradeai.data.local.AppPreferences
 import com.guidetradeai.di.AppModule
 import com.guidetradeai.domain.Result
@@ -284,6 +285,10 @@ class ChatViewModel(
         _isSpeaking.value = false
     }
 
+
+    suspend fun loadSymbols(provider: String, market: String): Result<List<SymbolItem>> {
+        return marketIntelligenceRepository.listSymbols(provider, market)
+    }
     fun deleteSession(sessionId: String) {
         viewModelScope.launch {
             val userId = authRepository.getCurrentUser()?.id ?: return@launch

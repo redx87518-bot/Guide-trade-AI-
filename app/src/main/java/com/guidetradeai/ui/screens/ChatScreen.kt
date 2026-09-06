@@ -83,6 +83,7 @@ import com.guidetradeai.ui.theme.AiBubble
 import com.guidetradeai.ui.theme.Background
 import com.guidetradeai.ui.theme.DividerColor
 import com.guidetradeai.ui.theme.ErrorColor
+import com.guidetradeai.domain.Result
 import com.guidetradeai.ui.theme.SurfaceDark
 import com.guidetradeai.ui.theme.SurfaceMid
 import com.guidetradeai.ui.theme.TextPrimary
@@ -124,6 +125,10 @@ fun ChatScreen(
     var showMarketSheet by remember { mutableStateOf(false) }
     var showAssetSheet by remember { mutableStateOf(false) }
     var showTimeframeSheet by remember { mutableStateOf(false) }
+    var assetOptions by remember { mutableStateOf<List<com.guidetradeai.domain.model.SymbolItem>>(emptyList()) }
+    var assetLoading by remember { mutableStateOf(false) }
+    var assetError by remember { mutableStateOf<String?>(null) }
+    var assetSearchQuery by remember { mutableStateOf("") }
 
     val listState = rememberLazyListState()
     val drawerState = remember { DrawerState(DrawerValue.Closed) }
@@ -147,6 +152,28 @@ fun ChatScreen(
     LaunchedEffect(error) {
         if (error != null) {
             delay(4000)
+        }
+    }
+
+    LaunchedEffect(selectedMarket) {
+        val market = selectedMarket
+        if (market != null && selectedProvider != "StockUp") {
+            assetLoading = true
+            assetError = null
+            try {
+                val result = chatViewModel.loadSymbols(selectedProvider.lowercase(), market.lowercase())
+                if (result is Result.Success) {
+                    assetOptions = result.data
+                } else {
+                    assetError = result.messageOrNull() ?: "Failed to load assets"
+                }
+            } catch (e: Exception) {
+                assetError = e.message ?: "Failed to load assets"
+            } finally {
+                assetLoading = false
+            }
+        } else {
+            assetOptions = emptyList()
         }
     }
 
@@ -456,7 +483,20 @@ fun ChatScreen(
         )
     }
 
-    BottomBar(navController = navController)
+            if (showAssetSheet) {
+                AssetSelectionBottomSheet(
+                    assets = assetOptions,
+                    loading = assetLoading,
+                    error = assetError,
+                    searchQuery = assetSearchQuery,
+                    selectedSymbol = selectedSymbol,
+                    onSearchQueryChange = { assetSearchQuery = it },
+                    onSymbolSelected = { selectedSymbol = it },
+                    onDismiss = { showAssetSheet = false },
+                )
+            }
+
+            BottomBar(navController = navController)
 
     if (showDeleteDialog && sessionToDelete != null) {
         androidx.compose.material3.AlertDialog(
@@ -902,14 +942,33 @@ fun DynamicProviderControls(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.spacedBy(8.dp),
             ) {
-                SimpleDropdown(
-                    label = "Asset",
-                    options = listOf(symbol ?: "Search..."),
-                    selectedOption = symbol ?: "Asset",
-                    onOptionSelected = onSymbolChange,
-                    modifier = Modifier.weight(1f),
-                    enabled = market != null,
-                )
+                Surface(
+                    modifier = Modifier
+                        .weight(1f)
+                        .clip(RoundedCornerShape(8.dp))
+                        .clickable { if (market != null) showAssetSheet = true },
+                    color = if (market != null) SurfaceMid else SurfaceMid.copy(alpha = 0.5f),
+                ) {
+                    Row(
+                        modifier = Modifier.padding(horizontal = 12.dp, vertical = 10.dp),
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(4.dp),
+                    ) {
+                        Text(
+                            text = selectedSymbol ?: if (market != null) "Search..." else "Asset",
+                            color = if (market != null) TextPrimary else TextSecondary,
+                            fontSize = 12.sp,
+                            maxLines = 1,
+                            modifier = Modifier.weight(1f),
+                        )
+                        Icon(
+                            imageVector = Icons.Default.ArrowDropDown,
+                            contentDescription = null,
+                            tint = TextSecondary,
+                            modifier = Modifier.size(16.dp),
+                        )
+                    }
+                }
                 SimpleDropdown(
                     label = "Timeframe",
                     options = timeframes,
@@ -970,6 +1029,128 @@ fun SimpleDropdown(
                     }
                 )
             }
+        }
+    }
+}
+
+
+@Composable
+fun AssetSelectionBottomSheet(
+    assets: List<com.guidetradeai.domain.model.SymbolItem>,
+    loading: Boolean,
+    error: String?,
+    searchQuery: String,
+    selectedSymbol: String?,
+    onSearchQueryChange: (String) -> Unit,
+    onSymbolSelected: (String) -> Unit,
+    onDismiss: () -> Unit,
+) {
+    val filtered = remember(assets, searchQuery) {
+        val query = searchQuery.lowercase()
+        if (query.isBlank()) assets else assets.filter { 
+            it.symbol.lowercase().contains(query) || it.name.lowercase().contains(query) 
+        }
+    }
+
+    androidx.compose.material3.ModalBottomSheet(
+        onDismissRequest = onDismiss,
+        containerColor = SurfaceDark,
+    ) {
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(16.dp),
+        ) {
+            Text(
+                text = "SELECT ASSET",
+                style = MaterialTheme.typography.labelLarge,
+                color = TextSecondary,
+                modifier = Modifier.padding(bottom = 12.dp),
+            )
+            TextField(
+                value = searchQuery,
+                onValueChange = onSearchQueryChange,
+                modifier = Modifier.fillMaxWidth(),
+                placeholder = { Text("Search...", color = TextSecondary) },
+                colors = TextFieldDefaults.colors(
+                    focusedContainerColor = SurfaceMid,
+                    unfocusedContainerColor = SurfaceMid,
+                    focusedIndicatorColor = AccentCyan,
+                    unfocusedIndicatorColor = DividerColor,
+                    focusedTextColor = TextPrimary,
+                    unfocusedTextColor = TextPrimary,
+                    cursorColor = AccentCyan,
+                ),
+                shape = RoundedCornerShape(12.dp),
+            )
+            Spacer(modifier = Modifier.height(12.dp))
+            when {
+                loading -> {
+                    Box(modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.Center) {
+                        Text("Loading...", color = TextSecondary)
+                    }
+                }
+                error != null -> {
+                    Box(modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.Center) {
+                        Text(error, color = ErrorColor)
+                    }
+                }
+                filtered.isEmpty() -> {
+                    Box(modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.Center) {
+                        Text("No assets found", color = TextSecondary)
+                    }
+                }
+                else -> {
+                    androidx.compose.foundation.lazy.LazyColumn(
+                        modifier = Modifier.fillMaxWidth(),
+                        verticalArrangement = Arrangement.spacedBy(4.dp),
+                    ) {
+                        items(filtered, key = { it.symbol }) { item ->
+                            Surface(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .clip(RoundedCornerShape(12.dp))
+                                    .clickable {
+                                        onSymbolSelected(item.symbol)
+                                        onDismiss()
+                                    },
+                                color = if (item.symbol == selectedSymbol) AccentCyan.copy(alpha = 0.15f) else SurfaceMid,
+                            ) {
+                                Row(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .padding(horizontal = 16.dp, vertical = 12.dp),
+                                    verticalAlignment = Alignment.CenterVertically,
+                                ) {
+                                    Column(modifier = Modifier.weight(1f)) {
+                                        Text(
+                                            text = item.symbol,
+                                            color = TextPrimary,
+                                            fontWeight = FontWeight.SemiBold,
+                                        )
+                                        if (item.name.isNotBlank() && item.name != item.symbol) {
+                                            Text(
+                                                text = item.name,
+                                                color = TextSecondary,
+                                                fontSize = 12.sp,
+                                            )
+                                        }
+                                    }
+                                    if (item.symbol == selectedSymbol) {
+                                        Icon(
+                                            imageVector = Icons.Default.CheckCircle,
+                                            contentDescription = null,
+                                            tint = AccentCyan,
+                                            modifier = Modifier.size(20.dp),
+                                        )
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            Spacer(modifier = Modifier.height(16.dp))
         }
     }
 }

@@ -6,6 +6,7 @@ import com.guidetradeai.data.repository.MarketIntelligenceRepository
 import com.guidetradeai.di.AppModule
 import com.guidetradeai.domain.model.MarketIntelligenceRequest
 import com.guidetradeai.domain.model.MarketIntelligenceResponse
+import com.guidetradeai.domain.model.SymbolItem
 import com.guidetradeai.domain.Result
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -37,6 +38,10 @@ class MarketIntelligenceViewModel(
         }
     }
 
+
+    suspend fun listSymbols(provider: String, market: String): Result<List<SymbolItem>> {
+        return marketIntelligenceRepository.listSymbols(provider, market)
+    }
     fun reset() {
         _uiState.value = MarketIntelligenceUiState.Idle
     }
