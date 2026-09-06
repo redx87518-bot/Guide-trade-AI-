@@ -71,3 +71,21 @@ data class TelegramSettings(
     val createdAt: String = "",
     val updatedAt: String = "",
 )
+
+data class MarketIntelligenceRequest(
+    val provider: String,
+    val feature: String,
+    val market: String? = null,
+    val symbol: String? = null,
+    val timeframe: String? = null,
+    val query: String? = null,
+)
+
+data class MarketIntelligenceResponse(
+    val provider: String,
+    val feature: String,
+    val market: String? = null,
+    val symbol: String? = null,
+    val timeframe: String? = null,
+    val result: JsonObject? = null,
+)

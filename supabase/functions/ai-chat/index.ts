@@ -77,7 +77,6 @@ Deno.serve(async (req) => {
       .limit(MAX_HISTORY_MESSAGES)
 
     if (historyError) {
-      console.error('Failed to load chat history:', historyError)
       return jsonResponse({ error: 'DATABASE_ERROR' }, 500)
     }
 
@@ -91,7 +90,7 @@ Deno.serve(async (req) => {
     ]
 
     const controller = new AbortController()
-    const timeoutId = setTimeout(() => controller.abort(), 60000)
+    const timeoutId = setTimeout(() => controller.abort(), 30000)
 
     let quanResponse: Response
     try {
@@ -122,6 +121,21 @@ Deno.serve(async (req) => {
 
     if (!quanResponse.ok) {
       const errorText = await quanResponse.text()
+<<<<<<< ours
+      if (quanResponse.status === 429) {
+        return jsonResponse({ error: 'RATE_LIMITED' }, 429)
+      }
+      if (quanResponse.status >= 500) {
+        return jsonResponse({ error: 'QUAN_ERROR' }, 502)
+      }
+      return jsonResponse({ error: 'QUAN_ERROR' }, 502)
+    }
+
+    const quanData = await quanResponse.json()
+
+    if (!quanData.choices || !quanData.choices[0] || !quanData.choices[0].message) {
+      return jsonResponse({ error: 'INVALID_RESPONSE' }, 502)
+=======
       console.error('Quan API error:', quanResponse.status, errorText)
       return jsonResponse({
         error: 'QUAN_ERROR',
@@ -148,7 +162,10 @@ Deno.serve(async (req) => {
           sample: JSON.stringify(quanData).substring(0, 300),
         }
       }, 502)
+>>>>>>> theirs
     }
+
+    const aiResponse: string = quanData.choices[0].message.content
 
     const { error: userMsgError } = await supabaseAdmin
       .from('chat_messages')
@@ -160,7 +177,6 @@ Deno.serve(async (req) => {
       })
 
     if (userMsgError) {
-      console.error('Failed to save user message:', userMsgError)
       return jsonResponse({ error: 'DATABASE_ERROR' }, 500)
     }
 
@@ -174,7 +190,6 @@ Deno.serve(async (req) => {
       })
 
     if (aiMsgError) {
-      console.error('Failed to save AI message:', aiMsgError)
       return jsonResponse({ error: 'DATABASE_ERROR' }, 500)
     }
 
@@ -182,9 +197,9 @@ Deno.serve(async (req) => {
       role: 'assistant',
       content: aiResponse,
       timestamp: new Date().toISOString(),
+      usage: quanData.usage ?? null,
     }, 200)
   } catch (error) {
-    console.error('Unexpected error:', error)
     return jsonResponse({ error: 'UNKNOWN_ERROR' }, 500)
   }
 })
