@@ -270,40 +270,6 @@ fun ChatScreen(
                 .fillMaxSize()
                 .background(Background),
         ) {
-            Surface(
-                modifier = Modifier.fillMaxWidth(),
-                color = SurfaceDark,
-                shadowElevation = 0.dp,
-            ) {
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = 12.dp, vertical = 12.dp),
-                    verticalAlignment = Alignment.CenterVertically,
-                ) {
-                    IconButton(onClick = {
-                        kotlinx.coroutines.GlobalScope.launch(kotlinx.coroutines.Dispatchers.Main) {
-                            drawerState.open()
-                        }
-                    }) {
-                        Icon(Icons.Default.Menu, contentDescription = "Menu", tint = TextPrimary)
-                    }
-                    Text(
-                        text = currentTitle.ifBlank { "New Chat" },
-                        style = MaterialTheme.typography.titleMedium,
-                        color = TextPrimary,
-                        maxLines = 1,
-                        modifier = Modifier.weight(1f),
-                    )
-                    IconButton(onClick = { chatViewModel.startNewSession() }) {
-                        Icon(Icons.Default.Add, contentDescription = "New Chat", tint = AccentCyan)
-                    }
-                    IconButton(onClick = { navController.navigate("settings") }) {
-                        Icon(Icons.Default.Settings, contentDescription = "Settings", tint = TextSecondary)
-                    }
-                }
-            }
-
             Box(modifier = Modifier.weight(1f)) {
                 if (messages.isEmpty() && !isLoading) {
                     EmptyChatState(
@@ -978,7 +944,7 @@ fun DynamicProviderControls(
     val timeframes = listOf("1m", "5m", "15m", "30m", "1h", "1d", "1w", "1mo")
     
     val features = when (provider) {
-        AIProvider.SIFTING_IO -> listOf("Full Analysis", "Technical Signal", "Signal History", "Live Price", "RSI", "MACD", "Market Status")
+        AIProvider.SIFTING_IO -> listOf("Full Analysis", "Technical Signal", "Signal History", "Live Trade", "Live Quote", "Previous Close", "Historical Price", "Market Status", "Market Hours", "Market Calendar", "Economic Calendar", "Search Stocks", "Company Profile", "Financials", "Ratios", "Insiders", "Ownership", "Filings")
         AIProvider.GUAVY -> listOf("Full Analysis", "Instrument Analysis", "Scorecard", "Sentiment", "Technical Indicators", "Price History", "News", "Current Action", "Current Trend", "Market Summary")
         AIProvider.COMBINED -> listOf("Full Analysis", "Research", "Technical Signal", "Sentiment")
         else -> emptyList()
