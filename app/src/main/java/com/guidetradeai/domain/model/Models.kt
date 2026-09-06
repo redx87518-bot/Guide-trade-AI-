@@ -92,10 +92,11 @@ data class MarketIntelligenceResponse(
     val result: JsonObject? = null,
 )
 
+@Serializable
 data class MarketDataResponse(
-    val provider: String,
-    val market: String,
-    val symbol: String,
+    val provider: String = "",
+    val market: String = "",
+    val symbol: String = "",
     val name: String = "",
     val timestamp: String = "",
     val price: Double? = null,

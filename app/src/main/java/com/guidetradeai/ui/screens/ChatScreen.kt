@@ -182,7 +182,9 @@ fun ChatScreen(
                     TextButton(
                         onClick = {
                             chatViewModel.startNewSession()
-                            drawerState.close()
+                            kotlinx.coroutines.GlobalScope.launch(kotlinx.coroutines.Dispatchers.Main) {
+                                drawerState.close()
+                            }
                         },
                         modifier = Modifier.fillMaxWidth(),
                         shape = RoundedCornerShape(12.dp),
@@ -205,7 +207,9 @@ fun ChatScreen(
                                     .fillMaxWidth()
                                     .clickable {
                                         chatViewModel.switchSession(session)
-                                        drawerState.close()
+                                        kotlinx.coroutines.GlobalScope.launch(kotlinx.coroutines.Dispatchers.Main) {
+                                            drawerState.close()
+                                        }
                                     }
                                     .background(
                                         if (isActive) AccentGlow else Color.Transparent
@@ -276,7 +280,11 @@ fun ChatScreen(
                         .padding(horizontal = 12.dp, vertical = 12.dp),
                     verticalAlignment = Alignment.CenterVertically,
                 ) {
-                    IconButton(onClick = { drawerState.open() }) {
+                    IconButton(onClick = {
+                        kotlinx.coroutines.GlobalScope.launch(kotlinx.coroutines.Dispatchers.Main) {
+                            drawerState.open()
+                        }
+                    }) {
                         Icon(Icons.Default.Menu, contentDescription = "Menu", tint = TextPrimary)
                     }
                     Text(
@@ -329,7 +337,8 @@ fun ChatScreen(
                 }
             }
 
-            if (error != null) {
+            val currentError = error
+            if (currentError != null) {
                 Surface(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -338,7 +347,7 @@ fun ChatScreen(
                     shape = RoundedCornerShape(12.dp),
                 ) {
                     Text(
-                        text = error,
+                        text = currentError,
                         color = ErrorColor,
                         modifier = Modifier.padding(12.dp),
                         fontSize = 13.sp,
@@ -485,7 +494,7 @@ fun EmptyChatState(onSuggestionClick: (String) -> Unit) {
             modifier = Modifier
                 .size(80.dp)
                 .shadow(
-                    radius = 24.dp,
+                    elevation = 24.dp,
                     shape = CircleShape,
                     spotColor = AccentCyan.copy(alpha = 0.4f),
                 )
@@ -813,7 +822,7 @@ fun OrbButton(
             }
             else -> {
                 Icon(
-                    imageVector = androidx.compose.material.icons.filled.Mic,
+                    imageVector = Icons.Default.Send,
                     contentDescription = "Voice",
                     tint = Color.White,
                     modifier = Modifier.size(22.dp),
