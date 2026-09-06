@@ -84,6 +84,7 @@ import com.guidetradeai.ui.theme.Background
 import com.guidetradeai.ui.theme.DividerColor
 import com.guidetradeai.ui.theme.ErrorColor
 import com.guidetradeai.domain.Result
+import com.guidetradeai.domain.messageOrNull
 import com.guidetradeai.ui.theme.SurfaceDark
 import com.guidetradeai.ui.theme.SurfaceMid
 import com.guidetradeai.ui.theme.TextPrimary
@@ -893,6 +894,8 @@ fun DynamicProviderControls(
     market: String?,
     symbol: String?,
     timeframe: String,
+    showAssetSheet: Boolean,
+    onShowAssetSheetChange: (Boolean) -> Unit,
     onFeatureChange: (String) -> Unit,
     onMarketChange: (String) -> Unit,
     onSymbolChange: (String) -> Unit,
@@ -946,7 +949,7 @@ fun DynamicProviderControls(
                     modifier = Modifier
                         .weight(1f)
                         .clip(RoundedCornerShape(8.dp))
-                        .clickable { if (market != null) showAssetSheet = true },
+                        .clickable { if (market != null) onShowAssetSheetChange(true) },
                     color = if (market != null) SurfaceMid else SurfaceMid.copy(alpha = 0.5f),
                 ) {
                     Row(
@@ -955,7 +958,7 @@ fun DynamicProviderControls(
                         horizontalArrangement = Arrangement.spacedBy(4.dp),
                     ) {
                         Text(
-                            text = selectedSymbol ?: if (market != null) "Search..." else "Asset",
+                            text = symbol ?: if (market != null) "Search..." else "Asset",
                             color = if (market != null) TextPrimary else TextSecondary,
                             fontSize = 12.sp,
                             maxLines = 1,
