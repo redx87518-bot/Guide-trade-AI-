@@ -114,7 +114,7 @@ fun ChatScreen(
     var messageText by rememberSaveable { mutableStateOf("") }
     var showDeleteDialog by remember { mutableStateOf(false) }
     var sessionToDelete by remember { mutableStateOf<String?>(null) }
-    var selectedProvider by rememberSaveable { mutableStateOf("StockUp") }
+    var selectedProvider by rememberSaveable { mutableStateOf(AIProvider.STOCKUP) }
     var selectedFeature by rememberSaveable { mutableStateOf("Chat") }
     var selectedMarket by rememberSaveable { mutableStateOf<String?>(null) }
     var selectedSymbol by rememberSaveable { mutableStateOf<String?>(null) }
@@ -350,9 +350,9 @@ fun ChatScreen(
                     onProviderSelected = { 
                         selectedProvider = it
                         selectedFeature = when (it) {
-                            "SiftingIO" -> "Full Analysis"
-                            "Guavy" -> "Full Analysis"
-                            "Combined" -> "Full Analysis"
+                            AIProvider.SIFTING_IO -> "Full Analysis"
+                            AIProvider.GUAVY -> "Full Analysis"
+                            AIProvider.COMBINED -> "Full Analysis"
                             else -> "Chat"
                         }
                         selectedMarket = null
@@ -431,7 +431,7 @@ fun ChatScreen(
             }
         }
     }
-    if (selectedProvider != "StockUp") {
+    if (selectedProvider != AIProvider.STOCKUP) {
         DynamicProviderControls(
             provider = selectedProvider,
             feature = selectedFeature,
@@ -865,11 +865,11 @@ fun formatDate(iso: String): String {
 
 @Composable
 fun ModelSelectionBottomSheet(
-    selectedProvider: String,
-    onProviderSelected: (String) -> Unit,
+    selectedProvider: AIProvider,
+    onProviderSelected: (AIProvider) -> Unit,
     onDismiss: () -> Unit,
 ) {
-    val models = listOf("StockUp", "SiftingIO", "Guavy", "Combined")
+    val models = AIProvider.values()
     val bottomSheetState = androidx.compose.material3.rememberModalBottomSheetState(skipPartiallyExpanded = true)
     
     androidx.compose.material3.ModalBottomSheet(

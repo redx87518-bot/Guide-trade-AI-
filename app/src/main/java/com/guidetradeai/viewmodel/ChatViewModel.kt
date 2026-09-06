@@ -4,13 +4,14 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.guidetradeai.data.repository.AuthRepository
 import com.guidetradeai.data.repository.ChatRepository
-import com.guidetradeai.data.repository.MarketIntelligenceRepository
+import com.guidetradeai.data.repository.SiftingIORepository
+import com.guidetradeai.data.repository.StockupRepository
 import com.guidetradeai.data.local.AppPreferences
 import com.guidetradeai.di.AppModule
 import com.guidetradeai.domain.Result
+import com.guidetradeai.domain.model.AIProvider
 import com.guidetradeai.domain.model.ChatMessage
 import com.guidetradeai.domain.model.ChatSession
-import com.guidetradeai.domain.model.MarketIntelligenceRequest
 import com.guidetradeai.domain.messageOrNull
 import com.guidetradeai.audio.VoiceManager
 import kotlinx.coroutines.flow.first
@@ -25,7 +26,8 @@ class ChatViewModel(
     private val chatRepository: ChatRepository = AppModule.chatRepository,
     private val authRepository: AuthRepository = AppModule.authRepository,
     private val voiceManager: VoiceManager = AppModule.voiceManager,
-    private val marketIntelligenceRepository: MarketIntelligenceRepository = MarketIntelligenceRepository(AppModule.supabaseClient),
+    private val stockupRepository: StockupRepository = AppModule.stockupRepository,
+    private val siftingIORepository: SiftingIORepository = AppModule.siftingIORepository,
 ) : ViewModel() {
 
     private val _messages = MutableStateFlow<List<ChatMessage>>(emptyList())
@@ -52,8 +54,8 @@ class ChatViewModel(
     private val _currentSessionTitle = MutableStateFlow("New Chat")
     val currentSessionTitle: StateFlow<String> = _currentSessionTitle.asStateFlow()
 
-    private val _selectedProvider = MutableStateFlow("StockUp")
-    val selectedProvider: StateFlow<String> = _selectedProvider.asStateFlow()
+    private val _selectedProvider = MutableStateFlow(AIProvider.STOCKUP)
+    val selectedProvider: StateFlow<AIProvider> = _selectedProvider.asStateFlow()
 
     private val _selectedFeature = MutableStateFlow("Chat")
     val selectedFeature: StateFlow<String> = _selectedFeature.asStateFlow()
@@ -107,12 +109,12 @@ class ChatViewModel(
         }
     }
 
-    fun setProvider(provider: String) {
+    fun setProvider(provider: AIProvider) {
         _selectedProvider.value = provider
         _selectedFeature.value = when (provider) {
-            "SiftingIO" -> "Full Analysis"
-            "Guavy" -> "Full Analysis"
-            "Combined" -> "Full Analysis"
+            AIProvider.SIFTING_IO -> "Full Analysis"
+            AIProvider.GUAVY -> "Full Analysis"
+            AIProvider.COMBINED -> "Full Analysis"
             else -> "Chat"
         }
         _selectedMarket.value = null
@@ -125,7 +127,7 @@ class ChatViewModel(
     fun setTimeframe(timeframe: String) { _selectedTimeframe.value = timeframe }
 
     data class IntentRoute(
-        val provider: String,
+        val provider: AIProvider,
         val feature: String,
         val market: String? = null,
         val symbol: String? = null,
@@ -185,25 +187,27 @@ class ChatViewModel(
 
             val provider = _selectedProvider.value
             val result = when (provider) {
-                "StockUp" -> chatRepository.sendMessage(sessionId, text)
-                else -> {
-                    val request = com.guidetradeai.domain.model.MarketIntelligenceRequest(
-                        provider = provider.lowercase(),
-                        feature = _selectedFeature.value.lowercase().replace(" ", "_"),
-                        market = _selectedMarket.value?.lowercase(),
-                        symbol = _selectedSymbol.value,
+                AIProvider.STOCKUP -> {
+                    val res = stockupRepository.sendMessage(sessionId, text)
+                    if (res is Result.Success) Result.success(res.data) else Result.error(res.messageOrNull() ?: "StockUp failed")
+                }
+                AIProvider.SIFTING_IO -> {
+                    when (val miResult = siftingIORepository.query(
+                        market = _selectedMarket.value?.lowercase() ?: "crypto",
+                        symbol = _selectedSymbol.value ?: "BTC",
                         timeframe = _selectedTimeframe.value,
+                        feature = _selectedFeature.value.lowercase().replace(" ", "_"),
                         query = text,
-                    )
-                    when (val miResult = marketIntelligenceRepository.queryProvider(request)) {
+                    )) {
                         is Result.Success -> {
-                            val content = formatMarketIntelligenceResponse(miResult.data)
+                            val content = formatSiftingIOResponse(miResult.data)
                             Result.success(content)
                         }
                         is Result.Error -> Result.error(miResult.message)
-                        else -> Result.error("Unknown error")
+                        else -> Result.error("Unknown SiftingIO error")
                     }
                 }
+                else -> Result.error("Provider $provider is not implemented yet")
             }
 
             if (result is Result.Success) {
@@ -224,22 +228,12 @@ class ChatViewModel(
         }
     }
 
-    private fun formatMarketIntelligenceResponse(response: com.guidetradeai.domain.model.MarketIntelligenceResponse): String {
-        val provider = response.provider.uppercase()
-        val symbol = response.symbol ?: response.market ?: "Market"
-        val result = response.result
-        
+    private fun formatSiftingIOResponse(data: JsonObject): String {
         return buildString {
-            append("**$provider — $symbol**\n\n")
-            if (result != null) {
-                append("Feature: ${response.feature}\n")
-                append("Time: ${response.timeframe ?: "N/A"}\n\n")
-                append("```json\n")
-                append(result.toString().take(500))
-                append("\n```")
-            } else {
-                append("No data available.")
-            }
+            append("**SIFTINGIO**\n\n")
+            append("```json\n")
+            append(data.toString().take(800))
+            append("\n```")
         }
     }
 
