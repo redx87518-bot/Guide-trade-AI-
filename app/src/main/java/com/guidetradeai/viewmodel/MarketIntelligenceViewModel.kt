@@ -15,7 +15,7 @@ import kotlinx.coroutines.launch
 sealed class MarketIntelligenceUiState {
     object Idle : MarketIntelligenceUiState()
     object Loading : MarketIntelligenceUiState()
-    data class Success(val response: com.guidetradeai.domain.MarketIntelligenceResponse) : MarketIntelligenceUiState()
+    data class Success(val response: MarketIntelligenceResponse) : MarketIntelligenceUiState()
     data class Error(val message: String) : MarketIntelligenceUiState()
 }
 
