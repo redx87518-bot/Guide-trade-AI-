@@ -270,22 +270,25 @@ class ChatViewModel(
         val symbol = response.symbol ?: return null
         val market = response.market ?: return null
         
+        fun JsonObject.str(key: String): String? = this[key]?.jsonPrimitive?.content
+        fun JsonObject.num(key: String): Double? = this[key]?.jsonPrimitive?.content?.toDoubleOrNull()
+        
         return com.guidetradeai.domain.model.MarketDataResponse(
             provider = "SIFTINGIO",
             market = market.uppercase(),
             symbol = symbol,
             name = symbol,
             timestamp = response.timeframe ?: "",
-            signal = result["signal"]?.jsonPrimitive?.content ?: result["direction"]?.jsonPrimitive?.content ?: "",
-            score = result["score"]?.jsonPrimitive?.content?.toDoubleOrNull() ?: result["confidence"]?.jsonPrimitive?.content?.toDoubleOrNull(),
-            oscillator = result["oscillator"]?.jsonPrimitive?.content ?: result["oscillators"]?.jsonObject?.get("overall")?.jsonPrimitive?.content ?: "",
-            movingAverage = result["moving_average"]?.jsonPrimitive?.content ?: result["movingAverage"]?.jsonObject?.get("overall")?.jsonPrimitive?.content ?: "",
-            rsi = result["rsi"]?.jsonPrimitive?.content?.toDoubleOrNull() ?: result["indicators"]?.jsonObject?.get("rsi")?.jsonPrimitive?.content?.toDoubleOrNull(),
-            macd = result["macd"]?.jsonPrimitive?.content ?: result["indicators"]?.jsonObject?.get("macd")?.jsonPrimitive?.content ?: "",
-            barStatus = result["bar_status"]?.jsonPrimitive?.content ?: result["barStatus"]?.jsonPrimitive?.content ?: "",
-            price = result["price"]?.jsonPrimitive?.content?.toDoubleOrNull() ?: result["last"]?.jsonPrimitive?.content?.toDoubleOrNull(),
-            change = result["change"]?.jsonPrimitive?.content?.toDoubleOrNull(),
-            changePercent = result["change_percent"]?.jsonPrimitive?.content?.toDoubleOrNull() ?: result["changePercent"]?.jsonPrimitive?.content?.toDoubleOrNull(),
+            signal = result.str("signal") ?: result.str("direction") ?: "",
+            score = result.num("score") ?: result.num("confidence"),
+            oscillator = result.str("oscillator") ?: result["oscillators"]?.jsonObject?.str("overall"),
+            movingAverage = result.str("moving_average") ?: result["movingAverage"]?.jsonObject?.str("overall"),
+            rsi = result.num("rsi") ?: result["indicators"]?.jsonObject?.num("rsi"),
+            macd = result.str("macd") ?: result["indicators"]?.jsonObject?.str("macd"),
+            barStatus = result.str("bar_status") ?: result.str("barStatus"),
+            price = result.num("price") ?: result.num("last"),
+            change = result.num("change"),
+            changePercent = result.num("change_percent") ?: result.num("changePercent"),
         )
     }
 

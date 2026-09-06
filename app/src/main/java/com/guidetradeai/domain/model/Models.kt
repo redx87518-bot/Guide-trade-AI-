@@ -124,16 +124,18 @@ data class MarketDataResponse(
     val metadata: Map<String, String> = emptyMap(),
 )
 
+@Serializable
 data class NewsItem(
-    val title: String,
+    val title: String = "",
     val summary: String = "",
     val timestamp: String = "",
     val source: String = "",
 )
 
+@Serializable
 data class ChartPoint(
-    val timestamp: String,
-    val value: Double,
+    val timestamp: String = "",
+    val value: Double = 0.0,
     val volume: Double? = null,
 )
 
