@@ -41,6 +41,7 @@ import androidx.compose.material3.DrawerState
 import androidx.compose.material3.DrawerValue
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalNavigationDrawer
 import androidx.compose.material3.Surface
@@ -75,6 +76,8 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import com.guidetradeai.ui.components.MarkdownText
+import com.guidetradeai.ui.components.MarketCard
+import com.guidetradeai.ui.components.BottomBar
 import com.guidetradeai.ui.theme.AccentCyan
 import com.guidetradeai.ui.theme.AccentPurple
 import com.guidetradeai.ui.theme.AccentGlow
@@ -82,8 +85,6 @@ import com.guidetradeai.ui.theme.AiBubble
 import com.guidetradeai.ui.theme.Background
 import com.guidetradeai.ui.theme.DividerColor
 import com.guidetradeai.ui.theme.ErrorColor
-import com.guidetradeai.domain.Result
-import com.guidetradeai.domain.messageOrNull
 import com.guidetradeai.ui.theme.SurfaceDark
 import com.guidetradeai.ui.theme.SurfaceMid
 import com.guidetradeai.ui.theme.TextPrimary
@@ -125,10 +126,6 @@ fun ChatScreen(
     var showMarketSheet by remember { mutableStateOf(false) }
     var showAssetSheet by remember { mutableStateOf(false) }
     var showTimeframeSheet by remember { mutableStateOf(false) }
-    var assetOptions by remember { mutableStateOf<List<com.guidetradeai.domain.model.SymbolItem>>(emptyList()) }
-    var assetLoading by remember { mutableStateOf(false) }
-    var assetError by remember { mutableStateOf<String?>(null) }
-    var assetSearchQuery by remember { mutableStateOf("") }
 
     val listState = rememberLazyListState()
     val drawerState = remember { DrawerState(DrawerValue.Closed) }
@@ -152,28 +149,6 @@ fun ChatScreen(
     LaunchedEffect(error) {
         if (error != null) {
             delay(4000)
-        }
-    }
-
-    LaunchedEffect(selectedMarket) {
-        val market = selectedMarket
-        if (market != null && selectedProvider != "StockUp") {
-            assetLoading = true
-            assetError = null
-            try {
-                val result = chatViewModel.loadSymbols(selectedProvider.lowercase(), market.lowercase())
-                if (result is Result.Success) {
-                    assetOptions = result.data
-                } else {
-                    assetError = result.messageOrNull() ?: "Failed to load assets"
-                }
-            } catch (e: Exception) {
-                assetError = e.message ?: "Failed to load assets"
-            } finally {
-                assetLoading = false
-            }
-        } else {
-            assetOptions = emptyList()
         }
     }
 
@@ -207,11 +182,7 @@ fun ChatScreen(
                     TextButton(
                         onClick = {
                             chatViewModel.startNewSession()
-                            kotlinx.coroutines.GlobalScope.launch(kotlinx.coroutines.Dispatchers.Main) {
-                                kotlinx.coroutines.GlobalScope.launch(kotlinx.coroutines.Dispatchers.Main) {
-                                    drawerState.close()
-                                }
-                            }
+                            drawerState.close()
                         },
                         modifier = Modifier.fillMaxWidth(),
                         shape = RoundedCornerShape(12.dp),
@@ -234,9 +205,7 @@ fun ChatScreen(
                                     .fillMaxWidth()
                                     .clickable {
                                         chatViewModel.switchSession(session)
-                                        kotlinx.coroutines.GlobalScope.launch(kotlinx.coroutines.Dispatchers.Main) {
-                                    drawerState.close()
-                                }
+                                        drawerState.close()
                                     }
                                     .background(
                                         if (isActive) AccentGlow else Color.Transparent
@@ -307,11 +276,7 @@ fun ChatScreen(
                         .padding(horizontal = 12.dp, vertical = 12.dp),
                     verticalAlignment = Alignment.CenterVertically,
                 ) {
-                    IconButton(onClick = {
-                        kotlinx.coroutines.GlobalScope.launch(kotlinx.coroutines.Dispatchers.Main) {
-                            drawerState.open()
-                        }
-                    }) {
+                    IconButton(onClick = { drawerState.open() }) {
                         Icon(Icons.Default.Menu, contentDescription = "Menu", tint = TextPrimary)
                     }
                     Text(
@@ -364,8 +329,7 @@ fun ChatScreen(
                 }
             }
 
-            val currentError = error
-            if (currentError != null) {
+            if (error != null) {
                 Surface(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -374,7 +338,7 @@ fun ChatScreen(
                     shape = RoundedCornerShape(12.dp),
                 ) {
                     Text(
-                        text = currentError,
+                        text = error,
                         color = ErrorColor,
                         modifier = Modifier.padding(12.dp),
                         fontSize = 13.sp,
@@ -476,8 +440,6 @@ fun ChatScreen(
             market = selectedMarket,
             symbol = selectedSymbol,
             timeframe = selectedTimeframe,
-            showAssetSheet = showAssetSheet,
-            onShowAssetSheetChange = { showAssetSheet = it },
             onFeatureChange = { selectedFeature = it },
             onMarketChange = { selectedMarket = it },
             onSymbolChange = { selectedSymbol = it },
@@ -485,19 +447,7 @@ fun ChatScreen(
         )
     }
 
-            if (showAssetSheet) {
-                AssetSelectionBottomSheet(
-                    assets = assetOptions,
-                    loading = assetLoading,
-                    error = assetError,
-                    searchQuery = assetSearchQuery,
-                    selectedSymbol = selectedSymbol,
-                    onSearchQueryChange = { assetSearchQuery = it },
-                    onSymbolSelected = { selectedSymbol = it },
-                    onDismiss = { showAssetSheet = false },
-                )
-            }
-
+    BottomBar(navController = navController)
 
     if (showDeleteDialog && sessionToDelete != null) {
         androidx.compose.material3.AlertDialog(
@@ -535,7 +485,7 @@ fun EmptyChatState(onSuggestionClick: (String) -> Unit) {
             modifier = Modifier
                 .size(80.dp)
                 .shadow(
-                    elevation = 24.dp,
+                    radius = 24.dp,
                     shape = CircleShape,
                     spotColor = AccentCyan.copy(alpha = 0.4f),
                 )
@@ -661,7 +611,7 @@ fun UserMessageBubble(content: String, timestamp: String) {
 }
 
 @Composable
-fun AiMessageBubble(content: String, timestamp: String) {
+fun AiMessageBubble(content: String, timestamp: String, marketData: com.guidetradeai.domain.model.MarketDataResponse? = null) {
     val formattedTime = remember(timestamp) {
         try {
             val instant = Instant.parse(timestamp)
@@ -718,10 +668,14 @@ fun AiMessageBubble(content: String, timestamp: String) {
                 shape = RoundedCornerShape(20.dp),
             ) {
                 Column(modifier = Modifier.padding(horizontal = 16.dp, vertical = 10.dp)) {
-                    MarkdownText(
-                        text = content,
-                        color = TextPrimary,
-                    )
+                    if (marketData != null) {
+                        com.guidetradeai.ui.components.MarketCard(data = marketData)
+                    } else {
+                        MarkdownText(
+                            text = content,
+                            color = TextPrimary,
+                        )
+                    }
                 }
             }
             if (formattedTime.isNotBlank()) {
@@ -805,6 +759,99 @@ fun TypingIndicator() {
     }
 }
 
+@Composable
+fun OrbButton(
+    isListening: Boolean,
+    isSpeaking: Boolean,
+    onIdleClick: () -> Unit,
+    onListeningClick: () -> Unit,
+    onSpeakingClick: () -> Unit,
+) {
+    val scale by androidx.compose.animation.core.animateFloatAsState(
+        targetValue = if (isListening) 1.15f else 1f,
+        animationSpec = tween(200),
+        label = "orb_scale",
+    )
+
+    val color = when {
+        isListening -> AccentPurple
+        isSpeaking -> AccentCyan
+        else -> AccentCyan
+    }
+
+    Box(
+        modifier = Modifier
+            .size(48.dp)
+            .scale(scale)
+            .shadow(
+                elevation = 12.dp,
+                shape = CircleShape,
+                spotColor = color.copy(alpha = 0.5f),
+            )
+            .clip(CircleShape)
+            .background(color)
+            .clickable {
+                when {
+                    isListening -> onListeningClick()
+                    isSpeaking -> onSpeakingClick()
+                    else -> onIdleClick()
+                }
+            },
+        contentAlignment = Alignment.Center,
+    ) {
+        when {
+            isListening -> {
+                Icon(
+                    imageVector = Icons.Default.Send,
+                    contentDescription = "Stop",
+                    tint = Color.White,
+                    modifier = Modifier.size(22.dp),
+                )
+            }
+            isSpeaking -> {
+                WaveIcon()
+            }
+            else -> {
+                Icon(
+                    imageVector = androidx.compose.material.icons.filled.Mic,
+                    contentDescription = "Voice",
+                    tint = Color.White,
+                    modifier = Modifier.size(22.dp),
+                )
+            }
+        }
+    }
+}
+
+@Composable
+fun WaveIcon() {
+    Row(
+        horizontalArrangement = Arrangement.spacedBy(3.dp),
+        verticalAlignment = Alignment.CenterVertically,
+        modifier = Modifier.height(24.dp),
+    ) {
+        listOf(0.6f, 1f, 0.6f).forEach { height ->
+            val infiniteTransition = rememberInfiniteTransition(label = "wave")
+            val animatedHeight by infiniteTransition.animateFloat(
+                initialValue = 4f,
+                targetValue = 18f,
+                animationSpec = infiniteRepeatable(
+                    animation = tween(600, easing = LinearEasing),
+                    repeatMode = RepeatMode.Reverse,
+                ),
+                label = "wave_height",
+            )
+            Box(
+                modifier = Modifier
+                    .width(3.dp)
+                    .height(animatedHeight.dp)
+                    .clip(RoundedCornerShape(2.dp))
+                    .background(Color.White),
+            )
+        }
+    }
+}
+
 fun formatDate(iso: String): String {
     return try {
         val instant = Instant.parse(iso)
@@ -835,40 +882,45 @@ fun ModelSelectionBottomSheet(
         onDismissRequest = onDismiss,
         sheetState = bottomSheetState,
         containerColor = SurfaceDark,
+        shape = RoundedCornerShape(topStart = 24.dp, topEnd = 24.dp),
     ) {
         Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(16.dp),
+                .padding(20.dp),
         ) {
             Text(
                 text = "SELECT MODEL",
                 style = MaterialTheme.typography.labelLarge,
                 color = TextSecondary,
-                modifier = Modifier.padding(bottom = 12.dp),
+                fontWeight = FontWeight.Bold,
+                letterSpacing = 1.sp,
+                modifier = Modifier.padding(bottom = 16.dp),
             )
             models.forEach { model ->
                 Surface(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(vertical = 4.dp)
-                        .clip(RoundedCornerShape(12.dp))
+                        .padding(vertical = 6.dp)
+                        .clip(RoundedCornerShape(16.dp))
                         .clickable { 
                             onProviderSelected(model)
                             onDismiss()
                         },
-                    color = if (model == selectedProvider) AccentCyan.copy(alpha = 0.15f) else SurfaceMid,
+                    color = if (model == selectedProvider) AccentCyan.copy(alpha = 0.2f) else SurfaceMid,
+                    shadowElevation = if (model == selectedProvider) 4.dp else 0.dp,
                 ) {
                     Row(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .padding(horizontal = 16.dp, vertical = 14.dp),
+                            .padding(horizontal = 18.dp, vertical = 16.dp),
                         verticalAlignment = Alignment.CenterVertically,
                     ) {
                         Text(
                             text = model,
                             color = if (model == selectedProvider) AccentCyan else TextPrimary,
                             fontWeight = if (model == selectedProvider) FontWeight.Bold else FontWeight.Normal,
+                            fontSize = 15.sp,
                         )
                         if (model == selectedProvider) {
                             Spacer(modifier = Modifier.weight(1f))
@@ -876,13 +928,13 @@ fun ModelSelectionBottomSheet(
                                 imageVector = Icons.Default.CheckCircle,
                                 contentDescription = null,
                                 tint = AccentCyan,
-                                modifier = Modifier.size(20.dp),
+                                modifier = Modifier.size(22.dp),
                             )
                         }
                     }
                 }
             }
-            Spacer(modifier = Modifier.height(16.dp))
+            Spacer(modifier = Modifier.height(24.dp))
         }
     }
 }
@@ -894,8 +946,6 @@ fun DynamicProviderControls(
     market: String?,
     symbol: String?,
     timeframe: String,
-    showAssetSheet: Boolean,
-    onShowAssetSheetChange: (Boolean) -> Unit,
     onFeatureChange: (String) -> Unit,
     onMarketChange: (String) -> Unit,
     onSymbolChange: (String) -> Unit,
@@ -945,33 +995,14 @@ fun DynamicProviderControls(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.spacedBy(8.dp),
             ) {
-                Surface(
-                    modifier = Modifier
-                        .weight(1f)
-                        .clip(RoundedCornerShape(8.dp))
-                        .clickable { if (market != null) onShowAssetSheetChange(true) },
-                    color = if (market != null) SurfaceMid else SurfaceMid.copy(alpha = 0.5f),
-                ) {
-                    Row(
-                        modifier = Modifier.padding(horizontal = 12.dp, vertical = 10.dp),
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.spacedBy(4.dp),
-                    ) {
-                        Text(
-                            text = symbol ?: if (market != null) "Search..." else "Asset",
-                            color = if (market != null) TextPrimary else TextSecondary,
-                            fontSize = 12.sp,
-                            maxLines = 1,
-                            modifier = Modifier.weight(1f),
-                        )
-                        Icon(
-                            imageVector = Icons.Default.ArrowDropDown,
-                            contentDescription = null,
-                            tint = TextSecondary,
-                            modifier = Modifier.size(16.dp),
-                        )
-                    }
-                }
+                SimpleDropdown(
+                    label = "Asset",
+                    options = listOf(symbol ?: "Search..."),
+                    selectedOption = symbol ?: "Asset",
+                    onOptionSelected = onSymbolChange,
+                    modifier = Modifier.weight(1f),
+                    enabled = market != null,
+                )
                 SimpleDropdown(
                     label = "Timeframe",
                     options = timeframes,
@@ -997,163 +1028,53 @@ fun SimpleDropdown(
     Box(modifier = modifier) {
         Surface(
             onClick = { if (enabled) expanded = true },
-            shape = RoundedCornerShape(8.dp),
+            shape = RoundedCornerShape(12.dp),
             color = if (enabled) SurfaceMid else SurfaceMid.copy(alpha = 0.5f),
+            shadowElevation = 2.dp,
         ) {
             Row(
-                modifier = Modifier.padding(horizontal = 12.dp, vertical = 10.dp),
+                modifier = Modifier.padding(horizontal = 14.dp, vertical = 12.dp),
                 verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.spacedBy(4.dp),
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
             ) {
                 Text(
                     text = selectedOption.ifBlank { label },
                     color = if (enabled) TextPrimary else TextSecondary,
-                    fontSize = 12.sp,
+                    fontSize = 13.sp,
+                    fontWeight = if (selectedOption.isNotBlank() && selectedOption != label) FontWeight.SemiBold else FontWeight.Normal,
                     maxLines = 1,
+                    modifier = Modifier.weight(1f),
                 )
                 Icon(
                     imageVector = Icons.Default.ArrowDropDown,
                     contentDescription = null,
-                    tint = TextSecondary,
-                    modifier = Modifier.size(16.dp),
+                    tint = if (expanded) AccentCyan else TextSecondary,
+                    modifier = Modifier.size(18.dp),
                 )
             }
         }
-        DropdownMenu(
+        androidx.compose.material3.DropdownMenu(
             expanded = expanded,
             onDismissRequest = { expanded = false },
+            containerColor = SurfaceDark,
+            shadowElevation = 8.dp,
         ) {
             options.forEach { option ->
                 DropdownMenuItem(
-                    text = { Text(text = option, fontSize = 14.sp) },
+                    text = {
+                        Text(
+                            text = option,
+                            fontSize = 14.sp,
+                            color = if (option == selectedOption) AccentCyan else TextPrimary,
+                            fontWeight = if (option == selectedOption) FontWeight.Bold else FontWeight.Normal,
+                        )
+                    },
                     onClick = {
                         onOptionSelected(option)
                         expanded = false
                     }
                 )
             }
-        }
-    }
-}
-
-
-@Composable
-fun AssetSelectionBottomSheet(
-    assets: List<com.guidetradeai.domain.model.SymbolItem>,
-    loading: Boolean,
-    error: String?,
-    searchQuery: String,
-    selectedSymbol: String?,
-    onSearchQueryChange: (String) -> Unit,
-    onSymbolSelected: (String) -> Unit,
-    onDismiss: () -> Unit,
-) {
-    val filtered = remember(assets, searchQuery) {
-        val query = searchQuery.lowercase()
-        if (query.isBlank()) assets else assets.filter { 
-            it.symbol.lowercase().contains(query) || it.name.lowercase().contains(query) 
-        }
-    }
-
-    androidx.compose.material3.ModalBottomSheet(
-        onDismissRequest = onDismiss,
-        containerColor = SurfaceDark,
-    ) {
-        Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(16.dp),
-        ) {
-            Text(
-                text = "SELECT ASSET",
-                style = MaterialTheme.typography.labelLarge,
-                color = TextSecondary,
-                modifier = Modifier.padding(bottom = 12.dp),
-            )
-            TextField(
-                value = searchQuery,
-                onValueChange = onSearchQueryChange,
-                modifier = Modifier.fillMaxWidth(),
-                placeholder = { Text("Search...", color = TextSecondary) },
-                colors = TextFieldDefaults.colors(
-                    focusedContainerColor = SurfaceMid,
-                    unfocusedContainerColor = SurfaceMid,
-                    focusedIndicatorColor = AccentCyan,
-                    unfocusedIndicatorColor = DividerColor,
-                    focusedTextColor = TextPrimary,
-                    unfocusedTextColor = TextPrimary,
-                    cursorColor = AccentCyan,
-                ),
-                shape = RoundedCornerShape(12.dp),
-            )
-            Spacer(modifier = Modifier.height(12.dp))
-            when {
-                loading -> {
-                    Box(modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.Center) {
-                        Text("Loading...", color = TextSecondary)
-                    }
-                }
-                error != null -> {
-                    Box(modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.Center) {
-                        Text(error, color = ErrorColor)
-                    }
-                }
-                filtered.isEmpty() -> {
-                    Box(modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.Center) {
-                        Text("No assets found", color = TextSecondary)
-                    }
-                }
-                else -> {
-                    androidx.compose.foundation.lazy.LazyColumn(
-                        modifier = Modifier.fillMaxWidth(),
-                        verticalArrangement = Arrangement.spacedBy(4.dp),
-                    ) {
-                        items(filtered, key = { it.symbol }) { item ->
-                            Surface(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .clip(RoundedCornerShape(12.dp))
-                                    .clickable {
-                                        onSymbolSelected(item.symbol)
-                                        onDismiss()
-                                    },
-                                color = if (item.symbol == selectedSymbol) AccentCyan.copy(alpha = 0.15f) else SurfaceMid,
-                            ) {
-                                Row(
-                                    modifier = Modifier
-                                        .fillMaxWidth()
-                                        .padding(horizontal = 16.dp, vertical = 12.dp),
-                                    verticalAlignment = Alignment.CenterVertically,
-                                ) {
-                                    Column(modifier = Modifier.weight(1f)) {
-                                        Text(
-                                            text = item.symbol,
-                                            color = TextPrimary,
-                                            fontWeight = FontWeight.SemiBold,
-                                        )
-                                        if (item.name.isNotBlank() && item.name != item.symbol) {
-                                            Text(
-                                                text = item.name,
-                                                color = TextSecondary,
-                                                fontSize = 12.sp,
-                                            )
-                                        }
-                                    }
-                                    if (item.symbol == selectedSymbol) {
-                                        Icon(
-                                            imageVector = Icons.Default.CheckCircle,
-                                            contentDescription = null,
-                                            tint = AccentCyan,
-                                            modifier = Modifier.size(20.dp),
-                                        )
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-            Spacer(modifier = Modifier.height(16.dp))
         }
     }
 }

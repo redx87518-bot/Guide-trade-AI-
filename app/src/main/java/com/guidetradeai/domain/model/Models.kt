@@ -31,6 +31,7 @@ data class ChatMessage(
     val role: String,
     val content: String,
     val createdAt: String,
+    val marketData: MarketDataResponse? = null,
 )
 
 @Serializable
