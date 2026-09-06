@@ -109,6 +109,11 @@ fun ChatScreen(
     var messageText by rememberSaveable { mutableStateOf("") }
     var showDeleteDialog by remember { mutableStateOf(false) }
     var sessionToDelete by remember { mutableStateOf<String?>(null) }
+    var selectedProvider by rememberSaveable { mutableStateOf("stockup") }
+    var selectedFeature by rememberSaveable { mutableStateOf("chat") }
+    var selectedMarket by rememberSaveable { mutableStateOf<String?>(null) }
+    var selectedSymbol by rememberSaveable { mutableStateOf<String?>(null) }
+    var selectedTimeframe by rememberSaveable { mutableStateOf("1h") }
 
     val listState = rememberLazyListState()
     val drawerState = remember { DrawerState(DrawerValue.Closed) }

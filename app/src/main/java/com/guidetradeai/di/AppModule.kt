@@ -8,6 +8,7 @@ import com.guidetradeai.data.repository.ChatRepository
 import com.guidetradeai.data.repository.ResearchRepository
 import com.guidetradeai.data.repository.SettingsRepository
 import com.guidetradeai.data.repository.TelegramRepository
+import com.guidetradeai.data.repository.MarketIntelligenceRepository
 import com.guidetradeai.audio.VoiceManager
 import com.guidetradeai.data.local.AppPreferences
 
@@ -20,6 +21,7 @@ object AppModule {
     val researchRepository: ResearchRepository by lazy { ResearchRepository(supabaseClient) }
     val settingsRepository: SettingsRepository by lazy { SettingsRepository(supabaseClient) }
     val telegramRepository: TelegramRepository by lazy { TelegramRepository(supabaseClient) }
+    val marketIntelligenceRepository: MarketIntelligenceRepository by lazy { MarketIntelligenceRepository(supabaseClient) }
     lateinit var applicationContext: Context
     val voiceManager: VoiceManager by lazy {
         VoiceManager(context = applicationContext, supabase = supabaseClient)

@@ -47,6 +47,11 @@ class ChatViewModel(
     val currentSessionTitle: StateFlow<String> = _currentSessionTitle.asStateFlow()
 
     private var isFirstMessage = true
+    private var selectedProvider = "stockup"
+    private var selectedFeature = "chat"
+    private var selectedMarket: String? = null
+    private var selectedSymbol: String? = null
+    private var selectedTimeframe = "1h"
 
     fun initialize() {
         viewModelScope.launch {
@@ -83,6 +88,29 @@ class ChatViewModel(
             val result = chatRepository.getMessages(session.id)
             if (result.isSuccess) _messages.value = result.data!!
             AppModule.appPreferences.saveLastSessionId(session.id)
+        }
+    }
+
+    data class IntentRoute(
+        val provider: String,
+        val feature: String,
+        val market: String? = null,
+        val symbol: String? = null,
+        val timeframe: String? = null,
+    )
+
+    private fun routeIntent(text: String): IntentRoute? {
+        val lower = text.lowercase()
+        return when {
+            lower.contains("btc") || lower.contains("bitcoin") -> IntentRoute("guavy", "instrument_analysis", "crypto", "BTC")
+            lower.contains("eth") || lower.contains("ethereum") -> IntentRoute("guavy", "instrument_analysis", "crypto", "ETH")
+            lower.contains("eur") && lower.contains("usd") -> IntentRoute("guavy", "sentiment_history", "forex", "EURUSD")
+            lower.contains("xau") || lower.contains("gold") -> IntentRoute("guavy", "instrument_analysis", "commodities", "XAUUSD")
+            lower.contains("aapl") || lower.contains("apple") -> IntentRoute("guavy", "instrument_analysis", "stocks", "AAPL")
+            lower.contains("signal") || lower.contains("technical") -> IntentRoute("siftingio", "technical_signal", "crypto", "BTCUSD")
+            lower.contains("sentiment") -> IntentRoute("guavy", "sentiment_history", "crypto", "BTC")
+            lower.contains("news") -> IntentRoute("guavy", "recent_briefs", "crypto", "BTC")
+            else -> null
         }
     }
 
