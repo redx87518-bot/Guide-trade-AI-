@@ -138,14 +138,14 @@ class ChatViewModel(
         val lower = text.lowercase()
         val activeProvider = _selectedProvider.value
         return when {
-            lower.contains("btc") || lower.contains("bitcoin") -> IntentRoute(activeProvider, "Full Analysis", "crypto", "BTC")
-            lower.contains("eth") || lower.contains("ethereum") -> IntentRoute(activeProvider, "Full Analysis", "crypto", "ETH")
+            lower.contains("btc") || lower.contains("bitcoin") -> IntentRoute(activeProvider, "Full Analysis", "crypto", "BTCUSD")
+            lower.contains("eth") || lower.contains("ethereum") -> IntentRoute(activeProvider, "Full Analysis", "crypto", "ETHUSD")
             lower.contains("eur") && lower.contains("usd") -> IntentRoute(activeProvider, "Sentiment", "forex", "EURUSD")
             lower.contains("xau") || lower.contains("gold") -> IntentRoute(activeProvider, "Full Analysis", "commodities", "XAUUSD")
             lower.contains("aapl") || lower.contains("apple") -> IntentRoute(activeProvider, "Full Analysis", "stocks", "AAPL")
             lower.contains("signal") || lower.contains("technical") -> IntentRoute(activeProvider, "Technical Signal", "crypto", "BTCUSD")
-            lower.contains("sentiment") -> IntentRoute(activeProvider, "Sentiment", "crypto", "BTC")
-            lower.contains("news") -> IntentRoute(activeProvider, "News", "crypto", "BTC")
+            lower.contains("sentiment") -> IntentRoute(activeProvider, "Sentiment", "crypto", "BTCUSD")
+            lower.contains("news") -> IntentRoute(activeProvider, "News", "crypto", "BTCUSD")
             else -> null
         }
     }

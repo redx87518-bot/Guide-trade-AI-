@@ -33,26 +33,23 @@ function jsonResponse(body: any, status: number) {
 function resolveSiftingIOEndpoint(feature: string, market: string, symbol: string, timeframe: string): { url: string; requiresGzip: boolean } | null {
   const featureLower = feature.toLowerCase().replace(/\s+/g, '_')
   const tf = timeframe.toLowerCase()
+  const venue = market.toLowerCase()
 
-  const endpointMap: Record<string, { url: string; gzip: boolean }> = {
+  const endpointMap: Record<string, { url: string; gzip: boolean; venues?: string[] }> = {
     // Live
-    live_trade: { url: `/v1/last/trade/${market}/${symbol}`, gzip: false },
-    live_quote: { url: `/v1/last/quote/${market}/${symbol}`, gzip: false },
-    previous_close: { url: `/v1/last/close/${market}/${symbol}`, gzip: false },
-    snapshot: { url: `/v1/snapshot/${market}`, gzip: true },
+    live_trade: { url: `/v1/last/trade/${venue}/${symbol}`, gzip: false, venues: ['stocks', 'crypto', 'forex', 'dex'] },
+    live_quote: { url: `/v1/last/quote/${venue}/${symbol}`, gzip: false, venues: ['stocks', 'crypto', 'forex', 'dex'] },
+    previous_close: { url: `/v1/last/close/${venue}/${symbol}`, gzip: false, venues: ['stocks', 'crypto', 'forex', 'commodities'] },
+    snapshot: { url: `/v1/snapshot/${venue}`, gzip: true, venues: ['stocks', 'crypto', 'forex', 'dex'] },
 
     // Signals
-    technical_signal: { url: `/v1/last/signals/${market}/${symbol}?interval=${tf}`, gzip: false },
-    signal_history: { url: `/v1/hist/${market}/${symbol}/signals?interval=${tf}`, gzip: false },
-    full_analysis: { url: `/v1/last/signals/${market}/${symbol}?interval=${tf}`, gzip: false },
+    technical_signal: { url: `/v1/last/signals/${venue}/${symbol}?interval=${tf}`, gzip: false, venues: ['stocks', 'crypto', 'forex', 'commodities'] },
+    signal_history: { url: `/v1/hist/${venue}/${symbol}/signals?interval=${tf}`, gzip: false, venues: ['stocks', 'crypto', 'forex', 'commodities'] },
+    full_analysis: { url: `/v1/last/signals/${venue}/${symbol}?interval=${tf}`, gzip: false, venues: ['stocks', 'crypto', 'forex', 'commodities'] },
 
     // Historical bars
-    historical_price: { url: `/v1/hist/${market}/${symbol}/bars?interval=${tf}`, gzip: true },
-    historical_ohlcv: { url: `/v1/hist/${market}/${symbol}/bars?interval=${tf}`, gzip: true },
-
-    // DEX
-    dex_tvl: { url: `/v1/last/tvl/${market}/${symbol}`, gzip: false },
-    dex_wallet: { url: `/v1/fnd/dex/wallet/${market}/${symbol}`, gzip: false },
+    historical_price: { url: `/v1/hist/${venue}/${symbol}/bars?interval=${tf}`, gzip: true },
+    historical_ohlcv: { url: `/v1/hist/${venue}/${symbol}/bars?interval=${tf}`, gzip: true },
 
     // Convert
     convert: { url: `/v1/convert/${symbol}/USD`, gzip: false },
@@ -67,14 +64,17 @@ function resolveSiftingIOEndpoint(feature: string, market: string, symbol: strin
     filings: { url: `/v1/fnd/stocks/${symbol}/filings`, gzip: false },
 
     // Markets
-    market_status: { url: `/v1/fnd/markets/${market}/status`, gzip: false },
-    market_hours: { url: `/v1/fnd/markets/${market}/hours`, gzip: false },
-    market_calendar: { url: `/v1/fnd/markets/${market}/calendar`, gzip: false },
+    market_status: { url: `/v1/fnd/markets/${venue}/status`, gzip: false },
+    market_hours: { url: `/v1/fnd/markets/${venue}/hours`, gzip: false },
+    market_calendar: { url: `/v1/fnd/markets/${venue}/calendar`, gzip: false },
     economic_calendar: { url: `/v1/fnd/economic-calendar`, gzip: false },
   }
 
   const mapped = endpointMap[featureLower]
   if (!mapped) return null
+  if (mapped.venues && !mapped.venues.includes(venue)) {
+    return null
+  }
   return mapped
 }
 
@@ -97,27 +97,6 @@ Deno.serve(async (req) => {
     }
 
     console.log('SiftingIO request:', JSON.stringify({ provider, feature, market, symbol, timeframe, query }))
-
-    if (feature === 'list_symbols') {
-      const url = `${SIFTINGIO_BASE_URL}/v1/${market}/symbols`
-      console.log('SiftingIO symbol list:', url)
-
-      const response = await fetch(url, {
-        headers: {
-          'x-api-key': SIFTINGIO_API_KEY,
-          'Content-Type': 'application/json',
-        },
-      })
-
-      if (!response.ok) {
-        const text = await response.text()
-        console.error('SiftingIO symbol list error:', response.status, text)
-        return jsonResponse({ error: `SIFTINGIO_ERROR_${response.status}`, details: text.substring(0, 500) }, response.status)
-      }
-
-      const data = await response.json()
-      return jsonResponse({ provider: 'SIFTINGIO', feature, market, symbol, timeframe, result: data }, 200)
-    }
 
     const resolved = resolveSiftingIOEndpoint(feature, market, symbol, timeframe)
     if (!resolved) {

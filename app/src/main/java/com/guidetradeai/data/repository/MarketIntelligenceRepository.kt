@@ -53,6 +53,9 @@ class MarketIntelligenceRepository(
     }
 
     suspend fun listSymbols(provider: String, market: String): Result<List<SymbolItem>> {
+        if (provider.equals("siftingio", ignoreCase = true)) {
+            return Result.error("SiftingIO does not support symbol listing")
+        }
         return try {
             val body = buildJsonObject {
                 put("provider", JsonPrimitive(provider))
