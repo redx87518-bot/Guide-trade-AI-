@@ -271,11 +271,13 @@ class ChatViewModel(
         val market = response.market ?: return null
         
         fun getString(obj: JsonObject?, key: String): String? {
-            return obj?.get(key)?.jsonPrimitive?.content
+            val primitive = obj?.get(key) as? JsonPrimitive
+            return primitive?.content
         }
         
         fun getDouble(obj: JsonObject?, key: String): Double? {
-            return obj?.get(key)?.jsonPrimitive?.content?.toDoubleOrNull()
+            val primitive = obj?.get(key) as? JsonPrimitive
+            return primitive?.content?.toDoubleOrNull()
         }
         
         val oscillators = result["oscillators"] as? JsonObject
