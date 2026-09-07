@@ -79,6 +79,15 @@ class ChatViewModel(
     private val _voiceEnabled = MutableStateFlow(true)
     val voiceEnabled: StateFlow<Boolean> = _voiceEnabled.asStateFlow()
 
+    private val _symbolSuggestions = MutableStateFlow<List<com.guidetradeai.domain.model.SymbolItem>>(emptyList())
+    val symbolSuggestions: StateFlow<List<com.guidetradeai.domain.model.SymbolItem>> = _symbolSuggestions.asStateFlow()
+
+    private val _isLoadingSymbols = MutableStateFlow(false)
+    val isLoadingSymbols: StateFlow<Boolean> = _isLoadingSymbols.asStateFlow()
+
+    private val _symbolError = MutableStateFlow<String?>(null)
+    val symbolError: StateFlow<String?> = _symbolError.asStateFlow()
+
     private var isFirstMessage = true
     private var currentRequestJob: kotlinx.coroutines.Job? = null
 
@@ -428,6 +437,44 @@ class ChatViewModel(
             chatRepository.deleteSession(sessionId)
             if (_currentSessionId.value == sessionId) startNewSession()
             loadSessions(userId)
+        }
+    }
+
+    fun loadSymbols(provider: String, market: String) {
+        viewModelScope.launch {
+            _isLoadingSymbols.value = true
+            _symbolError.value = null
+            _symbolSuggestions.value = emptyList()
+            
+            val result = when (provider) {
+                AIProvider.SIFTING_IO -> {
+                    Result.error("SiftingIO does not support symbol listing")
+                }
+                AIProvider.GUAVY -> {
+                    marketIntelligenceRepository.listSymbols("guavy", market)
+                }
+                AIProvider.COMBINED -> {
+                    marketIntelligenceRepository.listSymbols("combined", market)
+                }
+                AIProvider.GUIDETRADE_AGENT -> {
+                    val agentRepo = AppModule.guideTradeAgentRepository
+                    agentRepo.listSymbols("guidetrade_agent", market)
+                }
+                else -> {
+                    Result.error("Symbol search not available for this provider")
+                }
+            }
+            
+            when (result) {
+                is Result.Success -> {
+                    _symbolSuggestions.value = result.data
+                }
+                is Result.Error -> {
+                    _symbolError.value = result.message
+                }
+                is Result.Loading -> {}
+            }
+            _isLoadingSymbols.value = false
         }
     }
 
