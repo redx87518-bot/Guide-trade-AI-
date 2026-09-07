@@ -72,18 +72,16 @@ class TelegramRepository(
         sendChatResults: Boolean,
     ): Result<Unit> {
         return try {
-            val updates = buildJsonObject {
+            val body = buildJsonObject {
+                put("action", JsonPrimitive("save"))
                 put("bot_token", JsonPrimitive(botToken))
                 put("chat_id", JsonPrimitive(chatId))
                 put("enabled", JsonPrimitive(enabled))
                 put("send_research", JsonPrimitive(sendResearch))
                 put("send_chat_results", JsonPrimitive(sendChatResults))
             }
-            supabase.postgrest.from("telegram_settings")
-                .upsert(updates) {
-                    filter { eq("user_id", currentUserId()) }
-                }
-            Result.success(Unit)
+            val resp = supabase.functions.invoke("telegram-test", body = body)
+            parseSuccessResponse(resp.bodyAsText())
         } catch (e: Exception) {
             Result.error("Failed to save Telegram settings: ${e.message}")
         }

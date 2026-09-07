@@ -10,6 +10,7 @@ import com.guidetradeai.data.repository.SettingsRepository
 import com.guidetradeai.data.repository.TelegramRepository
 import com.guidetradeai.data.repository.StockupRepository
 import com.guidetradeai.data.repository.SiftingIORepository
+import com.guidetradeai.data.repository.MarketIntelligenceRepository
 import com.guidetradeai.audio.VoiceManager
 import com.guidetradeai.data.local.AppPreferences
 
@@ -24,6 +25,7 @@ object AppModule {
     val telegramRepository: TelegramRepository by lazy { TelegramRepository(supabaseClient) }
     val stockupRepository: StockupRepository by lazy { StockupRepository(supabaseClient) }
     val siftingIORepository: SiftingIORepository by lazy { SiftingIORepository(supabaseClient) }
+    val marketIntelligenceRepository: MarketIntelligenceRepository by lazy { MarketIntelligenceRepository(supabaseClient) }
     lateinit var applicationContext: Context
     val voiceManager: VoiceManager by lazy {
         VoiceManager(context = applicationContext, supabase = supabaseClient)

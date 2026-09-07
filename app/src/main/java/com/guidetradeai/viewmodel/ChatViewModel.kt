@@ -6,6 +6,7 @@ import com.guidetradeai.data.repository.AuthRepository
 import com.guidetradeai.data.repository.ChatRepository
 import com.guidetradeai.data.repository.SiftingIORepository
 import com.guidetradeai.data.repository.StockupRepository
+import com.guidetradeai.data.repository.MarketIntelligenceRepository
 import com.guidetradeai.data.local.AppPreferences
 import com.guidetradeai.di.AppModule
 import com.guidetradeai.domain.Result
@@ -30,6 +31,7 @@ class ChatViewModel(
     private val voiceManager: VoiceManager = AppModule.voiceManager,
     private val stockupRepository: StockupRepository = AppModule.stockupRepository,
     private val siftingIORepository: SiftingIORepository = AppModule.siftingIORepository,
+    private val marketIntelligenceRepository: MarketIntelligenceRepository = AppModule.marketIntelligenceRepository,
 ) : ViewModel() {
 
     private val _messages = MutableStateFlow<List<ChatMessage>>(emptyList())
@@ -72,6 +74,7 @@ class ChatViewModel(
     val selectedTimeframe: StateFlow<String> = _selectedTimeframe.asStateFlow()
 
     private var isFirstMessage = true
+    private var currentRequestJob: kotlinx.coroutines.Job? = null
 
     fun initialize() {
         viewModelScope.launch {
@@ -155,7 +158,9 @@ class ChatViewModel(
     fun sendMessage(text: String) {
         val sessionId = _currentSessionId.value ?: return
         val userId = authRepository.getCurrentUser()?.id ?: return
-        viewModelScope.launch {
+        
+        currentRequestJob?.cancel()
+        currentRequestJob = viewModelScope.launch {
             _isLoading.value = true
             _error.value = null
             voiceManager.stopSpeaking()
@@ -193,6 +198,7 @@ class ChatViewModel(
             Log.d("ChatViewModel", "Symbol: ${_selectedSymbol.value}")
             Log.d("ChatViewModel", "Timeframe: ${_selectedTimeframe.value}")
             Log.d("ChatViewModel", "Analysis: ${_selectedFeature.value}")
+            
             val result = when (provider) {
                 AIProvider.STOCKUP -> {
                     Log.d("ChatViewModel", "Edge Function: ai-chat")
@@ -214,6 +220,44 @@ class ChatViewModel(
                         }
                         is Result.Error -> Result.error(miResult.message)
                         else -> Result.error("Unknown SiftingIO error")
+                    }
+                }
+                AIProvider.GUAVY -> {
+                    Log.d("ChatViewModel", "Edge Function: market-intelligence (guavy)")
+                    val request = com.guidetradeai.domain.model.MarketIntelligenceRequest(
+                        provider = "guavy",
+                        feature = _selectedFeature.value.lowercase().replace(" ", "_"),
+                        market = _selectedMarket.value ?: "crypto",
+                        symbol = _selectedSymbol.value ?: "BTC",
+                        timeframe = _selectedTimeframe.value,
+                        query = text,
+                    )
+                    when (val miResult = marketIntelligenceRepository.queryProvider(request)) {
+                        is Result.Success -> {
+                            val content = formatMarketResult(miResult.data.result, "GUAVY")
+                            Result.success(content)
+                        }
+                        is Result.Error -> Result.error(miResult.message)
+                        else -> Result.error("Unknown Guavy error")
+                    }
+                }
+                AIProvider.COMBINED -> {
+                    Log.d("ChatViewModel", "Edge Function: market-intelligence (combined)")
+                    val request = com.guidetradeai.domain.model.MarketIntelligenceRequest(
+                        provider = "combined",
+                        feature = _selectedFeature.value.lowercase().replace(" ", "_"),
+                        market = _selectedMarket.value ?: "crypto",
+                        symbol = _selectedSymbol.value ?: "BTC",
+                        timeframe = _selectedTimeframe.value,
+                        query = text,
+                    )
+                    when (val miResult = marketIntelligenceRepository.queryProvider(request)) {
+                        is Result.Success -> {
+                            val content = formatCombinedResult(miResult.data.result)
+                            Result.success(content)
+                        }
+                        is Result.Error -> Result.error(miResult.message)
+                        else -> Result.error("Unknown Combined error")
                     }
                 }
                 else -> Result.error("Provider $provider is not implemented yet")
@@ -243,6 +287,54 @@ class ChatViewModel(
             append("```json\n")
             append(data.toString().take(800))
             append("\n```")
+        }
+    }
+
+    private fun formatMarketResult(result: JsonObject?, providerLabel: String): String {
+        if (result == null) {
+            return "$providerLabel returned no data."
+        }
+        return buildString {
+            append("**$providerLabel**\n\n")
+            append("```json\n")
+            append(result.toString().take(1200))
+            append("\n```")
+        }
+    }
+
+    private fun formatCombinedResult(result: JsonObject?): String {
+        if (result == null) {
+            return "Combined analysis returned no data."
+        }
+        val siftingio = result["siftingio"]
+        val guavy = result["guavy"]
+        val siftingioError = result["siftingio_error"]?.jsonPrimitive?.content
+        val guavyError = result["guavy_error"]?.jsonPrimitive?.content
+        
+        return buildString {
+            append("**COMBINED ANALYSIS**\n\n")
+            
+            if (siftingio != null) {
+                append("**SIFTINGIO**\n")
+                append("```json\n")
+                append(siftingio.toString().take(800))
+                append("\n```\n\n")
+            } else if (siftingioError != null) {
+                append("**SIFTINGIO:** Error - $siftingioError\n\n")
+            }
+            
+            if (guavy != null) {
+                append("**GUAVY**\n")
+                append("```json\n")
+                append(guavy.toString().take(800))
+                append("\n```\n\n")
+            } else if (guavyError != null) {
+                append("**GUAVY:** Error - $guavyError\n\n")
+            }
+            
+            if (siftingio == null && guavy == null) {
+                append("No results available from either provider.")
+            }
         }
     }
 

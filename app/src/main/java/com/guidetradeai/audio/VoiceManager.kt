@@ -1,7 +1,4 @@
 package com.guidetradeai.audio
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.Dispatchers
 
 import android.content.Context
 import android.content.Intent
@@ -100,8 +97,8 @@ class VoiceManager(
 
     suspend fun speak(
         text: String,
-        onDone: suspend () -> Unit = {},
-        onError: suspend () -> Unit = {}
+        onDone: () -> Unit = {},
+        onError: () -> Unit = {}
     ) {
         val cleaned = cleanTextForSpeech(text)
         if (cleaned.isBlank()) { onDone(); return }
@@ -140,8 +137,8 @@ class VoiceManager(
 
     private fun playAudio(
         audioBytes: ByteArray,
-        onDone: suspend () -> Unit,
-        onError: suspend () -> Unit
+        onDone: () -> Unit,
+        onError: () -> Unit
     ) {
         try {
             mediaPlayer?.release()
@@ -160,14 +157,10 @@ class VoiceManager(
                 )
                 setOnCompletionListener {
                     tempFile.delete()
-                    GlobalScope.launch(Dispatchers.Main) {
-                        onDone()
-                    }
+                    onDone()
                 }
                 setOnErrorListener { _, _, _ -> 
-                    GlobalScope.launch(Dispatchers.Main) {
-                        onError()
-                    }
+                    onError()
                     true 
                 }
                 prepare()
@@ -175,9 +168,7 @@ class VoiceManager(
             }
         } catch (e: Exception) {
             Log.e("VoiceManager", "MediaPlayer failed", e)
-            GlobalScope.launch(Dispatchers.Main) {
-                onError()
-            }
+            onError()
         }
     }
 

@@ -113,6 +113,11 @@ fun ChatScreen(
     val isListening by chatViewModel.isListening.collectAsState()
     val error by chatViewModel.error.collectAsState()
     val currentTitle by chatViewModel.currentSessionTitle.collectAsState()
+    val viewModelProvider by chatViewModel.selectedProvider.collectAsState()
+    val viewModelFeature by chatViewModel.selectedFeature.collectAsState()
+    val viewModelMarket by chatViewModel.selectedMarket.collectAsState()
+    val viewModelSymbol by chatViewModel.selectedSymbol.collectAsState()
+    val viewModelTimeframe by chatViewModel.selectedTimeframe.collectAsState()
 
     var messageText by rememberSaveable { mutableStateOf("") }
     var showDeleteDialog by remember { mutableStateOf(false) }
@@ -127,6 +132,14 @@ fun ChatScreen(
     var showMarketSheet by remember { mutableStateOf(false) }
     var showAssetSheet by remember { mutableStateOf(false) }
     var showTimeframeSheet by remember { mutableStateOf(false) }
+
+    LaunchedEffect(viewModelProvider, viewModelFeature, viewModelMarket, viewModelSymbol, viewModelTimeframe) {
+        selectedProvider = viewModelProvider
+        selectedFeature = viewModelFeature
+        selectedMarket = viewModelMarket
+        selectedSymbol = viewModelSymbol
+        selectedTimeframe = viewModelTimeframe
+    }
 
     val listState = rememberLazyListState()
     val drawerState = remember { DrawerState(DrawerValue.Closed) }
