@@ -81,7 +81,11 @@ class TelegramRepository(
                 put("send_chat_results", JsonPrimitive(sendChatResults))
             }
             val resp = supabase.functions.invoke("telegram-test", body = body)
-            parseSuccessResponse(resp.bodyAsText())
+            when (val result = parseSuccessResponse(resp.bodyAsText())) {
+                is Result.Success -> Result.success(Unit)
+                is Result.Error -> Result.error(result.message)
+                else -> Result.error("Unknown error")
+            }
         } catch (e: Exception) {
             Result.error("Failed to save Telegram settings: ${e.message}")
         }

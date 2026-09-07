@@ -308,8 +308,8 @@ class ChatViewModel(
         }
         val siftingio = result["siftingio"]
         val guavy = result["guavy"]
-        val siftingioError = result["siftingio_error"]?.jsonPrimitive?.content
-        val guavyError = result["guavy_error"]?.jsonPrimitive?.content
+        val siftingioError = (result["siftingio_error"] as? kotlinx.serialization.json.JsonPrimitive)?.content
+        val guavyError = (result["guavy_error"] as? kotlinx.serialization.json.JsonPrimitive)?.content
         
         return buildString {
             append("**COMBINED ANALYSIS**\n\n")
