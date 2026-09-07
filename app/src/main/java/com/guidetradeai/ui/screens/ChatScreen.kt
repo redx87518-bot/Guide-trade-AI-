@@ -52,6 +52,8 @@ import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -583,6 +585,7 @@ fun AgentProgressIndicator(provider: AIProvider) {
                 selectedTimeframe = it
                 chatViewModel.setTimeframe(it)
             },
+            onAssetClick = { showAssetSheet = true },
         )
     }
 
@@ -1113,6 +1116,7 @@ fun DynamicProviderControls(
     onMarketChange: (String) -> Unit,
     onSymbolChange: (String) -> Unit,
     onTimeframeChange: (String) -> Unit,
+    onAssetClick: (() -> Unit)? = null,
 ) {
     val markets = listOf("Crypto", "Forex", "Commodities", "Stocks")
     val timeframes = listOf("1m", "5m", "15m", "30m", "1h", "1d", "1w", "1mo")
@@ -1166,11 +1170,7 @@ fun DynamicProviderControls(
                     onOptionSelected = onSymbolChange,
                     modifier = Modifier.weight(1f),
                     enabled = market != null,
-                    onClick = {
-                        if (market != null) {
-                            showAssetSheet = true
-                        }
-                    },
+                    onClick = onAssetClick,
                 )
                 SimpleDropdown(
                     label = "Timeframe",

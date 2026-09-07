@@ -446,17 +446,17 @@ class ChatViewModel(
             _symbolError.value = null
             _symbolSuggestions.value = emptyList()
             
-            val result = when (provider) {
-                AIProvider.SIFTING_IO -> {
+            val result = when (provider.lowercase()) {
+                "siftingio" -> {
                     Result.error("SiftingIO does not support symbol listing")
                 }
-                AIProvider.GUAVY -> {
+                "guavy" -> {
                     marketIntelligenceRepository.listSymbols("guavy", market)
                 }
-                AIProvider.COMBINED -> {
+                "combined" -> {
                     marketIntelligenceRepository.listSymbols("combined", market)
                 }
-                AIProvider.GUIDETRADE_AGENT -> {
+                "guidetrade_agent" -> {
                     val agentRepo = AppModule.guideTradeAgentRepository
                     agentRepo.listSymbols("guidetrade_agent", market)
                 }
