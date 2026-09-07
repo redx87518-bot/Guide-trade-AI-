@@ -87,6 +87,22 @@ class AuthViewModel(
         }
     }
 
+    fun signInWithGoogle() {
+        viewModelScope.launch {
+            _uiState.value = AuthUiState.Loading
+            when (val result = authRepository.signInWithGoogle()) {
+                is Result.Success -> {
+                    _currentUser.value = result.data
+                    _uiState.value = AuthUiState.Authenticated(result.data)
+                }
+                is Result.Error -> {
+                    _uiState.value = AuthUiState.Error(result.message)
+                }
+                is Result.Loading -> _uiState.value = AuthUiState.Loading
+            }
+        }
+    }
+
     fun signOut() {
         viewModelScope.launch {
             _uiState.value = AuthUiState.Loading

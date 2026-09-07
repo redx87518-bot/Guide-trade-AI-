@@ -144,3 +144,56 @@ data class SymbolItem(
     val name: String = "",
     val market: String = "",
 )
+
+@Serializable
+data class AgentRequest(
+    val goal: String,
+    val sessionId: String? = null,
+    val provider: String? = null,
+    val market: String? = null,
+    val symbol: String? = null,
+    val timeframe: String? = null,
+    val feature: String? = null,
+    val query: String? = null,
+)
+
+@Serializable
+data class AgentResponse(
+    val sessionId: String? = null,
+    val content: String? = null,
+    val summary: String? = null,
+    val provider: String? = null,
+    val market: String? = null,
+    val symbol: String? = null,
+    val timeframe: String? = null,
+    val toolsUsed: List<String> = emptyList(),
+    val toolCalls: List<AgentToolCall> = emptyList(),
+    val tasks: List<AgentTask> = emptyList(),
+    val marketData: MarketDataResponse? = null,
+    val timestamp: String? = null,
+)
+
+@Serializable
+data class AgentToolCall(
+    val name: String,
+    val status: String,
+    val startedAt: String? = null,
+    val finishedAt: String? = null,
+)
+
+@Serializable
+data class AgentTask(
+    val id: String,
+    val description: String,
+    val status: String,
+    val createdAt: String? = null,
+)
+
+@Serializable
+data class AgentSession(
+    val id: String,
+    val title: String,
+    val provider: String? = null,
+    val createdAt: String? = null,
+    val updatedAt: String? = null,
+)

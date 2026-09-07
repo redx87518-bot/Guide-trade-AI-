@@ -7,6 +7,7 @@ import io.github.jan.supabase.SupabaseClient
 import io.github.jan.supabase.gotrue.OtpType
 import io.github.jan.supabase.gotrue.SessionStatus
 import io.github.jan.supabase.gotrue.auth
+import io.github.jan.supabase.gotrue.providers.Google
 import io.github.jan.supabase.gotrue.providers.builtin.Email
 import kotlinx.coroutines.flow.Flow
 import kotlinx.serialization.json.JsonPrimitive
@@ -87,6 +88,30 @@ class AuthRepository(
         } catch (e: Exception) {
             Log.e("SupabaseAuth", "signIn failed", e)
             Result.error(mapAuthError(e.message ?: "Login failed"))
+        }
+    }
+
+    suspend fun signInWithGoogle(): Result<User> {
+        return try {
+            supabase.auth.signInWith(Google)
+            val u = supabase.auth.currentUserOrNull()
+            if (u != null) {
+                Result.success(
+                    User(
+                        id = u.id,
+                        email = u.email ?: "",
+                        fullName = u.userMetadata?.jsonObject?.get("full_name")?.jsonPrimitive?.content ?: "",
+                        avatarUrl = u.userMetadata?.jsonObject?.get("avatar_url")?.jsonPrimitive?.content,
+                        createdAt = u.createdAt?.toString() ?: "",
+                        updatedAt = u.updatedAt?.toString() ?: "",
+                    ),
+                )
+            } else {
+                Result.error("Google sign-in was cancelled or failed")
+            }
+        } catch (e: Exception) {
+            Log.e("SupabaseAuth", "signInWithGoogle failed", e)
+            Result.error(e.message ?: "Google sign-in failed")
         }
     }
 

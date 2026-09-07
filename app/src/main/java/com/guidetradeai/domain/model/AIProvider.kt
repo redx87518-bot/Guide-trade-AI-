@@ -4,5 +4,6 @@ enum class AIProvider {
     STOCKUP,
     SIFTING_IO,
     GUAVY,
-    COMBINED
+    COMBINED,
+    GUIDETRADE_AGENT,
 }

@@ -192,6 +192,21 @@ fun LoginScreen(
                 fontWeight = androidx.compose.ui.text.font.FontWeight.SemiBold,
             )
         }
+        Spacer(modifier = Modifier.height(12.dp))
+        androidx.compose.material3.OutlinedButton(
+            onClick = { authViewModel.signInWithGoogle() },
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(56.dp),
+            shape = RoundedCornerShape(16.dp),
+            enabled = authUiState !is AuthUiState.Loading,
+        ) {
+            Text(
+                text = "Continue with Google",
+                fontSize = 16.sp,
+                fontWeight = androidx.compose.ui.text.font.FontWeight.SemiBold,
+            )
+        }
         Spacer(modifier = Modifier.height(16.dp))
         TextButton(
             onClick = { navController.navigate(com.guidetradeai.ui.navigation.NavRoutes.SIGNUP) },

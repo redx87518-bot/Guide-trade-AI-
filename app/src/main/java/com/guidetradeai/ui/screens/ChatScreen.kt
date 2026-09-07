@@ -345,6 +345,7 @@ fun ChatScreen(
                             AIProvider.SIFTING_IO -> "Full Analysis"
                             AIProvider.GUAVY -> "Full Analysis"
                             AIProvider.COMBINED -> "Full Analysis"
+                            AIProvider.GUIDETRADE_AGENT -> "Full Analysis"
                             else -> "Chat"
                         }
                         selectedMarket = null
@@ -960,6 +961,7 @@ fun DynamicProviderControls(
         AIProvider.SIFTING_IO -> listOf("Full Analysis", "Technical Signal", "Signal History", "Live Trade", "Live Quote", "Previous Close", "Historical Price", "Market Status", "Market Hours", "Market Calendar", "Economic Calendar", "Search Stocks", "Company Profile", "Financials", "Ratios", "Insiders", "Ownership", "Filings")
         AIProvider.GUAVY -> listOf("Full Analysis", "Instrument Analysis", "Scorecard", "Sentiment", "Technical Indicators", "Price History", "News", "Current Action", "Current Trend", "Market Summary")
         AIProvider.COMBINED -> listOf("Full Analysis", "Research", "Technical Signal", "Sentiment")
+        AIProvider.GUIDETRADE_AGENT -> listOf("Full Analysis", "Technical Analysis", "Signals", "Market Snapshot", "Historical Analysis", "Price Data")
         else -> emptyList()
     }
 

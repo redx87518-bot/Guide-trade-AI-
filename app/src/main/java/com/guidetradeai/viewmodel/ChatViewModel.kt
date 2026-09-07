@@ -7,10 +7,12 @@ import com.guidetradeai.data.repository.ChatRepository
 import com.guidetradeai.data.repository.SiftingIORepository
 import com.guidetradeai.data.repository.StockupRepository
 import com.guidetradeai.data.repository.MarketIntelligenceRepository
+import com.guidetradeai.data.repository.GuideTradeAgentRepository
 import com.guidetradeai.data.local.AppPreferences
 import com.guidetradeai.di.AppModule
 import com.guidetradeai.domain.Result
 import com.guidetradeai.domain.model.AIProvider
+import com.guidetradeai.domain.model.AgentResponse
 import com.guidetradeai.domain.model.ChatMessage
 import com.guidetradeai.domain.model.ChatSession
 import com.guidetradeai.domain.messageOrNull
@@ -32,6 +34,7 @@ class ChatViewModel(
     private val stockupRepository: StockupRepository = AppModule.stockupRepository,
     private val siftingIORepository: SiftingIORepository = AppModule.siftingIORepository,
     private val marketIntelligenceRepository: MarketIntelligenceRepository = AppModule.marketIntelligenceRepository,
+    private val agentRepository: GuideTradeAgentRepository = AppModule.guideTradeAgentRepository,
 ) : ViewModel() {
 
     private val _messages = MutableStateFlow<List<ChatMessage>>(emptyList())
@@ -73,8 +76,17 @@ class ChatViewModel(
     private val _selectedTimeframe = MutableStateFlow("1h")
     val selectedTimeframe: StateFlow<String> = _selectedTimeframe.asStateFlow()
 
+    private val _voiceEnabled = MutableStateFlow(true)
+    val voiceEnabled: StateFlow<Boolean> = _voiceEnabled.asStateFlow()
+
     private var isFirstMessage = true
     private var currentRequestJob: kotlinx.coroutines.Job? = null
+
+    init {
+        viewModelScope.launch {
+            _voiceEnabled.value = AppModule.appPreferences.voiceEnabled.first()
+        }
+    }
 
     fun initialize() {
         viewModelScope.launch {
@@ -120,6 +132,7 @@ class ChatViewModel(
             AIProvider.SIFTING_IO -> "Full Analysis"
             AIProvider.GUAVY -> "Full Analysis"
             AIProvider.COMBINED -> "Full Analysis"
+            AIProvider.GUIDETRADE_AGENT -> "Full Analysis"
             else -> "Chat"
         }
         _selectedMarket.value = null
@@ -260,6 +273,40 @@ class ChatViewModel(
                         else -> Result.error("Unknown Combined error")
                     }
                 }
+                AIProvider.GUIDETRADE_AGENT -> {
+                    Log.d("ChatViewModel", "Edge Function: agent-orchestrator")
+                    val agentRequest = com.guidetradeai.domain.model.AgentRequest(
+                        goal = text,
+                        sessionId = sessionId,
+                        provider = "guidetrade_agent",
+                        market = _selectedMarket.value,
+                        symbol = _selectedSymbol.value,
+                        timeframe = _selectedTimeframe.value,
+                        feature = _selectedFeature.value,
+                        query = text,
+                    )
+                    when (val agentResult = agentRepository.sendRequest(agentRequest)) {
+                        is Result.Success -> {
+                            val response = agentResult.data
+                            val content = buildString {
+                                if (!response.summary.isNullOrBlank()) {
+                                    append(response.summary)
+                                    append("\n\n")
+                                }
+                                if (!response.content.isNullOrBlank()) {
+                                    append(response.content)
+                                }
+                                if (response.toolsUsed.isNotEmpty()) {
+                                    append("\n\n**Tools Used:** ")
+                                    append(response.toolsUsed.joinToString(", "))
+                                }
+                            }
+                            Result.success(content)
+                        }
+                        is Result.Error -> Result.error(agentResult.message)
+                        else -> Result.error("Unknown Agent error")
+                    }
+                }
                 else -> Result.error("Provider $provider is not implemented yet")
             }
 
@@ -273,7 +320,9 @@ class ChatViewModel(
                     createdAt = Instant.now().toString()
                 )
                 _messages.value = _messages.value + aiMsg
-                speakResponse(result.data)
+                if (_voiceEnabled.value) {
+                    speakResponse(result.data)
+                }
             } else {
                 _error.value = result.messageOrNull()
             }

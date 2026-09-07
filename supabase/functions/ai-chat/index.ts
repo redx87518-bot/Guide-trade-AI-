@@ -121,24 +121,13 @@ Deno.serve(async (req) => {
 
     if (!quanResponse.ok) {
       const errorText = await quanResponse.text()
-<<<<<<< ours
-<<<<<<< ours
-<<<<<<< ours
+      console.error('Quan API error:', quanResponse.status, errorText)
       if (quanResponse.status === 429) {
         return jsonResponse({ error: 'RATE_LIMITED' }, 429)
       }
       if (quanResponse.status >= 500) {
         return jsonResponse({ error: 'QUAN_ERROR' }, 502)
       }
-      return jsonResponse({ error: 'QUAN_ERROR' }, 502)
-    }
-
-    const quanData = await quanResponse.json()
-
-    if (!quanData.choices || !quanData.choices[0] || !quanData.choices[0].message) {
-      return jsonResponse({ error: 'INVALID_RESPONSE' }, 502)
-=======
-      console.error('Quan API error:', quanResponse.status, errorText)
       return jsonResponse({
         error: 'QUAN_ERROR',
         details: {
@@ -149,32 +138,6 @@ Deno.serve(async (req) => {
     }
 
     const quanData = await quanResponse.json()
-=======
-      console.error('Quan API error:', quanResponse.status, errorText)
-      return jsonResponse({
-        error: 'QUAN_ERROR',
-        details: {
-          status: quanResponse.status,
-          body: errorText.substring(0, 500),
-        }
-      }, 502)
-    }
-
-    const quanData = await quanResponse.json()
->>>>>>> theirs
-=======
-      console.error('Quan API error:', quanResponse.status, errorText)
-      return jsonResponse({
-        error: 'QUAN_ERROR',
-        details: {
-          status: quanResponse.status,
-          body: errorText.substring(0, 500),
-        }
-      }, 502)
-    }
-
-    const quanData = await quanResponse.json()
->>>>>>> theirs
     console.log('Quan API response keys:', Object.keys(quanData))
 
     const aiResponse = quanData?.candidates?.[0]?.content?.parts?.[0]?.text
@@ -190,16 +153,7 @@ Deno.serve(async (req) => {
           sample: JSON.stringify(quanData).substring(0, 300),
         }
       }, 502)
-<<<<<<< ours
-<<<<<<< ours
->>>>>>> theirs
-=======
->>>>>>> theirs
-=======
->>>>>>> theirs
     }
-
-    const aiResponse: string = quanData.choices[0].message.content
 
     const { error: userMsgError } = await supabaseAdmin
       .from('chat_messages')
@@ -234,6 +188,7 @@ Deno.serve(async (req) => {
       usage: quanData.usage ?? null,
     }, 200)
   } catch (error) {
+    console.error('ai-chat error:', error)
     return jsonResponse({ error: 'UNKNOWN_ERROR' }, 500)
   }
 })
