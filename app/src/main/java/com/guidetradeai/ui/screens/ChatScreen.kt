@@ -1375,3 +1375,126 @@ fun SimpleDropdown(
         }
     }
 }
+
+@Composable
+fun SymbolSearchDialog(
+    query: String,
+    symbols: List<com.guidetradeai.domain.model.SymbolItem>,
+    isLoading: Boolean,
+    error: String?,
+    onQueryChange: (String) -> Unit,
+    onSymbolSelect: (com.guidetradeai.domain.model.SymbolItem) -> Unit,
+    onDismiss: () -> Unit,
+) {
+    androidx.compose.material3.AlertDialog(
+        onDismissRequest = onDismiss,
+        title = { Text("Search Symbol", color = TextPrimary) },
+        text = {
+            Column {
+                OutlinedTextField(
+                    value = query,
+                    onValueChange = onQueryChange,
+                    placeholder = { Text("Search...", color = TextSecondary) },
+                    singleLine = true,
+                    colors = OutlinedTextFieldDefaults.colors(
+                        focusedBorderColor = AccentCyan,
+                        cursorColor = AccentCyan,
+                        focusedTextColor = TextPrimary,
+                        unfocusedTextColor = TextPrimary,
+                    ),
+                    modifier = Modifier.fillMaxWidth(),
+                )
+                Spacer(modifier = Modifier.height(12.dp))
+                when {
+                    isLoading -> {
+                        Box(modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.Center) {
+                            CircularProgressIndicator(color = AccentCyan)
+                        }
+                    }
+                    error != null -> {
+                        Text(text = error, color = ErrorColor, fontSize = 13.sp)
+                    }
+                    symbols.isEmpty() && query.isNotBlank() -> {
+                        Text(text = "No symbols found", color = TextSecondary, fontSize = 13.sp)
+                    }
+                    else -> {
+                        LazyColumn(
+                            modifier = Modifier.fillMaxWidth(),
+                            verticalArrangement = Arrangement.spacedBy(4.dp),
+                        ) {
+                            val filtered = if (query.isBlank()) symbols else symbols.filter {
+                                it.symbol.contains(query, ignoreCase = true) || it.name.contains(query, ignoreCase = true)
+                            }
+                            items(filtered) { item ->
+                                Surface(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .clickable { onSymbolSelect(item) },
+                                    shape = RoundedCornerShape(12.dp),
+                                    color = SurfaceMid,
+                                ) {
+                                    Row(
+                                        modifier = Modifier.padding(horizontal = 16.dp, vertical = 12.dp),
+                                        verticalAlignment = Alignment.CenterVertically,
+                                    ) {
+                                        Column(modifier = Modifier.weight(1f)) {
+                                            Text(text = item.symbol, color = TextPrimary, fontWeight = FontWeight.SemiBold, fontSize = 14.sp)
+                                            if (item.name.isNotBlank()) {
+                                                Text(text = item.name, color = TextSecondary, fontSize = 12.sp)
+                                            }
+                                        }
+                                        Text(text = item.market.uppercase(), color = TextSecondary, fontSize = 11.sp)
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        confirmButton = {},
+        dismissButton = {
+            TextButton(onClick = onDismiss) { Text("Cancel", color = TextSecondary) }
+        },
+        containerColor = SurfaceDark,
+    )
+}
+
+@Composable
+fun AgentProgressIndicator(provider: AIProvider) {
+    Surface(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 16.dp, vertical = 8.dp),
+        shape = RoundedCornerShape(16.dp),
+        color = SurfaceDark,
+    ) {
+        Row(
+            modifier = Modifier.padding(horizontal = 16.dp, vertical = 12.dp),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(12.dp),
+        ) {
+            CircularProgressIndicator(
+                modifier = Modifier.size(20.dp),
+                color = AccentCyan,
+                strokeWidth = 2.dp,
+            )
+            Column {
+                Text(
+                    text = when (provider) {
+                        AIProvider.GUIDETRADE_AGENT -> "GuideTrade Agent is analyzing..."
+                        else -> "Analyzing..."
+                    },
+                    color = TextPrimary,
+                    fontSize = 14.sp,
+                    fontWeight = FontWeight.Medium,
+                )
+                Text(
+                    text = "This may take a few moments",
+                    color = TextSecondary,
+                    fontSize = 12.sp,
+                )
+            }
+        }
+    }
+}
