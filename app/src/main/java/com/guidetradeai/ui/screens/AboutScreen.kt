@@ -2,6 +2,7 @@ package com.guidetradeai.ui.screens
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -44,6 +45,7 @@ import androidx.compose.material.icons.filled.Share
 import androidx.compose.material.icons.filled.SmartToy
 import androidx.compose.material.icons.filled.Speaker
 import androidx.compose.material.icons.filled.Sparkles
+import androidx.compose.material.icons.filled.ArrowForward
 import androidx.compose.material.icons.filled.Star
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -65,7 +67,9 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TextField
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.TextFieldDefaults
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.rememberModalBottomSheetState
@@ -97,6 +101,7 @@ import androidx.navigation.NavHostController
 import coil.compose.AsyncImage
 import com.guidetradeai.ui.components.*
 import com.guidetradeai.ui.theme.GuideTradeColors
+import com.guidetradeai.BuildConfig
 import com.guidetradeai.voice.VoiceState
 import com.guidetradeai.viewmodel.*
 import com.guidetradeai.data.repository.AuthRepository

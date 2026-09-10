@@ -49,6 +49,7 @@ class ChatViewModel(
 
     private val _error = MutableStateFlow<String?>(null)
     val error: StateFlow<String?> = _error.asStateFlow()
+    fun clearError() { _error.value = null }
 
     private val _currentSessionTitle = MutableStateFlow("New Chat")
     val currentSessionTitle: StateFlow<String> = _currentSessionTitle.asStateFlow()
