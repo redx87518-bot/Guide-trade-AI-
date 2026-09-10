@@ -1,13 +1,16 @@
 package com.guidetradeai.ui.components
 
-import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.background
+import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.border
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -15,22 +18,22 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Briefcase
-import androidx.compose.material.icons.filled.ChartArea
-import androidx.compose.material.icons.filled.Sparkles
-import androidx.compose.material.icons.filled.ArrowForward
-import androidx.compose.material.icons.filled.ContentCopy
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowForward
+import androidx.compose.material.icons.filled.ContentCopy
+import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Modifier
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.guidetradeai.ui.theme.GuideTradeColors
+
 @Composable
 fun MessageCard(
     role: String,
@@ -49,7 +52,10 @@ fun MessageCard(
     }
     val contentColor = if (isUser) {
         MaterialTheme.colorScheme.onPrimary
+    } else {
         MaterialTheme.colorScheme.onSurface
+    }
+
     Card(
         modifier = modifier
             .fillMaxWidth()
@@ -60,23 +66,26 @@ fun MessageCard(
             bottomStart = 16.dp,
             bottomEnd = 16.dp,
         ),
-        colors = CardDefaults.cardColors(containerColor = backgroundColor),
+        colors = CardDefaults.cardColors(
+            containerColor = backgroundColor,
+            contentColor = contentColor,
+        ),
     ) {
         Column(modifier = Modifier.padding(12.dp)) {
             Text(
                 text = content,
-                style = MaterialTheme.typography.bodyLarge,
                 color = contentColor,
-                lineHeight = 22.sp,
+                fontSize = 14.sp,
+                lineHeight = 20.sp,
             )
-            if (!isUser) {
+            if (timestamp != null) {
+                Spacer(modifier = Modifier.height(4.dp))
                 Text(
-                    text = "\n\nDisclaimer: This content is AI-generated and not financial advice. Always verify before trading.",
-                    style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                    lineHeight = 16.sp,
-                    modifier = Modifier.padding(top = 8.dp),
+                    text = timestamp,
+                    color = if (isUser) GuideTradeColors.TextPrimary else GuideTradeColors.MutedText,
+                    fontSize = 10.sp,
                 )
             }
         }
+    }
 }

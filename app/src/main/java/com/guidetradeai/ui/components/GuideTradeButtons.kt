@@ -10,29 +10,25 @@ import androidx.compose.foundation.interaction.collectIsPressedAsState
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.Icon
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
-import androidx.compose.material3.Icon
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Briefcase
 import androidx.compose.material.icons.filled.ChartArea
 import androidx.compose.material.icons.filled.Sparkles
-import androidx.compose.material.icons.filled.ArrowForward
-import androidx.compose.material.icons.filled.ContentCopy
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
@@ -43,103 +39,136 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.guidetradeai.ui.theme.GuideTradeColors
+
 @Composable
 fun PrimaryButton(
     text: String,
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
-    enabled: Boolean = true,
-    loading: Boolean = false,
     icon: ImageVector? = null,
+    enabled: Boolean = true,
 ) {
-    val scale by animateFloatAsState(
-        targetValue = if (enabled && !loading) 1f else 0.96f,
-        animationSpec = tween(100),
-        label = "button_scale",
-    )
     Button(
         onClick = onClick,
-        modifier = modifier
-            .fillMaxWidth()
-            .height(52.dp),
-        enabled = enabled && !loading,
+        modifier = modifier.height(52.dp),
+        enabled = enabled,
         shape = RoundedCornerShape(14.dp),
         colors = ButtonDefaults.buttonColors(
             containerColor = GuideTradeColors.PrimaryPurple,
             contentColor = GuideTradeColors.White,
-            disabledContainerColor = GuideTradeColors.PrimaryPurple.copy(alpha = 0.4f),
-            disabledContentColor = GuideTradeColors.White.copy(alpha = 0.6f),
+            disabledContainerColor = GuideTradeColors.Disabled,
+            disabledContentColor = GuideTradeColors.White,
         ),
-        elevation = ButtonDefaults.buttonElevation(defaultElevation = 0.dp, pressedElevation = 2.dp),
+        contentPadding = ButtonDefaults.ContentPadding,
     ) {
-        if (loading) {
-            androidx.compose.material3.CircularProgressIndicator(
-                color = GuideTradeColors.White,
-                modifier = Modifier.size(20.dp),
-                strokeWidth = 2.dp,
-            )
-        } else {
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.Center,
-                modifier = Modifier.fillMaxWidth(),
-            ) {
-                if (icon != null) {
-                    Icon(
-                        imageVector = icon,
-                        contentDescription = null,
-                        tint = GuideTradeColors.White,
-                        modifier = Modifier.size(18.dp),
-                    )
-                    Spacer(modifier = Modifier.width(8.dp))
-                }
-                Text(
-                    text = text.uppercase(),
-                    fontSize = 14.sp,
-                    fontWeight = FontWeight.SemiBold,
-                    letterSpacing = 0.5.sp,
-                    textAlign = TextAlign.Center,
-                )
-            }
-        }
-    }
-}
-fun SecondaryButton(
-    OutlinedButton(
-        enabled = enabled,
-        colors = ButtonDefaults.outlinedButtonColors(
-            contentColor = GuideTradeColors.TextPrimary,
-            disabledContentColor = GuideTradeColors.Disabled,
-        border = ButtonDefaults.outlinedButtonBorder.copy(
-            brush = Brush.linearGradient(
-                colors = listOf(GuideTradeColors.PrimaryPurple, GuideTradeColors.PrimaryPurple.copy(alpha = 0.3f)),
-            ),
-            width = 1.dp,
         Row(
-            verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.Center,
+            verticalAlignment = Alignment.CenterVertically,
             modifier = Modifier.fillMaxWidth(),
         ) {
             if (icon != null) {
                 Icon(
                     imageVector = icon,
                     contentDescription = null,
-                    tint = GuideTradeColors.BrightPurple,
-                    modifier = Modifier.size(18.dp),
+                    modifier = Modifier.size(20.dp),
+                    tint = GuideTradeColors.White,
+                )
                 Spacer(modifier = Modifier.width(8.dp))
+            }
             Text(
-                text = text.uppercase(),
-                fontSize = 14.sp,
-                fontWeight = FontWeight.SemiBold,
-                letterSpacing = 0.5.sp,
-                textAlign = TextAlign.Center,
-fun GhostButton(
-    TextButton(
-        modifier = modifier,
-        shape = RoundedCornerShape(10.dp),
-                    modifier = Modifier.size(16.dp),
-                Spacer(modifier = Modifier.width(6.dp))
                 text = text,
-                color = GuideTradeColors.BrightPurple,
-                fontSize = 13.sp,
+                fontSize = 15.sp,
+                fontWeight = FontWeight.SemiBold,
+                textAlign = TextAlign.Center,
+            )
+        }
+    }
+}
+
+@Composable
+fun SecondaryButton(
+    text: String,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier,
+    icon: ImageVector? = null,
+    enabled: Boolean = true,
+) {
+    Button(
+        onClick = onClick,
+        modifier = modifier.height(52.dp),
+        enabled = enabled,
+        shape = RoundedCornerShape(14.dp),
+        colors = ButtonDefaults.buttonColors(
+            containerColor = GuideTradeColors.SecondarySurface,
+            contentColor = GuideTradeColors.TextPrimary,
+            disabledContainerColor = GuideTradeColors.Disabled,
+            disabledContentColor = GuideTradeColors.TextSecondary,
+        ),
+        contentPadding = ButtonDefaults.ContentPadding,
+    ) {
+        Row(
+            horizontalArrangement = Arrangement.Center,
+            verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier.fillMaxWidth(),
+        ) {
+            if (icon != null) {
+                Icon(
+                    imageVector = icon,
+                    contentDescription = null,
+                    modifier = Modifier.size(20.dp),
+                    tint = GuideTradeColors.TextPrimary,
+                )
+                Spacer(modifier = Modifier.width(8.dp))
+            }
+            Text(
+                text = text,
+                fontSize = 15.sp,
+                fontWeight = FontWeight.SemiBold,
+                textAlign = TextAlign.Center,
+            )
+        }
+    }
+}
+
+@Composable
+fun GhostButton(
+    text: String,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier,
+    icon: ImageVector? = null,
+    enabled: Boolean = true,
+) {
+    OutlinedButton(
+        onClick = onClick,
+        modifier = modifier.height(48.dp),
+        enabled = enabled,
+        shape = RoundedCornerShape(14.dp),
+        colors = ButtonDefaults.outlinedButtonColors(
+            contentColor = GuideTradeColors.BrightPurple,
+            disabledContentColor = GuideTradeColors.Disabled,
+        ),
+        contentPadding = ButtonDefaults.ContentPadding,
+    ) {
+        Row(
+            horizontalArrangement = Arrangement.Center,
+            verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier.fillMaxWidth(),
+        ) {
+            if (icon != null) {
+                Icon(
+                    imageVector = icon,
+                    contentDescription = null,
+                    modifier = Modifier.size(18.dp),
+                    tint = GuideTradeColors.BrightPurple,
+                )
+                Spacer(modifier = Modifier.width(8.dp))
+            }
+            Text(
+                text = text,
+                fontSize = 14.sp,
                 fontWeight = FontWeight.Medium,
+                textAlign = TextAlign.Center,
+            )
+        }
+    }
+}
