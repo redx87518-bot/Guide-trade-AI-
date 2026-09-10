@@ -9,6 +9,7 @@ import com.guidetradeai.domain.model.PaperPosition
 import com.guidetradeai.domain.model.PaperTrade
 import io.github.jan.supabase.SupabaseClient
 import io.github.jan.supabase.functions.functions
+import io.github.jan.supabase.gotrue.auth
 import io.github.jan.supabase.postgrest.postgrest
 import io.github.jan.supabase.postgrest.query.Order
 import io.ktor.client.statement.bodyAsText
@@ -91,7 +92,6 @@ class PaperTradingRepository(
             balance = json["balance"]?.jsonPrimitive?.content?.toDoubleOrNull() ?: 0.0,
             equity = json["equity"]?.jsonPrimitive?.content?.toDoubleOrNull() ?: 0.0,
             buyingPower = json["buying_power"]?.jsonPrimitive?.content?.toDoubleOrNull() ?: 0.0,
-            unrealizedPnl = json["unrealized_pnl"]?.jsonPrimitive?.content?.toDoubleOrNull() ?: 0.0,
             createdAt = json["created_at"]?.jsonPrimitive?.content ?: "",
             updatedAt = json["updated_at"]?.jsonPrimitive?.content ?: "",
         )
@@ -101,12 +101,13 @@ class PaperTradingRepository(
         return PaperPosition(
             id = json["id"]?.jsonPrimitive?.content ?: "",
             userId = json["user_id"]?.jsonPrimitive?.content ?: "",
-            accountId = json["account_id"]?.jsonPrimitive?.content ?: "",
             symbol = json["symbol"]?.jsonPrimitive?.content ?: "",
             quantity = json["quantity"]?.jsonPrimitive?.content?.toDoubleOrNull() ?: 0.0,
-            averageCost = json["average_cost"]?.jsonPrimitive?.content?.toDoubleOrNull() ?: 0.0,
+            avgEntry = json["avg_entry"]?.jsonPrimitive?.content?.toDoubleOrNull() ?: 0.0,
+            currentPrice = json["current_price"]?.jsonPrimitive?.content?.toDoubleOrNull() ?: 0.0,
             marketValue = json["market_value"]?.jsonPrimitive?.content?.toDoubleOrNull() ?: 0.0,
             unrealizedPnl = json["unrealized_pnl"]?.jsonPrimitive?.content?.toDoubleOrNull() ?: 0.0,
+            unrealizedPnlPercent = json["unrealized_pnl_percent"]?.jsonPrimitive?.content?.toDoubleOrNull() ?: 0.0,
             createdAt = json["created_at"]?.jsonPrimitive?.content ?: "",
             updatedAt = json["updated_at"]?.jsonPrimitive?.content ?: "",
         )
@@ -116,31 +117,27 @@ class PaperTradingRepository(
         return PaperOrder(
             id = json["id"]?.jsonPrimitive?.content ?: "",
             userId = json["user_id"]?.jsonPrimitive?.content ?: "",
-            accountId = json["account_id"]?.jsonPrimitive?.content ?: "",
             symbol = json["symbol"]?.jsonPrimitive?.content ?: "",
             side = json["side"]?.jsonPrimitive?.content ?: "",
             quantity = json["quantity"]?.jsonPrimitive?.content?.toDoubleOrNull() ?: 0.0,
             price = json["price"]?.jsonPrimitive?.content?.toDoubleOrNull() ?: 0.0,
+            notionalValue = json["notional_value"]?.jsonPrimitive?.content?.toDoubleOrNull() ?: 0.0,
             orderType = json["order_type"]?.jsonPrimitive?.content ?: "",
             status = json["status"]?.jsonPrimitive?.content ?: "",
-            filledQuantity = json["filled_quantity"]?.jsonPrimitive?.content?.toDoubleOrNull() ?: 0.0,
-            filledPrice = json["filled_price"]?.jsonPrimitive?.content?.toDoubleOrNull(),
             createdAt = json["created_at"]?.jsonPrimitive?.content ?: "",
-            updatedAt = json["updated_at"]?.jsonPrimitive?.content ?: "",
         )
     }
 
     private fun mapToPaperTrade(json: JsonObject): PaperTrade {
         return PaperTrade(
             id = json["id"]?.jsonPrimitive?.content ?: "",
-            userId = json["user_id"]?.jsonPrimitive?.content ?: "",
-            accountId = json["account_id"]?.jsonPrimitive?.content ?: "",
             orderId = json["order_id"]?.jsonPrimitive?.content ?: "",
+            userId = json["user_id"]?.jsonPrimitive?.content ?: "",
             symbol = json["symbol"]?.jsonPrimitive?.content ?: "",
             side = json["side"]?.jsonPrimitive?.content ?: "",
             quantity = json["quantity"]?.jsonPrimitive?.content?.toDoubleOrNull() ?: 0.0,
             price = json["price"]?.jsonPrimitive?.content?.toDoubleOrNull() ?: 0.0,
-            fee = json["fee"]?.jsonPrimitive?.content?.toDoubleOrNull() ?: 0.0,
+            notionalValue = json["notional_value"]?.jsonPrimitive?.content?.toDoubleOrNull() ?: 0.0,
             createdAt = json["created_at"]?.jsonPrimitive?.content ?: "",
         )
     }
