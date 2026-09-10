@@ -41,8 +41,6 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import com.guidetradeai.viewmodel.AuthUiState
 import com.guidetradeai.viewmodel.AuthViewModel
-import com.guidetradeai.ui.navigation.NavRoutes
-import androidx.compose.material3.Surface
 
 @Composable
 fun EmailVerificationScreen(

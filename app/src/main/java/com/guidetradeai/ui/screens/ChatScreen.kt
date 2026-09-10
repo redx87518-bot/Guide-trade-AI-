@@ -27,14 +27,14 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.filled.Delete
-import androidx.compose.material.icons.filled.MoreVert
-import androidx.compose.material.icons.filled.Search
-import androidx.compose.material.icons.filled.Send
-import androidx.compose.material.icons.filled.Share
-import androidx.compose.material.icons.filled.Speaker
+import androidx.compose.material3.icons.Icons
+import androidx.compose.material3.icons.automirrored.filled.ArrowBack
+import androidx.compose.material3.icons.filled.Delete
+import androidx.compose.material3.icons.filled.MoreVert
+import androidx.compose.material3.icons.filled.Search
+import androidx.compose.material3.icons.filled.Send
+import androidx.compose.material3.icons.filled.Share
+import androidx.compose.material3.icons.filled.Speaker
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -59,9 +59,6 @@ import com.guidetradeai.viewmodel.ChatUiState
 import com.guidetradeai.viewmodel.ChatViewModel
 import com.guidetradeai.viewmodel.ResearchDetailViewModel
 import androidx.compose.material3.Divider
-import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.OutlinedTextFieldDefaults
-import androidx.compose.runtime.collectAsState
 
 @Composable
 fun ChatScreen(

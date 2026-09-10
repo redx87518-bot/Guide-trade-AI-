@@ -1,110 +1,104 @@
 package com.guidetradeai.ui.navigation
 
+import androidx.compose.foundation.layout.padding
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
-import androidx.navigation.NavOptionsBuilder
-import androidx.navigation.NavBackStackEntry
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import androidx.navigation.navArgument
-import androidx.navigation.navType
+import com.guidetradeai.ui.screens.*
 import com.guidetradeai.viewmodel.AuthViewModel
+import com.guidetradeai.viewmodel.ChatViewModel
+import com.guidetradeai.viewmodel.GuideTradeAgentViewModel
+import com.guidetradeai.viewmodel.HomeViewModel
+import com.guidetradeai.viewmodel.MarketsViewModel
+import com.guidetradeai.viewmodel.PaperTradingViewModel
+import com.guidetradeai.viewmodel.ResearchViewModel
+import com.guidetradeai.viewmodel.SettingsViewModel
 
 @Composable
-fun NavGraph(
-    modifier: Modifier = Modifier,
-    startDestination: String = NavRoutes.SPLASH,
-    authViewModel: AuthViewModel,
+fun GuideTradeNavGraph(
     navController: NavHostController = rememberNavController(),
+    startDestination: String = NavRoutes.HOME,
+    authViewModel: AuthViewModel = hiltViewModel(),
 ) {
-    NavHost(
-        modifier = modifier,
-        navController = navController,
-        startDestination = startDestination,
-    ) {
-        composable(NavRoutes.SPLASH) {
-            com.guidetradeai.ui.screens.SplashScreen(
-                navController = navController,
-                authViewModel = authViewModel,
-            )
-        }
-        composable(NavRoutes.ONBOARDING) {
-            com.guidetradeai.ui.screens.OnboardingScreen(navController = navController)
-        }
-        composable(NavRoutes.LOGIN) {
-            com.guidetradeai.ui.screens.LoginScreen(
-                navController = navController,
-                authViewModel = authViewModel,
-            )
-        }
-        composable(NavRoutes.SIGNUP) {
-            com.guidetradeai.ui.screens.SignUpScreen(
-                navController = navController,
-                authViewModel = authViewModel,
-            )
-        }
-        composable(NavRoutes.FORGOT_PASSWORD) {
-            com.guidetradeai.ui.screens.ForgotPasswordScreen(
-                navController = navController,
-                authViewModel = authViewModel,
-            )
-        }
+    val authState by authViewModel.uiState.collectAsState()
+    val isAuthenticated = authState is com.guidetradeai.viewmodel.AuthUiState.Authenticated
 
+    if (!isAuthenticated && startDestination != NavRoutes.LOGIN) {
+        navController.navigate(NavRoutes.LOGIN) {
+            popUpTo(NavRoutes.HOME) { inclusive = true }
+        }
+        return
+    }
+
+    NavHost(navController = navController, startDestination = startDestination) {
         composable(NavRoutes.HOME) {
-            com.guidetradeai.ui.screens.HomeScreen(
-                navController = navController,
-                authViewModel = authViewModel,
-            )
+            HomeScreen(navController = navController)
+        }
+        composable(NavRoutes.MARKETS) {
+            MarketsScreen(navController = navController)
+        }
+        composable(NavRoutes.AGENT) {
+            AgentScreen(navController = navController)
         }
         composable(NavRoutes.CHAT_NEW) {
-            com.guidetradeai.ui.screens.ChatScreen(
-                navController = navController,
-                sessionId = null,
-            )
-        }
-        composable(
-            route = NavRoutes.CHAT,
-            arguments = listOf(navArgument("sessionId") { type = navType.StringType }),
-        ) {
-            com.guidetradeai.ui.screens.ChatScreen(
-                navController = navController,
-                sessionId = it.arguments?.getString("sessionId"),
-            )
+            AgentScreen(navController = navController)
         }
         composable(NavRoutes.CHAT_HISTORY) {
-            com.guidetradeai.ui.screens.ChatHistoryScreen(navController = navController)
+            ChatHistoryScreen(navController = navController)
         }
-        composable(NavRoutes.RESEARCH_HISTORY) {
-            com.guidetradeai.ui.screens.ResearchHistoryScreen(navController = navController)
+        composable(NavRoutes.CHAT) { backStackEntry ->
+            val sessionId = backStackEntry.arguments?.getString("sessionId") ?: ""
+            AgentScreen(navController = navController)
         }
-        composable(
-            route = NavRoutes.RESEARCH_DETAIL,
-            arguments = listOf(navArgument("researchId") { type = navType.StringType }),
-        ) {
-            com.guidetradeai.ui.screens.ResearchDetailScreen(
-                navController = navController,
-                researchId = it.arguments?.getString("researchId") ?: "",
-            )
-        }
-        composable(NavRoutes.PROFILE) {
-            com.guidetradeai.ui.screens.ProfileScreen(
-                navController = navController,
-                authViewModel = authViewModel,
-            )
+        composable(NavRoutes.PAPER) {
+            PaperTradingScreen(navController = navController)
         }
         composable(NavRoutes.SETTINGS) {
-            com.guidetradeai.ui.screens.SettingsScreen(navController = navController)
+            SettingsScreen(navController = navController)
+        }
+        composable(NavRoutes.RESEARCH_HISTORY) {
+            ResearchHistoryScreen(navController = navController)
+        }
+        composable(NavRoutes.RESEARCH_DETAIL) { backStackEntry ->
+            val researchId = backStackEntry.arguments?.getString("researchId") ?: ""
+            ResearchDetailScreen(navController = navController, researchId = researchId)
         }
         composable(NavRoutes.TELEGRAM_SETTINGS) {
-            com.guidetradeai.ui.screens.TelegramSettingsScreen(navController = navController)
+            TelegramSettingsScreen(navController = navController)
         }
         composable(NavRoutes.VOICE_SETTINGS) {
-            com.guidetradeai.ui.screens.VoiceSettingsScreen(navController = navController)
+            VoiceSettingsScreen(navController = navController)
+        }
+        composable(NavRoutes.MCP_CONNECTIONS) {
+            McpConnectionsScreen(navController = navController)
         }
         composable(NavRoutes.ABOUT) {
-            com.guidetradeai.ui.screens.AboutScreen(navController = navController)
+            AboutScreen(navController = navController)
+        }
+        composable(NavRoutes.PROFILE) {
+            ProfileScreen(navController = navController)
+        }
+        composable(NavRoutes.ASSET_DETAIL) { backStackEntry ->
+            val symbol = backStackEntry.arguments?.getString("symbol") ?: ""
+            AssetDetailScreen(symbol = symbol, navController = navController)
+        }
+        composable(NavRoutes.SPLASH) {
+            SplashScreen(navController = navController, authViewModel = authViewModel)
+        }
+        composable(NavRoutes.LOGIN) {
+            LoginScreen(navController = navController, authViewModel = authViewModel)
         }
     }
 }

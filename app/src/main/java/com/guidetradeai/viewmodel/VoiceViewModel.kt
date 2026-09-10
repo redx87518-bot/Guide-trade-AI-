@@ -8,11 +8,18 @@ import com.guidetradeai.di.AppModule
 import com.guidetradeai.domain.Result
 import com.guidetradeai.voice.AudioPlayer
 import com.guidetradeai.voice.VoiceState
-import io.github.supabase.functions.functions
+import io.github.jan.supabase.functions.functions
+import io.ktor.client.statement.bodyAsText
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
+import kotlinx.serialization.json.Json
+import kotlinx.serialization.json.JsonElement
+import kotlinx.serialization.json.JsonObject
+import kotlinx.serialization.json.JsonPrimitive
+import kotlinx.serialization.json.jsonObject
+import kotlinx.serialization.json.jsonPrimitive
 
 sealed class VoiceUiState {
     object Idle : VoiceUiState()
@@ -20,6 +27,16 @@ sealed class VoiceUiState {
     data class Processing(val message: String = "Guide Trade is thinking...") : VoiceUiState()
     data class Speaking(val message: String = "Speaking...") : VoiceUiState()
     data class Error(val message: String) : VoiceUiState()
+}
+
+data class VoiceSettings(
+    val voiceEnabled: Boolean = true,
+    val autoSpeak: Boolean = false,
+    val theme: String = "dark",
+) {
+    companion object {
+        val Default = VoiceSettings()
+    }
 }
 
 class VoiceViewModel(
@@ -69,20 +86,20 @@ class VoiceViewModel(
             return
         }
 
+        val json = Json { ignoreUnknownKeys = true }
         viewModelScope.launch {
             _uiState.value = VoiceUiState.Processing("Generating voice...")
-            // Call text-to-speech edge function through the supabase functions
             try {
                 val response = AppModule.supabaseClient.functions.invoke(
                     "text-to-speech",
                     body = """
                     {
-                        "text": ${kotlinx.serialization.json.Json.encodeToString(kotlinx.serialization.json.JsonPrimitive(text))}
+                        "text": ${json.encodeToString(JsonElement.serializer(), JsonPrimitive(text))}
                     """.trimIndent(),
                 )
-                val data = response.data
-                val json = kotlinx.serialization.json.Json.decodeFromString<kotlinx.serialization.json.JsonObject>(data)
-                val audioBase64 = json.jsonObject["audio"]?.jsonPrimitive?.contentOrNull
+                val data = response.bodyAsText()
+                val result = json.decodeFromString<JsonObject>(data)
+                val audioBase64 = result.jsonObject["audio"]?.jsonPrimitive?.content
                 if (audioBase64 != null) {
                     _uiState.value = VoiceUiState.Speaking()
                     audioPlayer.playBase64Audio(audioBase64) {
@@ -127,15 +144,5 @@ class VoiceViewModel(
 
     fun clearError() {
         _uiState.value = VoiceUiState.Idle
-    }
-}
-
-data class VoiceSettings(
-    val voiceEnabled: Boolean = true,
-    val autoSpeak: Boolean = false,
-    val theme: String = "dark",
-) {
-    companion object {
-        val Default = VoiceSettings()
     }
 }

@@ -33,12 +33,11 @@ class ResearchRepository(private val supabase: SupabaseClient) {
                 ?: return Result.error("Empty research response")
             val result = ResearchResult(
                 id = parsed["id"]?.jsonPrimitive?.contentOrNull ?: "",
-                userId = userId,
                 title = query,
-                query = query,
-                response = summary,
-                asset = null,
+                summary = summary,
+                symbols = emptyList(),
                 createdAt = Instant.now().atZone(ZoneId.of("UTC")).toString(),
+                updatedAt = Instant.now().atZone(ZoneId.of("UTC")).toString(),
             )
             Result.success(result)
         } catch (e: Exception) {
@@ -54,12 +53,11 @@ class ResearchRepository(private val supabase: SupabaseClient) {
             val results = rows.map { row ->
                 ResearchResult(
                     id = row["id"]?.jsonPrimitive?.content ?: "",
-                    userId = row["user_id"]?.jsonPrimitive?.content ?: "",
                     title = row["title"]?.jsonPrimitive?.content ?: "",
-                    query = row["query"]?.jsonPrimitive?.content ?: "",
-                    asset = row["asset"]?.jsonPrimitive?.content,
-                    response = row["response"]?.jsonPrimitive?.content ?: "",
+                    summary = row["summary"]?.jsonPrimitive?.content ?: "",
+                    symbols = emptyList(),
                     createdAt = row["created_at"]?.jsonPrimitive?.content ?: "",
+                    updatedAt = row["updated_at"]?.jsonPrimitive?.content ?: "",
                 )
             }.sortedByDescending { it.createdAt }
             Result.success(results)

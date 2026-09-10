@@ -13,286 +13,223 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.AlertDialog
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.FloatingActionButton
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.IconButtonDefaults
-import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.OutlinedTextFieldDefaults
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Analytics
+import androidx.compose.material.icons.filled.Briefcase
+import androidx.compose.material.icons.filled.ChartArea
+import androidx.compose.material.icons.filled.CheckCircle
+import androidx.compose.material.icons.filled.Close
+import androidx.compose.material.icons.filled.ContentCopy
+import androidx.compose.material.icons.filled.DateRange
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Edit
-import androidx.compose.material.icons.filled.MoreVert
+import androidx.compose.material.icons.filled.ExitToApp
+import androidx.compose.material.icons.filled.Info
+import androidx.compose.material.icons.filled.Lock
+import androidx.compose.material.icons.filled.Mic
+import androidx.compose.material.icons.filled.Notifications
+import androidx.compose.material.icons.filled.Palette
+import androidx.compose.material.icons.filled.PlayArrow
+import androidx.compose.material.icons.filled.Search
+import androidx.compose.material.icons.filled.Send
+import androidx.compose.material.icons.filled.Share
+import androidx.compose.material.icons.filled.SmartToy
+import androidx.compose.material.icons.filled.Speaker
+import androidx.compose.material.icons.filled.Sparkles
+import androidx.compose.material.icons.filled.Star
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.Divider
+import androidx.compose.material3.DrawerState
+import androidx.compose.material3.DrawerValue
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.ListItem
+import androidx.compose.material3.ListItemDefaults
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.ModalBottomSheet
+import androidx.compose.material3.ModalNavigationDrawer
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
+import androidx.compose.material3.TextField
+import androidx.compose.material3.TextFieldDefaults
+import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
+import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.setValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.scale
+import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.NavHostController
-import com.guidetradeai.domain.model.ChatSession
-import com.guidetradeai.ui.components.BottomBar
-import com.guidetradeai.utils.formatDate
-import com.guidetradeai.viewmodel.ChatHistoryUiState
-import com.guidetradeai.viewmodel.ChatHistoryViewModel
+import coil.compose.AsyncImage
+import com.guidetradeai.ui.components.*
+import com.guidetradeai.ui.theme.GuideTradeColors
+import com.guidetradeai.voice.VoiceState
+import com.guidetradeai.viewmodel.*
+import com.guidetradeai.data.repository.AuthRepository
+import com.guidetradeai.data.repository.ChatRepository
+import com.guidetradeai.data.repository.GuideTradeAgentRepository
+import com.guidetradeai.data.local.AppPreferences
+import com.guidetradeai.di.AppModule
+import com.guidetradeai.domain.Result
+import com.guidetradeai.domain.model.*
+import com.guidetradeai.audio.VoiceManager
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.launch
 import java.time.Instant
+import java.time.LocalDateTime
 import java.time.ZoneId
-import com.guidetradeai.ui.navigation.NavRoutes
-import androidx.compose.runtime.collectAsState
+import java.time.format.DateTimeFormatter
+import java.util.UUID
+import android.util.Log
+import android.widget.Toast
+import android.content.ClipData
+import android.content.ClipboardManager
+import android.content.Context
+import android.content.Intent
+import kotlinx.coroutines.delay
+import android.speech.RecognitionListener
+import android.speech.RecognizerIntent
+import android.speech.SpeechRecognizer
+import android.os.Bundle
+import android.media.AudioAttributes
+import android.media.MediaPlayer
+import android.util.Base64
+import java.io.File
+import java.util.Locale
+import io.github.jan.supabase.SupabaseClient
+import io.github.jan.supabase.functions.functions
+import io.github.jan.supabase.postgrest.postgrest
+import io.github.jan.supabase.postgrest.query.Order
+import io.ktor.client.statement.bodyAsText
+import kotlinx.serialization.json.Json
+import kotlinx.serialization.json.JsonObject
+import kotlinx.serialization.json.JsonPrimitive
+import kotlinx.serialization.json.buildJsonObject
+import kotlinx.serialization.json.jsonObject
+import kotlinx.serialization.json.jsonPrimitive
 
 @Composable
-fun ChatHistoryScreen(
-    navController: NavHostController,
-    chatHistoryViewModel: ChatHistoryViewModel = viewModel(),
-) {
+fun ChatHistoryScreen(navController: NavHostController) {
+    val chatHistoryViewModel: ChatHistoryViewModel = viewModel()
     val uiState by chatHistoryViewModel.uiState.collectAsState()
     val sessions = (uiState as? ChatHistoryUiState.Success)?.sessions ?: emptyList()
 
-    LaunchedEffect(Unit) {
-        chatHistoryViewModel.loadSessions()
-    }
+    LaunchedEffect(Unit) { chatHistoryViewModel.loadSessions() }
 
     Scaffold(
         floatingActionButton = {
             FloatingActionButton(
                 onClick = {
                     chatHistoryViewModel.createNewSession { sessionId ->
-                        navController.navigate(com.guidetradeai.ui.navigation.NavRoutes.chatRoute(sessionId))
+                        navController.navigate(NavRoutes.chatRoute(sessionId))
                     }
                 },
-                containerColor = MaterialTheme.colorScheme.primary,
-                contentColor = MaterialTheme.colorScheme.onPrimary,
+                containerColor = GuideTradeColors.PrimaryPurple,
+                contentColor = GuideTradeColors.White,
             ) {
-                Icon(
-                    imageVector = Icons.Default.Add,
-                    contentDescription = "New Chat",
-                )
+                Icon(imageVector = Icons.Default.Add, contentDescription = "New Chat")
             }
         },
-        bottomBar = { BottomBar(navController = navController) },
+        bottomBar = { GuideTradeBottomBar(navController = navController) },
+        containerColor = GuideTradeColors.Background,
     ) { padding ->
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .background(MaterialTheme.colorScheme.background)
-                .padding(padding),
-        ) {
+        Column(modifier = Modifier.fillMaxSize().padding(padding)) {
             Text(
                 text = "Chat History",
                 style = MaterialTheme.typography.headlineMedium,
-                color = MaterialTheme.colorScheme.onBackground,
+                color = GuideTradeColors.TextPrimary,
                 modifier = Modifier.padding(24.dp, 24.dp, 24.dp, 8.dp),
                 fontWeight = FontWeight.W600,
             )
-
             if (sessions.isEmpty()) {
-                Box(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .padding(24.dp),
-                    contentAlignment = Alignment.Center,
-                ) {
-                    Text(
-                        text = "No chat sessions yet. Create a new one to get started.",
-                        color = MaterialTheme.colorScheme.onSurfaceVariant,
-                        style = MaterialTheme.typography.bodyMedium,
-                        textAlign = androidx.compose.ui.text.style.TextAlign.Center,
-                    )
-                }
+                EmptyState(
+                    title = "No chat sessions yet.",
+                    description = "Start a new conversation with GuideTrade Agent.",
+                    modifier = Modifier.fillMaxSize(),
+                    action = {
+                        PrimaryButton(
+                            text = "New Chat",
+                            onClick = {
+                                chatHistoryViewModel.createNewSession { sessionId ->
+                                    navController.navigate(NavRoutes.chatRoute(sessionId))
+                                }
+                            },
+                        )
+                    },
+                )
             } else {
-                val grouped = groupSessionsByDate(sessions)
-
                 LazyColumn(
                     modifier = Modifier.fillMaxSize(),
                     contentPadding = PaddingValues(vertical = 8.dp),
                     verticalArrangement = Arrangement.spacedBy(8.dp),
                 ) {
-                    grouped.forEach { (header, sessionList) ->
-                        item {
-                            Text(
-                                text = header,
-                                style = MaterialTheme.typography.titleSmall,
-                                color = MaterialTheme.colorScheme.onSurfaceVariant,
-                                modifier = Modifier.padding(horizontal = 24.dp, vertical = 8.dp),
-                                fontSize = 13.sp,
-                                fontWeight = FontWeight.W600,
-                                letterSpacing = 0.5.sp,
-                            )
-                        }
-                        items(sessionList, key = { it.id }) { session ->
-                            SessionItem(
-                                session = session,
-                                onOpen = {
-                                    navController.navigate(com.guidetradeai.ui.navigation.NavRoutes.chatRoute(session.id))
-                                },
-                            )
+                    items(sessions, key = { it.id }) { session ->
+                        GuideTradeCard(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(horizontal = 16.dp, vertical = 4.dp)
+                                .clickable { navController.navigate(NavRoutes.chatRoute(session.id)) },
+                        ) {
+                            Row(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(16.dp),
+                                horizontalArrangement = Arrangement.SpaceBetween,
+                                verticalAlignment = Alignment.CenterVertically,
+                            ) {
+                                Column(modifier = Modifier.weight(1f)) {
+                                    Text(text = session.title, color = GuideTradeColors.TextPrimary, fontSize = 16.sp, fontWeight = FontWeight.SemiBold, maxLines = 1, overflow = TextOverflow.Ellipsis)
+                                    Text(text = session.updatedAt.formatDate("MMM dd"), color = GuideTradeColors.TextSecondary, fontSize = 12.sp)
+                                }
+                                Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(4.dp)) {
+                                    IconButton(onClick = {
+                                        chatHistoryViewModel.deleteSession(session.id)
+                                    }) {
+                                        Icon(imageVector = Icons.Default.Delete, contentDescription = "Delete", tint = GuideTradeColors.Negative, modifier = Modifier.size(18.dp))
+                                    }
+                                }
+                            }
                         }
                     }
                 }
             }
         }
     }
-}
-
-@Composable
-fun SessionItem(
-    session: ChatSession,
-    onOpen: () -> Unit,
-    modifier: Modifier = Modifier,
-) {
-    var showMenu by remember { mutableStateOf(false) }
-    var showRenameDialog by remember { mutableStateOf(false) }
-    var showDeleteDialog by remember { mutableStateOf(false) }
-    var renameText by rememberSaveable { mutableStateOf(session.title) }
-
-    Card(
-        modifier = modifier
-            .fillMaxWidth()
-            .padding(horizontal = 16.dp, vertical = 4.dp)
-            .clickable(onClick = onOpen),
-        shape = RoundedCornerShape(16.dp),
-        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
-        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
-    ) {
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(16.dp),
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically,
-        ) {
-            Column(modifier = Modifier.weight(1f)) {
-                Text(
-                    text = session.title,
-                    style = MaterialTheme.typography.titleMedium,
-                    color = MaterialTheme.colorScheme.onSurface,
-                    maxLines = 1,
-                )
-                Text(
-                    text = session.updatedAt.formatDate("MMM dd"),
-                    style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                )
-            }
-
-            IconButton(onClick = { showMenu = true }) {
-                Icon(
-                    imageVector = Icons.Default.MoreVert,
-                    contentDescription = "More",
-                    tint = MaterialTheme.colorScheme.onSurfaceVariant,
-                )
-            }
-        }
-
-        DropdownMenu(expanded = showMenu, onDismissRequest = { showMenu = false }) {
-            androidx.compose.material3.DropdownMenuItem(
-                text = { Text("Rename") },
-                onClick = {
-                    showMenu = false
-                    showRenameDialog = true
-                },
-            )
-            androidx.compose.material3.DropdownMenuItem(
-                text = { Text("Delete", color = MaterialTheme.colorScheme.error) },
-                onClick = {
-                    showMenu = false
-                    showDeleteDialog = true
-                },
-            )
-        }
-    }
-
-    if (showRenameDialog) {
-        AlertDialog(
-            onDismissRequest = { showRenameDialog = false },
-            title = { Text("Rename Chat") },
-            text = {
-                OutlinedTextField(
-                    value = renameText,
-                    onValueChange = { renameText = it },
-                    singleLine = true,
-                    colors = OutlinedTextFieldDefaults.colors(
-                        focusedBorderColor = MaterialTheme.colorScheme.primary,
-                    ),
-                )
-            },
-            confirmButton = {
-                TextButton(onClick = {
-                    showRenameDialog = false
-                }) { Text("OK") }
-            },
-            dismissButton = {
-                TextButton(onClick = { showRenameDialog = false }) { Text("Cancel") }
-            },
-        )
-    }
-
-    if (showDeleteDialog) {
-        AlertDialog(
-            onDismissRequest = { showDeleteDialog = false },
-            title = { Text("Delete Chat") },
-            text = { Text("Are you sure you want to delete \"${session.title}\"? This action cannot be undone.") },
-            confirmButton = {
-                TextButton(
-                    onClick = {
-                        showDeleteDialog = false
-                    },
-                    colors = androidx.compose.material3.TextButtonDefaults.textButtonColors(
-                        containerColor = Color.Transparent,
-                    ),
-                ) { Text("Delete", color = MaterialTheme.colorScheme.error) }
-            },
-            dismissButton = {
-                TextButton(onClick = { showDeleteDialog = false }) { Text("Cancel") }
-            },
-        )
-    }
-}
-
-private fun groupSessionsByDate(sessions: List<ChatSession>): List<Pair<String, List<ChatSession>>> {
-    val today = java.time.LocalDate.now()
-    val yesterday = today.minusDays(1)
-    val startOfWeek = today.with(java.time.DayOfWeek.MONDAY)
-
-    val groups = LinkedHashMap<String, MutableList<ChatSession>>()
-
-    sessions.forEach { session ->
-        val date = try {
-            Instant.parse(session.createdAt).atZone(ZoneId.systemDefault()).toLocalDate()
-        } catch (e: Exception) {
-            today
-        }
-
-        val header = when {
-            date == today -> "TODAY"
-            date == yesterday -> "YESTERDAY"
-            date >= startOfWeek -> "THIS WEEK"
-            else -> "OLDER"
-        }
-
-        groups.getOrPut(header) { mutableListOf() }.add(session)
-    }
-
-    return groups.entries.map { it.key to it.value }.toList()
 }

@@ -24,7 +24,7 @@ class ResearchViewModel(
     private val _uiState = MutableStateFlow<ResearchHistoryUiState>(ResearchHistoryUiState.Loading)
     val uiState: StateFlow<ResearchHistoryUiState> = _uiState.asStateFlow()
 
-    fun loadHistory() {
+    fun loadResearchHistory() {
         viewModelScope.launch {
             _uiState.value = ResearchHistoryUiState.Loading
             when (val result = researchRepository.getResearchHistory()) {
@@ -43,13 +43,13 @@ class ResearchViewModel(
                         ?.filterNot { it.id == id } ?: emptyList()
                     _uiState.value = ResearchHistoryUiState.Success(current)
                 }
-                is Result.Error -> _uiState.value = ResearchHistoryUiState.Error(result.message)
+                is Result.Error -> {}
                 is Result.Loading -> {}
             }
         }
     }
 
     fun refresh() {
-        loadHistory()
+        loadResearchHistory()
     }
 }

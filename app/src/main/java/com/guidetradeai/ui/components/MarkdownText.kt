@@ -15,6 +15,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.AnnotatedString
@@ -23,6 +24,7 @@ import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.runtime.setValue
 
 @Composable
 fun MarkdownText(
@@ -40,86 +42,61 @@ fun MarkdownText(
     )
 }
 
-fun buildMarkdownAnnotatedString(text: String, color: Color): AnnotatedString {
-    val builder = AnnotatedString.Builder(text)
+fun buildMarkdownAnnotatedString(text: String, color: Color = Color.Unspecified): AnnotatedString {
+    val builder = AnnotatedString.Builder()
+    val boldRegex = Regex("\\*\\*(.*?)\\*\\*")
     val paragraphs = text.split("\n\n").filter { it.isNotBlank() }
-
-    builder.clearLength()
 
     for (paragraph in paragraphs) {
         val lines = paragraph.split("\n")
-
         for (line in lines) {
             val trimmed = line.trim()
-
             when {
                 trimmed.startsWith("### ") -> {
-                    builder.pushStyle(SpanStyle(fontSize = 18.sp, fontWeight = FontWeight.W600, color = color))
                     builder.append(trimmed.substring(4))
-                    builder.pop()
-                    builder.pushStyle(SpanStyle(color = Color.Transparent))
-                    builder.append("\n")
-                    builder.pop()
                 }
                 trimmed.startsWith("## ") -> {
-                    builder.pushStyle(SpanStyle(fontSize = 22.sp, fontWeight = FontWeight.W700, color = color))
                     builder.append(trimmed.substring(3))
-                    builder.pop()
-                    builder.pushStyle(SpanStyle(color = Color.Transparent))
-                    builder.append("\n")
-                    builder.pop()
                 }
                 trimmed.startsWith("# ") -> {
-                    builder.pushStyle(SpanStyle(fontSize = 26.sp, fontWeight = FontWeight.W700, color = color))
                     builder.append(trimmed.substring(2))
-                    builder.pop()
-                    builder.pushStyle(SpanStyle(color = Color.Transparent))
-                    builder.append("\n")
-                    builder.pop()
                 }
                 trimmed.startsWith("- ") || trimmed.startsWith("* ") -> {
-                    builder.pushStyle(SpanStyle(color = color))
-                    builder.append("• ${trimmed.substring(2)}")
-                    builder.pop()
-                    builder.pushStyle(SpanStyle(color = Color.Transparent))
-                    builder.append("\n")
-                    builder.pop()
+                    builder.append("\u2022 ${trimmed.substring(2)}")
                 }
                 trimmed.matches(Regex("^[0-9]+\\. .*")) -> {
                     val content = trimmed.substringAfter(". ")
                     val num = trimmed.substringBefore(".")
-                    builder.pushStyle(SpanStyle(color = color))
                     builder.append("$num. $content")
-                    builder.pop()
-                    builder.pushStyle(SpanStyle(color = Color.Transparent))
-                    builder.append("\n")
-                    builder.pop()
                 }
                 else -> {
-                    builder.pushStyle(SpanStyle(color = color))
                     builder.append(trimmed)
-                    builder.pop()
-                    builder.pushStyle(SpanStyle(color = Color.Transparent))
-                    builder.append("\n")
-                    builder.pop()
                 }
             }
+            builder.append("\n\n")
         }
-        builder.pushStyle(SpanStyle(color = Color.Transparent))
-        builder.append("\n")
-        builder.pop()
     }
 
-    return builder.toAnnotatedString()
+    val result = builder.toAnnotatedString()
+    val styled = AnnotatedString.Builder(result)
+    val boldPattern = Regex("\\*\\*(.*?)\\*\\*")
+    var searchStart = 0
+    boldPattern.findAll(result.text).forEach { match ->
+        styled.addStyle(
+            style = SpanStyle(fontWeight = FontWeight.Bold, color = color),
+            start = match.range.first,
+            end = match.range.last + 1,
+        )
+    }
+    return styled.toAnnotatedString()
 }
 
 @Composable
 fun ChatTypingIndicator() {
     val infiniteTransition = rememberInfiniteTransition(label = "typing_dots")
-
     Row(
         horizontalArrangement = Arrangement.spacedBy(4.dp),
-        verticalAlignment = androidx.compose.ui.Alignment.CenterVertically,
+        verticalAlignment = Alignment.CenterVertically,
     ) {
         repeat(3) { index ->
             val alpha by infiniteTransition.animateFloat(

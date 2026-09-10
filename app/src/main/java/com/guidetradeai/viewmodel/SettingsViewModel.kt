@@ -37,45 +37,30 @@ class SettingsViewModel(
 
     fun updateVoiceEnabled(enabled: Boolean) {
         viewModelScope.launch {
-            when (val result = settingsRepository.updateVoiceEnabled(enabled)) {
-                is Result.Success -> {
-                    val current = (uiState.value as? SettingsUiState.Success)?.settings
-                    if (current != null) {
-                        _uiState.value = SettingsUiState.Success(current.copy(voiceEnabled = enabled))
-                    }
-                }
-                is Result.Error -> _uiState.value = SettingsUiState.Error(result.message)
-                is Result.Loading -> {}
+            settingsRepository.updateVoiceEnabled(enabled)
+            val current = (uiState.value as? SettingsUiState.Success)?.settings
+            if (current != null) {
+                _uiState.value = SettingsUiState.Success(current.copy(voiceEnabled = enabled))
             }
         }
     }
 
     fun updateAutoSpeak(enabled: Boolean) {
         viewModelScope.launch {
-            when (val result = settingsRepository.updateAutoSpeak(enabled)) {
-                is Result.Success -> {
-                    val current = (uiState.value as? SettingsUiState.Success)?.settings
-                    if (current != null) {
-                        _uiState.value = SettingsUiState.Success(current.copy(autoSpeak = enabled))
-                    }
-                }
-                is Result.Error -> _uiState.value = SettingsUiState.Error(result.message)
-                is Result.Loading -> {}
+            settingsRepository.updateAutoSpeak(enabled)
+            val current = (uiState.value as? SettingsUiState.Success)?.settings
+            if (current != null) {
+                _uiState.value = SettingsUiState.Success(current.copy(autoSpeak = enabled))
             }
         }
     }
 
     fun updateTheme(theme: String) {
         viewModelScope.launch {
-            when (val result = settingsRepository.updateTheme(theme)) {
-                is Result.Success -> {
-                    val current = (uiState.value as? SettingsUiState.Success)?.settings
-                    if (current != null) {
-                        _uiState.value = SettingsUiState.Success(current.copy(theme = theme))
-                    }
-                }
-                is Result.Error -> _uiState.value = SettingsUiState.Error(result.message)
-                is Result.Loading -> {}
+            settingsRepository.updateTheme(theme)
+            val current = (uiState.value as? SettingsUiState.Success)?.settings
+            if (current != null) {
+                _uiState.value = SettingsUiState.Success(current.copy(theme = theme))
             }
         }
     }
