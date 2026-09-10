@@ -13,6 +13,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -37,15 +38,7 @@ fun LoadingState(
         Box(
             modifier = Modifier
                 .size(48.dp)
-                .background(
-                    Brush.radialGradient(
-                        colors = listOf(
-                            GuideTradeColors.PrimaryPurple.copy(alpha = 0.3f),
-                            Color.Transparent,
-                        ),
-                    ),
-                    CircleShape,
-                ),
+                .background(GuideTradeColors.PrimarySurface, CircleShape),
             contentAlignment = Alignment.Center,
         ) {
             CircurProgressIndicator(
@@ -59,7 +52,6 @@ fun LoadingState(
             text = message,
             color = GuideTradeColors.TextSecondary,
             fontSize = 14.sp,
-            textAlign = TextAlign.Center,
         )
     }
 }
@@ -75,15 +67,11 @@ fun EmptyState(
         modifier = modifier.fillMaxSize(),
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally,
-        padding = Modifier.padding(32.dp),
     ) {
         Box(
             modifier = Modifier
                 .size(72.dp)
-                .background(
-                    GuideTradeColors.PrimarySurface,
-                    RoundedCornerShape(20.dp),
-                ),
+                .background(GuideTradeColors.PrimarySurface, RoundedCornerShape(20.dp)),
             contentAlignment = Alignment.Center,
         ) {
             Box(
@@ -143,7 +131,6 @@ fun ErrorState(
         modifier = modifier.fillMaxSize(),
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally,
-        padding = Modifier.padding(32.dp),
     ) {
         Box(
             modifier = Modifier
@@ -191,26 +178,4 @@ fun ErrorState(
             }
         }
     }
-}
-
-@Composable
-fun LoadingShimmer(
-    modifier: Modifier = Modifier,
-    height: Float = 16f,
-) {
-    val infiniteTransition = androidx.compose.animation.core.rememberInfiniteTransition(label = "shimmer")
-    val alpha by infiniteTransition.animateFloat(
-        initialValue = 0.3f,
-        targetValue = 0.7f,
-        animationSpec = androidx.compose.animation.core.infiniteRepeatable(
-            animation = androidx.compose.animation.core.tween(800),
-            repeatMode = androidx.compose.animation.core.RepeatMode.Reverse,
-        ),
-        label = "shimmer_alpha",
-    )
-    Box(
-        modifier = modifier
-            .height(height.dp)
-            .background(GuideTradeColors.SecondarySurface.copy(alpha = alpha), RoundedCornerShape(4.dp)),
-    )
 }
