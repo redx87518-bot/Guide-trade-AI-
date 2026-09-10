@@ -31,7 +31,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.guidetradeai.ui.theme.GuideTradeColors
-
 @Composable
 fun InfoRow(
     icon: ImageVector,
@@ -57,7 +56,6 @@ fun InfoRow(
                 text = label,
                 color = GuideTradeColors.TextSecondary,
                 fontSize = 13.sp,
-            )
         }
         Text(
             text = value,
@@ -67,65 +65,35 @@ fun InfoRow(
         )
     }
 }
-
-@Composable
 fun InfoCard(
     title: String,
-    value: String,
-    modifier: Modifier = Modifier,
     subtitle: String? = null,
     tint: Color = GuideTradeColors.BrightPurple,
-) {
     Column(
         modifier = modifier
             .background(GuideTradeColors.SecondarySurface, RoundedCornerShape(12.dp))
             .padding(12.dp),
-    ) {
-        Text(
             text = title.uppercase(),
             color = GuideTradeColors.MutedText,
             fontSize = 10.sp,
             fontWeight = FontWeight.SemiBold,
             letterSpacing = 0.5.sp,
-        )
         Spacer(modifier = Modifier.height(4.dp))
-        Text(
-            text = value,
             color = tint,
             fontSize = 18.sp,
             fontWeight = FontWeight.Bold,
-        )
         if (subtitle != null) {
-            Text(
                 text = subtitle,
-                color = GuideTradeColors.TextSecondary,
                 fontSize = 11.sp,
-            )
-        }
-    }
-}
-
-@Composable
 fun RiskGauge(
     riskLevel: String,
-    modifier: Modifier = Modifier,
-) {
     val (color, _) = when (riskLevel.lowercase()) {
         "low" -> GuideTradeColors.Positive to 0.25f
         "moderate" -> GuideTradeColors.Warning to 0.5f
         "high" -> GuideTradeColors.Negative to 0.75f
         "extreme" -> GuideTradeColors.Negative to 1f
         else -> GuideTradeColors.Information to 0.5f
-    }
     Column(modifier = modifier) {
-        Text(
             text = "RISK LEVEL",
-            color = GuideTradeColors.MutedText,
-            fontSize = 10.sp,
-            fontWeight = FontWeight.SemiBold,
-            letterSpacing = 0.5.sp,
-        )
         Spacer(modifier = Modifier.height(6.dp))
         StatusBadge(text = riskLevel.uppercase(), color = color)
-    }
-}

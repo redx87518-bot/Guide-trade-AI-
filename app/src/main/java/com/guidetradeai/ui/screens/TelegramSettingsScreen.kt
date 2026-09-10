@@ -69,7 +69,6 @@ import androidx.compose.material3.TextButton
 import androidx.compose.material3.TextField
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.TextFieldDefaults
-import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.rememberModalBottomSheetState
@@ -148,29 +147,24 @@ import kotlinx.serialization.json.JsonPrimitive
 import kotlinx.serialization.json.buildJsonObject
 import kotlinx.serialization.json.jsonObject
 import kotlinx.serialization.json.jsonPrimitive
-
 @Composable
 fun TelegramSettingsScreen(navController: NavHostController) {
     val telegramViewModel: TelegramViewModel = viewModel()
     val uiState by telegramViewModel.uiState.collectAsState()
     val testState by telegramViewModel.testState.collectAsState()
-
     LaunchedEffect(Unit) { telegramViewModel.loadSettings() }
-
     var botToken by rememberSaveable { mutableStateOf("") }
     var chatId by rememberSaveable { mutableStateOf("") }
     var showToken by remember { mutableStateOf(false) }
     var showMessageDialog by remember { mutableStateOf(false) }
     var promptMessage by remember { mutableStateOf("") }
     var isConfigured by remember { mutableStateOf(false) }
-
     val settings = (uiState as? TelegramUiState.Success)?.settings
     if (settings != null) {
         LaunchedEffect(settings) {
             isConfigured = settings.enabled && settings.chatId != null
         }
     }
-
     LaunchedEffect(testState) {
         when (testState) {
             is TelegramTestState.Success -> {
@@ -180,13 +174,7 @@ fun TelegramSettingsScreen(navController: NavHostController) {
             }
             is TelegramTestState.Error -> {
                 promptMessage = (testState as? TelegramTestState.Error)?.message ?: "Connection failed"
-                showMessageDialog = true
-                telegramViewModel.clearTestState()
-            }
             else -> {}
-        }
-    }
-
     Scaffold(
         topBar = {
             GuideTradeTopBar(
@@ -205,7 +193,6 @@ fun TelegramSettingsScreen(navController: NavHostController) {
         ) {
             item {
                 Text(text = "Connect your Telegram bot to receive market intelligence updates.", color = GuideTradeColors.TextSecondary, fontSize = 14.sp)
-            }
             if (isConfigured) {
                 item {
                     GuideTradeCard {
@@ -217,7 +204,6 @@ fun TelegramSettingsScreen(navController: NavHostController) {
                     }
                 }
             } else {
-                item {
                     OutlinedTextField(
                         value = botToken,
                         onValueChange = { botToken = it },
@@ -231,21 +217,10 @@ fun TelegramSettingsScreen(navController: NavHostController) {
                         ),
                         modifier = Modifier.fillMaxWidth(),
                     )
-                }
-                item {
-                    OutlinedTextField(
                         value = chatId,
                         onValueChange = { chatId = it },
                         label = { Text("Chat ID") },
                         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-                        colors = OutlinedTextFieldDefaults.colors(
-                            focusedBorderColor = GuideTradeColors.PrimaryPurple,
-                            cursorColor = GuideTradeColors.PrimaryPurple,
-                        ),
-                        modifier = Modifier.fillMaxWidth(),
-                    )
-                }
-                item {
                     PrimaryButton(
                         text = "Save Settings",
                         onClick = {
@@ -255,22 +230,9 @@ fun TelegramSettingsScreen(navController: NavHostController) {
                                 showMessageDialog = true
                             }
                         },
-                    )
-                }
-                item {
                     SecondaryButton(
                         text = "Test Connection",
-                        onClick = {
-                            if (botToken.isNotBlank() && chatId.isNotBlank()) {
                                 telegramViewModel.testConnection(botToken, chatId)
-                            }
-                        },
-                    )
-                }
-            }
-        }
-    }
-
     if (showMessageDialog) {
         AlertDialog(
             onDismissRequest = { showMessageDialog = false },
@@ -283,10 +245,7 @@ fun TelegramSettingsScreen(navController: NavHostController) {
             text = { Text(promptMessage) },
             confirmButton = {
                 TextButton(onClick = { showMessageDialog = false }) { Text("OK") }
-            },
             dismissButton = {
                 TextButton(onClick = { showMessageDialog = false }) { Text("Cancel") }
-            },
         )
-    }
 }

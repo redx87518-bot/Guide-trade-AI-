@@ -69,7 +69,6 @@ import androidx.compose.material3.TextButton
 import androidx.compose.material3.TextField
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.TextFieldDefaults
-import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.rememberModalBottomSheetState
@@ -148,7 +147,6 @@ import kotlinx.serialization.json.JsonPrimitive
 import kotlinx.serialization.json.buildJsonObject
 import kotlinx.serialization.json.jsonObject
 import kotlinx.serialization.json.jsonPrimitive
-
 @Composable
 fun OrbScreen(navController: NavHostController) {
     Scaffold(
@@ -166,7 +164,6 @@ fun OrbScreen(navController: NavHostController) {
                 state = VoiceState.IDLE,
                 sizeDp = 180f,
                 onClick = { navController.navigate(NavRoutes.AGENT) },
-            )
         }
     }
 }

@@ -69,7 +69,6 @@ import androidx.compose.material3.TextButton
 import androidx.compose.material3.TextField
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.TextFieldDefaults
-import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.rememberModalBottomSheetState
@@ -148,7 +147,6 @@ import kotlinx.serialization.json.JsonPrimitive
 import kotlinx.serialization.json.buildJsonObject
 import kotlinx.serialization.json.jsonObject
 import kotlinx.serialization.json.jsonPrimitive
-
 @Composable
 fun LoginScreen(navController: NavHostController, authViewModel: AuthViewModel) {
     val uiState by authViewModel.uiState.collectAsState()
@@ -156,7 +154,6 @@ fun LoginScreen(navController: NavHostController, authViewModel: AuthViewModel) 
     var password by rememberSaveable { mutableStateOf("") }
     var isSignUp by rememberSaveable { mutableStateOf(false) }
     var fullName by rememberSaveable { mutableStateOf("") }
-
     LaunchedEffect(uiState) {
         if (uiState is AuthUiState.Authenticated) {
             navController.navigate(NavRoutes.HOME) {
@@ -164,7 +161,6 @@ fun LoginScreen(navController: NavHostController, authViewModel: AuthViewModel) 
             }
         }
     }
-
     Scaffold(
         containerColor = GuideTradeColors.Background,
     ) { padding ->
@@ -189,7 +185,6 @@ fun LoginScreen(navController: NavHostController, authViewModel: AuthViewModel) 
             Spacer(modifier = Modifier.height(32.dp))
             Text(text = "GuideTrade AI", color = GuideTradeColors.TextPrimary, fontSize = 28.sp, fontWeight = FontWeight.Bold, textAlign = TextAlign.Center)
             Text(text = "AI Market Intelligence", color = GuideTradeColors.TextSecondary, fontSize = 14.sp, textAlign = TextAlign.Center)
-            Spacer(modifier = Modifier.height(32.dp))
             if (isSignUp) {
                 OutlinedTextField(
                     value = fullName,
@@ -199,22 +194,16 @@ fun LoginScreen(navController: NavHostController, authViewModel: AuthViewModel) 
                     modifier = Modifier.fillMaxWidth(),
                 )
                 Spacer(modifier = Modifier.height(12.dp))
-            }
             OutlinedTextField(
                 value = email,
                 onValueChange = { email = it },
                 label = { Text("Email") },
                 colors = OutlinedTextFieldDefaults.colors(focusedBorderColor = GuideTradeColors.PrimaryPurple, cursorColor = GuideTradeColors.PrimaryPurple),
                 modifier = Modifier.fillMaxWidth(),
-            )
             Spacer(modifier = Modifier.height(12.dp))
-            OutlinedTextField(
                 value = password,
                 onValueChange = { password = it },
                 label = { Text("Password") },
-                colors = OutlinedTextFieldDefaults.colors(focusedBorderColor = GuideTradeColors.PrimaryPurple, cursorColor = GuideTradeColors.PrimaryPurple),
-                modifier = Modifier.fillMaxWidth(),
-            )
             Spacer(modifier = Modifier.height(24.dp))
             PrimaryButton(
                 text = if (isSignUp) "Sign Up" else "Sign In",
@@ -222,15 +211,8 @@ fun LoginScreen(navController: NavHostController, authViewModel: AuthViewModel) 
                     if (isSignUp) authViewModel.signUp(email, password, fullName)
                     else authViewModel.signIn(email, password)
                 },
-            )
-            Spacer(modifier = Modifier.height(12.dp))
             TextButton(onClick = { isSignUp = !isSignUp }) {
                 Text(text = if (isSignUp) "Already have an account? Sign In" else "Don't have an account? Sign Up", color = GuideTradeColors.BrightPurple)
-            }
             if (uiState is AuthUiState.Error) {
-                Spacer(modifier = Modifier.height(12.dp))
                 Text(text = (uiState as AuthUiState.Error).message, color = GuideTradeColors.Negative, fontSize = 13.sp, textAlign = TextAlign.Center)
-            }
-        }
-    }
 }

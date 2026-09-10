@@ -22,12 +22,6 @@ import androidx.compose.material.icons.filled.Sparkles
 import androidx.compose.material.icons.filled.ArrowForward
 import androidx.compose.material.icons.filled.ContentCopy
 import androidx.compose.material3.IconButton
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Briefcase
-import androidx.compose.material.icons.filled.ChartArea
-import androidx.compose.material.icons.filled.Sparkles
-import androidx.compose.material.icons.filled.ArrowForward
-import androidx.compose.material.icons.filled.ContentCopy
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
@@ -40,7 +34,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.guidetradeai.ui.theme.GuideTradeColors
-
 @Composable
 fun GuideTradeTopBar(
     title: String,
@@ -80,10 +73,6 @@ fun GuideTradeTopBar(
                         contentDescription = "Back",
                         tint = GuideTradeColors.TextPrimary,
                         modifier = Modifier.size(24.dp),
-                    )
-                }
-            }
-        },
         actions = actions,
         colors = TopAppBarDefaults.topAppBarColors(
             containerColor = containerColor,

@@ -69,7 +69,6 @@ import androidx.compose.material3.TextButton
 import androidx.compose.material3.TextField
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.TextFieldDefaults
-import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.rememberModalBottomSheetState
@@ -149,7 +148,6 @@ import kotlinx.serialization.json.JsonPrimitive
 import kotlinx.serialization.json.buildJsonObject
 import kotlinx.serialization.json.jsonObject
 import kotlinx.serialization.json.jsonPrimitive
-
 @Composable
 fun AboutScreen(navController: NavHostController) {
     Scaffold(
@@ -182,38 +180,17 @@ fun AboutScreen(navController: NavHostController) {
                     )
                 }
             }
-            item {
                 Text(text = "GuideTrade AI", color = GuideTradeColors.TextPrimary, fontSize = 24.sp, fontWeight = FontWeight.Bold, modifier = Modifier.fillMaxWidth(), textAlign = TextAlign.Center)
                 Text(text = "AI Market Intelligence", color = GuideTradeColors.TextSecondary, fontSize = 14.sp, modifier = Modifier.fillMaxWidth(), textAlign = TextAlign.Center)
                 Text(text = "Version 1.0.0", color = GuideTradeColors.MutedText, fontSize = 12.sp, modifier = Modifier.fillMaxWidth(), textAlign = TextAlign.Center)
-            }
-            item {
                 Text(text = com.guidetradeai.BuildConfig.APPLICATION_ID, color = GuideTradeColors.MutedText, fontSize = 11.sp, modifier = Modifier.fillMaxWidth(), textAlign = TextAlign.Center)
-            }
-            item {
                 GuideTradeCard(onClick = { /* TODO */ }) {
                     Row(modifier = Modifier.fillMaxWidth().padding(16.dp), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.SpaceBetween) {
                         Text(text = "Privacy Policy", color = GuideTradeColors.TextPrimary, fontSize = 15.sp)
                         Icon(imageVector = Icons.Default.ArrowForward, contentDescription = null, tint = GuideTradeColors.MutedText, modifier = Modifier.size(18.dp))
                     }
-                }
-            }
-            item {
-                GuideTradeCard(onClick = { /* TODO */ }) {
-                    Row(modifier = Modifier.fillMaxWidth().padding(16.dp), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.SpaceBetween) {
                         Text(text = "Terms of Service", color = GuideTradeColors.TextPrimary, fontSize = 15.sp)
-                        Icon(imageVector = Icons.Default.ArrowForward, contentDescription = null, tint = GuideTradeColors.MutedText, modifier = Modifier.size(18.dp))
-                    }
-                }
-            }
-            item {
-                GuideTradeCard(onClick = { /* TODO */ }) {
-                    Row(modifier = Modifier.fillMaxWidth().padding(16.dp), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.SpaceBetween) {
                         Text(text = "Support", color = GuideTradeColors.TextPrimary, fontSize = 15.sp)
-                        Icon(imageVector = Icons.Default.ArrowForward, contentDescription = null, tint = GuideTradeColors.MutedText, modifier = Modifier.size(18.dp))
-                    }
-                }
-            }
         }
     }
 }

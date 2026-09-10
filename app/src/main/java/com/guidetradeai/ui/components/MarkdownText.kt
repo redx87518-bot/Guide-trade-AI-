@@ -28,7 +28,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.runtime.setValue
-
 @Composable
 fun MarkdownText(
     text: String,
@@ -44,12 +43,10 @@ fun MarkdownText(
         fontSize = 16.sp,
     )
 }
-
 fun buildMarkdownAnnotatedString(text: String, color: Color = Color.Unspecified): AnnotatedString {
     val builder = AnnotatedString.Builder()
     val boldRegex = Regex("\\*\\*(.*?)\\*\\*")
     val paragraphs = text.split("\n\n").filter { it.isNotBlank() }
-
     for (paragraph in paragraphs) {
         val lines = paragraph.split("\n")
         for (line in lines) {
@@ -60,26 +57,20 @@ fun buildMarkdownAnnotatedString(text: String, color: Color = Color.Unspecified)
                 }
                 trimmed.startsWith("## ") -> {
                     builder.append(trimmed.substring(3))
-                }
                 trimmed.startsWith("# ") -> {
                     builder.append(trimmed.substring(2))
-                }
                 trimmed.startsWith("- ") || trimmed.startsWith("* ") -> {
                     builder.append("\u2022 ${trimmed.substring(2)}")
-                }
                 trimmed.matches(Regex("^[0-9]+\\. .*")) -> {
                     val content = trimmed.substringAfter(". ")
                     val num = trimmed.substringBefore(".")
                     builder.append("$num. $content")
-                }
                 else -> {
                     builder.append(trimmed)
-                }
             }
             builder.append("\n\n")
         }
     }
-
     val result = builder.toAnnotatedString()
     val styled = AnnotatedString.Builder(result)
     val boldPattern = Regex("\\*\\*(.*?)\\*\\*")
@@ -90,11 +81,7 @@ fun buildMarkdownAnnotatedString(text: String, color: Color = Color.Unspecified)
             start = match.range.first,
             end = match.range.last + 1,
         )
-    }
     return styled.toAnnotatedString()
-}
-
-@Composable
 fun ChatTypingIndicator() {
     val infiniteTransition = rememberInfiniteTransition(label = "typing_dots")
     Row(
@@ -118,7 +105,3 @@ fun ChatTypingIndicator() {
                         color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = alpha),
                         shape = RoundedCornerShape(50),
                     ),
-            )
-        }
-    }
-}

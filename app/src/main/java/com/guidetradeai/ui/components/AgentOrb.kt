@@ -24,12 +24,6 @@ import androidx.compose.material.icons.filled.Sparkles
 import androidx.compose.material.icons.filled.ArrowForward
 import androidx.compose.material.icons.filled.ContentCopy
 import androidx.compose.material3.IconButton
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Briefcase
-import androidx.compose.material.icons.filled.ChartArea
-import androidx.compose.material.icons.filled.Sparkles
-import androidx.compose.material.icons.filled.ArrowForward
-import androidx.compose.material.icons.filled.ContentCopy
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -46,7 +40,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.guidetradeai.voice.VoiceState
 import com.guidetradeai.ui.theme.GuideTradeColors
-
 @Composable
 fun AgentOrb(
     state: VoiceState,
@@ -55,7 +48,6 @@ fun AgentOrb(
     onClick: () -> Unit = {},
 ) {
     val transition = updateTransition(targetState = state, label = "orb_state")
-
     val scale by transition.animateFloat(
         transitionSpec = { tween(durationMillis = 300) },
         label = "orb_scale",
@@ -68,20 +60,13 @@ fun AgentOrb(
             VoiceState.ERROR -> 1.0f
         }
     }
-
     val pulseAlpha by transition.animateFloat(
-        transitionSpec = { tween(durationMillis = 300) },
         label = "orb_alpha",
-    ) { currentState ->
-        when (currentState) {
             VoiceState.IDLE -> 0.85f
             VoiceState.LISTENING -> 1.0f
             VoiceState.PROCESSING -> 0.65f
             VoiceState.SPEAKING -> 1.0f
             VoiceState.ERROR -> 0.4f
-        }
-    }
-
     val infiniteTransition = rememberInfiniteTransition(label = "orb_idle_pulse")
     val idlePulse by infiniteTransition.animateFloat(
         initialValue = 0.95f,
@@ -92,9 +77,7 @@ fun AgentOrb(
         ),
         label = "idle_pulse_scale",
     )
-
     val finalScale = if (state == VoiceState.IDLE) scale * idlePulse else scale
-
     val gradientColors = when (state) {
         VoiceState.IDLE -> listOf(
             GuideTradeColors.PrimaryPurple,
@@ -103,26 +86,12 @@ fun AgentOrb(
         )
         VoiceState.LISTENING -> listOf(
             GuideTradeColors.Information,
-            GuideTradeColors.PrimaryPurple,
             GuideTradeColors.BrightPurple,
-        )
         VoiceState.PROCESSING -> listOf(
             GuideTradeColors.Warning,
-            GuideTradeColors.PrimaryPurple,
-            GuideTradeColors.BrightPurple,
-        )
         VoiceState.SPEAKING -> listOf(
-            GuideTradeColors.SecondaryAccent,
-            GuideTradeColors.PrimaryPurple,
-            GuideTradeColors.BrightPurple,
-        )
         VoiceState.ERROR -> listOf(
             GuideTradeColors.Negative,
-            GuideTradeColors.PrimaryPurple,
-            GuideTradeColors.DeepPurple,
-        )
-    }
-
     Box(
         modifier = modifier
             .size(sizeDp.dp)
@@ -153,22 +122,11 @@ fun AgentOrb(
                             Color.Transparent,
                         ),
                     ),
-                ),
-        )
-    }
 }
-
-@Composable
 fun MiniAgentOrb(
-    state: VoiceState,
-    modifier: Modifier = Modifier,
     sizeDp: Float = 48f,
-    onClick: () -> Unit = {},
-) {
     AgentOrb(
         state = state,
         modifier = modifier,
         sizeDp = sizeDp,
         onClick = onClick,
-    )
-}

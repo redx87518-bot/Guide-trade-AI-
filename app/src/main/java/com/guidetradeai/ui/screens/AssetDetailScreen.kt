@@ -71,7 +71,6 @@ import androidx.compose.material3.TextButton
 import androidx.compose.material3.TextField
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.TextFieldDefaults
-import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.rememberModalBottomSheetState
@@ -150,7 +149,6 @@ import kotlinx.serialization.json.JsonPrimitive
 import kotlinx.serialization.json.buildJsonObject
 import kotlinx.serialization.json.jsonObject
 import kotlinx.serialization.json.jsonPrimitive
-
 @Composable
 fun AssetDetailScreen(
     symbol: String,
@@ -160,11 +158,9 @@ fun AssetDetailScreen(
     var selectedTab by rememberSaveable { mutableIntStateOf(0) }
     val tabs = listOf("Overview", "Chart", "Signals", "Analysis", "Risk", "Events")
     val chatVm: ChatViewModel = viewModel()
-
     LaunchedEffect(symbol) {
         chatVm.setSymbol(symbol)
     }
-
     Scaffold(
         topBar = {
             GuideTradeTopBar(
@@ -200,7 +196,6 @@ fun AssetDetailScreen(
                     )
                 }
             }
-
             when (selectedTab) {
                 0 -> OverviewTab(symbol = symbol)
                 1 -> ChartTab(symbol = symbol)
@@ -208,12 +203,8 @@ fun AssetDetailScreen(
                 3 -> AnalysisTab(symbol = symbol)
                 4 -> RiskTab(symbol = symbol)
                 5 -> EventsTab(symbol = symbol)
-            }
         }
-    }
 }
-
-@Composable
 fun OverviewTab(symbol: String) {
     LazyColumn(
         modifier = Modifier.fillMaxSize(),
@@ -223,58 +214,23 @@ fun OverviewTab(symbol: String) {
         item {
             Text(text = symbol.uppercase(), color = GuideTradeColors.TextPrimary, fontSize = 28.sp, fontWeight = FontWeight.Bold)
             Text(text = "Loading price data...", color = GuideTradeColors.TextSecondary, fontSize = 14.sp)
-        }
-        item {
             GuideTradeCard {
                 Column(modifier = Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
                     Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
                         InfoCard(title = "Regime", value = "Neutral", modifier = Modifier.weight(1f))
                         InfoCard(title = "Risk", value = "Moderate", modifier = Modifier.weight(1f), tint = GuideTradeColors.Warning)
-                    }
-                }
-            }
-        }
-        item {
             PrimaryButton(
                 text = "Analyze with GuideTrade Agent",
                 onClick = { /* handled by top bar */ },
                 icon = Icons.Default.Sparkles,
-            )
-        }
-    }
-}
-
-@Composable
 fun ChartTab(symbol: String) {
     Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
         Text(text = "Chart data for $symbol", color = GuideTradeColors.TextSecondary)
-    }
-}
-
-@Composable
 fun SignalsTab(symbol: String) {
-    Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
         Text(text = "Signals for $symbol", color = GuideTradeColors.TextSecondary)
-    }
-}
-
-@Composable
 fun AnalysisTab(symbol: String) {
-    Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
         Text(text = "Analysis for $symbol", color = GuideTradeColors.TextSecondary)
-    }
-}
-
-@Composable
 fun RiskTab(symbol: String) {
-    Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
         Text(text = "Risk assessment for $symbol", color = GuideTradeColors.TextSecondary)
-    }
-}
-
-@Composable
 fun EventsTab(symbol: String) {
-    Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
         Text(text = "Events for $symbol", color = GuideTradeColors.TextSecondary)
-    }
-}

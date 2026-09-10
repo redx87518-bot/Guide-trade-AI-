@@ -69,7 +69,6 @@ import androidx.compose.material3.TextButton
 import androidx.compose.material3.TextField
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.TextFieldDefaults
-import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.rememberModalBottomSheetState
@@ -148,12 +147,10 @@ import kotlinx.serialization.json.JsonPrimitive
 import kotlinx.serialization.json.buildJsonObject
 import kotlinx.serialization.json.jsonObject
 import kotlinx.serialization.json.jsonPrimitive
-
 @Composable
 fun SettingsScreen(navController: NavHostController) {
     val settingsViewModel: SettingsViewModel = viewModel()
     val uiState by settingsViewModel.uiState.collectAsState()
-
     Scaffold(
         topBar = {
             GuideTradeTopBar(
@@ -172,7 +169,6 @@ fun SettingsScreen(navController: NavHostController) {
             item {
                 SectionHeader(title = "Account")
             }
-            item {
                 GuideTradeCard(onClick = { navController.navigate(NavRoutes.PROFILE) }) {
                     Row(
                         modifier = Modifier.fillMaxWidth().padding(16.dp),
@@ -190,12 +186,8 @@ fun SettingsScreen(navController: NavHostController) {
                         Icon(imageVector = Icons.Default.ArrowForward, contentDescription = null, tint = GuideTradeColors.MutedText, modifier = Modifier.size(18.dp))
                     }
                 }
-            }
             item { Divider(color = GuideTradeColors.SubtleBorder) }
-            item {
                 SectionHeader(title = "Appearance")
-            }
-            item {
                 var selectedTheme by rememberSaveable { mutableStateOf("dark") }
                 Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                     listOf("Light", "Dark", "System").forEach { theme ->
@@ -212,74 +204,26 @@ fun SettingsScreen(navController: NavHostController) {
                             contentAlignment = Alignment.Center,
                         ) {
                             Text(text = theme, color = if (isSelected) GuideTradeColors.White else GuideTradeColors.TextSecondary, fontSize = 13.sp, fontWeight = if (isSelected) FontWeight.SemiBold else FontWeight.Normal)
-                        }
-                    }
-                }
-            }
-            item { Divider(color = GuideTradeColors.SubtleBorder) }
-            item {
                 SectionHeader(title = "AI")
-            }
-            item {
                 GuideTradeCard(onClick = { /* TODO */ }) {
                     Row(modifier = Modifier.fillMaxWidth().padding(16.dp), horizontalArrangement = Arrangement.SpaceBetween, verticalAlignment = Alignment.CenterVertically) {
                         Column(modifier = Modifier.weight(1f)) {
                             Text(text = "GuideTrade Agent", color = GuideTradeColors.TextPrimary, fontSize = 15.sp, fontWeight = FontWeight.Medium)
                             Text(text = "Primary intelligence experience", color = GuideTradeColors.TextSecondary, fontSize = 12.sp)
-                        }
                         StatusBadge(text = "ACTIVE", color = GuideTradeColors.Positive)
-                    }
-                }
-            }
-            item {
                 GuideTradeCard(onClick = { navController.navigate(NavRoutes.VOICE_SETTINGS) }) {
-                    Row(modifier = Modifier.fillMaxWidth().padding(16.dp), horizontalArrangement = Arrangement.SpaceBetween, verticalAlignment = Alignment.CenterVertically) {
-                        Column(modifier = Modifier.weight(1f)) {
                             Text(text = "Voice", color = GuideTradeColors.TextPrimary, fontSize = 15.sp, fontWeight = FontWeight.Medium)
                             Text(text = "Voice responses and input", color = GuideTradeColors.TextSecondary, fontSize = 12.sp)
-                        }
-                        Icon(imageVector = Icons.Default.ArrowForward, contentDescription = null, tint = GuideTradeColors.MutedText, modifier = Modifier.size(18.dp))
-                    }
-                }
-            }
-            item { Divider(color = GuideTradeColors.SubtleBorder) }
-            item {
                 SectionHeader(title = "Connections")
-            }
-            item {
                 GuideTradeCard(onClick = { navController.navigate(NavRoutes.TELEGRAM_SETTINGS) }) {
-                    Row(modifier = Modifier.fillMaxWidth().padding(16.dp), horizontalArrangement = Arrangement.SpaceBetween, verticalAlignment = Alignment.CenterVertically) {
-                        Column(modifier = Modifier.weight(1f)) {
                             Text(text = "Telegram", color = GuideTradeColors.TextPrimary, fontSize = 15.sp, fontWeight = FontWeight.Medium)
                             Text(text = "Connect Telegram bot", color = GuideTradeColors.TextSecondary, fontSize = 12.sp)
-                        }
-                        Icon(imageVector = Icons.Default.ArrowForward, contentDescription = null, tint = GuideTradeColors.MutedText, modifier = Modifier.size(18.dp))
-                    }
-                }
-            }
-            item {
                 GuideTradeCard(onClick = { navController.navigate(NavRoutes.MCP_CONNECTIONS) }) {
-                    Row(modifier = Modifier.fillMaxWidth().padding(16.dp), horizontalArrangement = Arrangement.SpaceBetween, verticalAlignment = Alignment.CenterVertically) {
-                        Column(modifier = Modifier.weight(1f)) {
                             Text(text = "MCP Connections", color = GuideTradeColors.TextPrimary, fontSize = 15.sp, fontWeight = FontWeight.Medium)
                             Text(text = "Advanced integrations", color = GuideTradeColors.TextSecondary, fontSize = 12.sp)
-                        }
-                        Icon(imageVector = Icons.Default.ArrowForward, contentDescription = null, tint = GuideTradeColors.MutedText, modifier = Modifier.size(18.dp))
-                    }
-                }
-            }
-            item { Divider(color = GuideTradeColors.SubtleBorder) }
-            item {
                 GuideTradeCard(onClick = { navController.navigate(NavRoutes.ABOUT) }) {
-                    Row(modifier = Modifier.fillMaxWidth().padding(16.dp), horizontalArrangement = Arrangement.SpaceBetween, verticalAlignment = Alignment.CenterVertically) {
-                        Column(modifier = Modifier.weight(1f)) {
                             Text(text = "About", color = GuideTradeColors.TextPrimary, fontSize = 15.sp, fontWeight = FontWeight.Medium)
                             Text(text = "Version, privacy, terms", color = GuideTradeColors.TextSecondary, fontSize = 12.sp)
-                        }
-                        Icon(imageVector = Icons.Default.ArrowForward, contentDescription = null, tint = GuideTradeColors.MutedText, modifier = Modifier.size(18.dp))
-                    }
-                }
-            }
         }
     }
 }

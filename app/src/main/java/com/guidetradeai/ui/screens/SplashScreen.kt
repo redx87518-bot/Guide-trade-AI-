@@ -51,7 +51,6 @@ import com.guidetradeai.ui.theme.GuideTradeColors
 import com.guidetradeai.viewmodel.AuthUiState
 import com.guidetradeai.viewmodel.AuthViewModel
 import kotlinx.coroutines.delay
-
 @Composable
 fun SplashScreen(
     navController: NavHostController,
@@ -62,7 +61,6 @@ fun SplashScreen(
     var exit by remember { mutableStateOf(false) }
     var typedText by remember { mutableIntStateOf(0) }
     val tagline = "INTELLIGENCE. PRECISION. EDGE."
-
     LaunchedEffect(authUiState) {
         if (authUiState is AuthUiState.Loading) return@LaunchedEffect
         delay(100)
@@ -77,9 +75,7 @@ fun SplashScreen(
         val destination = if (authUiState is AuthUiState.Authenticated) "home" else "login"
         navController.navigate(destination) {
             popUpTo(0) { inclusive = true }
-        }
     }
-
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -108,13 +104,8 @@ fun SplashScreen(
                 val alpha by infiniteTransition.animateFloat(
                     initialValue = 0.7f,
                     targetValue = 1f,
-                    animationSpec = infiniteRepeatable(
                         animation = tween(1800, easing = LinearOutSlowInEasing),
-                        repeatMode = RepeatMode.Reverse,
-                    ),
                     label = "orb_alpha",
-                )
-
                 Box(
                     modifier = Modifier
                         .size(100.dp)
@@ -139,32 +130,21 @@ fun SplashScreen(
                     Canvas(modifier = Modifier.fillMaxSize()) {
                         val center = Offset(size.width / 2f, size.height / 2f)
                         val baseRadius = size.minDimension / 2f
-
                         drawCircle(
                             color = Color.White.copy(alpha = alpha * 0.12f),
                             radius = baseRadius,
-                        )
-                        drawCircle(
                             brush = Brush.radialGradient(
-                                colors = listOf(
                                     GuideTradeColors.BrightPurple.copy(alpha = 0.8f * alpha),
                                     GuideTradeColors.PrimaryPurple.copy(alpha = 0.6f * alpha),
                                     GuideTradeColors.Background,
-                                ),
                                 center = Offset(center.x * 0.35f, center.y * 0.3f),
-                            ),
                             radius = baseRadius * 0.85f,
-                        )
-                        drawCircle(
                             color = Color.White.copy(alpha = 0.18f),
                             radius = baseRadius * 0.16f,
                             center = Offset(center.x * 0.3f, center.y * 0.25f),
-                        )
                     }
                 }
-
                 Spacer(modifier = Modifier.height(40.dp))
-
                 Text(
                     text = "GUIDETRADE AI",
                     color = GuideTradeColors.TextPrimary,
@@ -172,19 +152,11 @@ fun SplashScreen(
                     fontSize = 32.sp,
                     letterSpacing = 3.sp,
                     textAlign = TextAlign.Center,
-                )
-
                 Spacer(modifier = Modifier.height(12.dp))
-
-                Text(
                     text = tagline.take(typedText),
                     color = GuideTradeColors.BrightPurple,
                     fontWeight = FontWeight.W500,
                     fontSize = 12.sp,
                     letterSpacing = 0.12.sp,
-                    textAlign = TextAlign.Center,
-                )
             }
-        }
-    }
 }

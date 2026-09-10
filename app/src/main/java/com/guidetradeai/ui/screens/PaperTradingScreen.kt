@@ -69,7 +69,6 @@ import androidx.compose.material3.TextButton
 import androidx.compose.material3.TextField
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.TextFieldDefaults
-import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.rememberModalBottomSheetState
@@ -148,14 +147,11 @@ import kotlinx.serialization.json.JsonPrimitive
 import kotlinx.serialization.json.buildJsonObject
 import kotlinx.serialization.json.jsonObject
 import kotlinx.serialization.json.jsonPrimitive
-
 @Composable
 fun PaperTradingScreen(navController: NavHostController) {
     val viewModel: PaperTradingViewModel = viewModel()
     val uiState by viewModel.uiState.collectAsState()
-
     LaunchedEffect(Unit) { viewModel.loadDashboard() }
-
     Scaffold(
         topBar = {
             GuideTradeTopBar(
@@ -185,7 +181,6 @@ fun PaperTradingScreen(navController: NavHostController) {
                 message = (uiState as PaperTradingUiState.Error).message,
                 onRetry = { viewModel.loadDashboard() },
                 modifier = Modifier.fillMaxSize(),
-            )
             is PaperTradingUiState.Success -> {
                 val data = (uiState as PaperTradingUiState.Success).data
                 val account = data.account
@@ -202,36 +197,21 @@ fun PaperTradingScreen(navController: NavHostController) {
                                 modifier = Modifier.weight(1f),
                                 tint = GuideTradeColors.BrightPurple,
                             )
-                            InfoCard(
                                 title = "Cash",
                                 value = "$${"%.2f".format(account?.balance ?: 0.0)}",
-                                modifier = Modifier.weight(1f),
-                            )
                         }
                     }
-                    item {
-                        Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-                            InfoCard(
                                 title = "Unrealized P/L",
                                 value = "$${"%.2f".format(account?.unrealizedPnl ?: 0.0)}",
-                                modifier = Modifier.weight(1f),
                                 tint = GuideTradeColors.Positive,
-                            )
-                            InfoCard(
                                 title = "Buying Power",
                                 value = "$${"%.2f".format(account?.buyingPower ?: 0.0)}",
-                                modifier = Modifier.weight(1f),
-                            )
-                        }
-                    }
                     item { Divider(color = GuideTradeColors.SubtleBorder) }
                     if (data.positions.isNotEmpty()) {
                         item {
                             SectionHeader(
                                 title = "Positions",
                                 modifier = Modifier.padding(vertical = 8.dp),
-                            )
-                        }
                         items(data.positions) { position ->
                             GuideTradeCard(modifier = Modifier.fillMaxWidth()) {
                                 Row(
@@ -247,71 +227,40 @@ fun PaperTradingScreen(navController: NavHostController) {
                                         Text(text = "$${"%.2f".format(position.marketValue)}", color = GuideTradeColors.TextPrimary, fontSize = 14.sp, fontWeight = FontWeight.Medium)
                                         val pnlColor = if (position.unrealizedPnl >= 0) GuideTradeColors.Positive else GuideTradeColors.Negative
                                         Text(text = "${if (position.unrealizedPnl >= 0) "+" else ""}${"%.2f".format(position.unrealizedPnl)}", color = pnlColor, fontSize = 12.sp)
-                                    }
                                 }
                             }
-                        }
-                    }
                     if (data.orders.isNotEmpty()) {
                         item { Divider(color = GuideTradeColors.SubtleBorder) }
-                        item {
-                            SectionHeader(
                                 title = "Recent Orders",
-                                modifier = Modifier.padding(vertical = 8.dp),
-                            )
-                        }
                         items(data.orders.take(10)) { order ->
-                            GuideTradeCard(modifier = Modifier.fillMaxWidth()) {
-                                Row(
-                                    modifier = Modifier.fillMaxWidth().padding(16.dp),
-                                    horizontalArrangement = Arrangement.SpaceBetween,
-                                    verticalAlignment = Alignment.CenterVertically,
-                                ) {
-                                    Column(modifier = Modifier.weight(1f)) {
                                         Text(text = "${order.side.uppercase()} ${order.symbol}", color = GuideTradeColors.TextPrimary, fontSize = 14.sp, fontWeight = FontWeight.SemiBold)
                                         Text(text = "${order.quantity} @ $${"%.2f".format(order.price)}", color = GuideTradeColors.TextSecondary, fontSize = 12.sp)
-                                    }
                                     StatusBadge(text = order.status, color = when (order.status.lowercase()) {
                                         "filled" -> GuideTradeColors.Positive
                                         "pending" -> GuideTradeColors.Warning
                                         "cancelled" -> GuideTradeColors.Negative
                                         else -> GuideTradeColors.MutedText
                                     })
-                                }
-                            }
-                        }
-                    }
-                    item {
                         PrimaryButton(
                             text = "New Order",
                             onClick = { /* TODO open order sheet */ },
                             modifier = Modifier.fillMaxWidth(),
                         )
-                    }
                 }
             }
             is PaperTradingUiState.OrderPlaced -> {
                 LaunchedEffect(Unit) {
                     kotlinx.coroutines.delay(2000)
                     viewModel.refresh()
-                }
                 Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
                     Column(horizontalAlignment = Alignment.CenterHorizontally) {
                         Icon(imageVector = Icons.Default.CheckCircle, contentDescription = null, tint = GuideTradeColors.Positive, modifier = Modifier.size(48.dp))
                         Spacer(modifier = Modifier.height(12.dp))
                         Text(text = "Paper order completed", color = GuideTradeColors.TextPrimary, fontSize = 16.sp, fontWeight = FontWeight.SemiBold)
-                    }
-                }
-            }
             is PaperTradingUiState.OrderFailed -> {
-                Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                    Column(horizontalAlignment = Alignment.CenterHorizontally) {
                         Text(text = "Order failed", color = GuideTradeColors.Negative, fontSize = 16.sp, fontWeight = FontWeight.SemiBold)
                         Spacer(modifier = Modifier.height(8.dp))
                         TextButton(onClick = { viewModel.refresh() }) { Text("Retry", color = GuideTradeColors.BrightPurple) }
-                    }
-                }
-            }
         }
     }
 }

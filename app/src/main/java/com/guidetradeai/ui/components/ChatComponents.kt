@@ -31,7 +31,6 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-
 @Composable
 fun MessageCard(
     role: String,
@@ -50,10 +49,7 @@ fun MessageCard(
     }
     val contentColor = if (isUser) {
         MaterialTheme.colorScheme.onPrimary
-    } else {
         MaterialTheme.colorScheme.onSurface
-    }
-
     Card(
         modifier = modifier
             .fillMaxWidth()
@@ -83,5 +79,4 @@ fun MessageCard(
                 )
             }
         }
-    }
 }

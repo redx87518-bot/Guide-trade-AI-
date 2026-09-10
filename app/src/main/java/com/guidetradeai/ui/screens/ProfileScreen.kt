@@ -69,7 +69,6 @@ import androidx.compose.material3.TextButton
 import androidx.compose.material3.TextField
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.TextFieldDefaults
-import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.rememberModalBottomSheetState
@@ -148,12 +147,10 @@ import kotlinx.serialization.json.JsonPrimitive
 import kotlinx.serialization.json.buildJsonObject
 import kotlinx.serialization.json.jsonObject
 import kotlinx.serialization.json.jsonPrimitive
-
 @Composable
 fun ProfileScreen(navController: NavHostController) {
     val authViewModel: AuthViewModel = viewModel()
     val user = authViewModel.currentUser.collectAsState().value
-
     Scaffold(
         topBar = {
             GuideTradeTopBar(
@@ -185,7 +182,6 @@ fun ProfileScreen(navController: NavHostController) {
                 }
             }
             item { Divider(color = GuideTradeColors.SubtleBorder) }
-            item {
                 GuideTradeCard(onClick = { /* TODO */ }) {
                     Row(modifier = Modifier.fillMaxWidth().padding(16.dp), verticalAlignment = Alignment.CenterVertically) {
                         Icon(imageVector = Icons.Default.Lock, contentDescription = null, tint = GuideTradeColors.BrightPurple, modifier = Modifier.size(20.dp))
@@ -196,20 +192,14 @@ fun ProfileScreen(navController: NavHostController) {
                         }
                         Icon(imageVector = Icons.Default.ArrowForward, contentDescription = null, tint = GuideTradeColors.MutedText, modifier = Modifier.size(18.dp))
                     }
-                }
-            }
-            item {
                 PrimaryButton(
                     text = "Sign Out",
                     onClick = {
                         authViewModel.signOut()
                         navController.navigate(NavRoutes.LOGIN) {
                             popUpTo(NavRoutes.HOME) { inclusive = true }
-                        }
                     },
-                    modifier = Modifier.fillMaxWidth(),
                 )
-            }
         }
     }
 }

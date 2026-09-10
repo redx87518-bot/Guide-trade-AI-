@@ -22,7 +22,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.OutlinedTextFieldDefaults
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material.icons.Icons
@@ -54,14 +53,12 @@ import com.guidetradeai.utils.isPasswordValid
 import com.guidetradeai.viewmodel.AuthUiState
 import com.guidetradeai.viewmodel.AuthViewModel
 import androidx.compose.runtime.setValue
-
 @Composable
 fun SignUpScreen(
     navController: NavHostController,
     authViewModel: AuthViewModel,
 ) {
     val authUiState by authViewModel.uiState.collectAsState()
-
     LaunchedEffect(authUiState) {
         when (authUiState) {
             is AuthUiState.VerificationSent -> {
@@ -73,12 +70,9 @@ fun SignUpScreen(
             is AuthUiState.Authenticated -> {
                 navController.navigate(com.guidetradeai.ui.navigation.NavRoutes.HOME) {
                     popUpTo(0) { inclusive = true }
-                }
-            }
             else -> {}
         }
     }
-
     var fullName by rememberSaveable { mutableStateOf("") }
     var email by rememberSaveable { mutableStateOf("") }
     var password by rememberSaveable { mutableStateOf("") }
@@ -88,7 +82,6 @@ fun SignUpScreen(
     var emailError by remember { mutableStateOf<String?>(null) }
     var passwordError by remember { mutableStateOf<String?>(null) }
     var confirmPasswordError by remember { mutableStateOf<String?>(null) }
-
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -101,12 +94,10 @@ fun SignUpScreen(
             style = MaterialTheme.typography.headlineLarge,
             color = MaterialTheme.colorScheme.onBackground,
         )
-        Text(
             text = "Create an account to start using Guide Trade AI",
             style = MaterialTheme.typography.bodyMedium,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
             modifier = Modifier.padding(top = 8.dp),
-        )
         Spacer(modifier = Modifier.height(32.dp))
         OutlinedTextField(
             value = fullName,
@@ -123,32 +114,17 @@ fun SignUpScreen(
                 cursorColor = MaterialTheme.colorScheme.primary,
             ),
             modifier = Modifier.fillMaxWidth(),
-        )
         Spacer(modifier = Modifier.height(16.dp))
-        OutlinedTextField(
             value = email,
-            onValueChange = {
                 email = it
                 emailError = if (it.isNotBlank() && !it.isEmailValid()) "Invalid email" else null
-            },
             label = { Text("Email") },
             isError = emailError != null,
             supportingText = { emailError?.let { Text(it, color = MaterialTheme.colorScheme.error) } },
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email),
-            singleLine = true,
-            colors = OutlinedTextFieldDefaults.colors(
-                focusedBorderColor = MaterialTheme.colorScheme.primary,
-                cursorColor = MaterialTheme.colorScheme.primary,
-            ),
-            modifier = Modifier.fillMaxWidth(),
-        )
-        Spacer(modifier = Modifier.height(16.dp))
-        OutlinedTextField(
             value = password,
-            onValueChange = {
                 password = it
                 passwordError = if (it.isNotBlank() && !it.isPasswordValid()) "At least 8 characters" else null
-            },
             label = { Text("Password") },
             isError = passwordError != null,
             supportingText = { passwordError?.let { Text(it, color = MaterialTheme.colorScheme.error) } },
@@ -161,33 +137,12 @@ fun SignUpScreen(
                         contentDescription = if (passwordVisible) "Hide password" else "Show password",
                         tint = MaterialTheme.colorScheme.onSurfaceVariant,
                     )
-                }
-            },
-            singleLine = true,
-            colors = OutlinedTextFieldDefaults.colors(
-                focusedBorderColor = MaterialTheme.colorScheme.primary,
-                cursorColor = MaterialTheme.colorScheme.primary,
-            ),
-            modifier = Modifier.fillMaxWidth(),
-        )
-        Spacer(modifier = Modifier.height(16.dp))
-        OutlinedTextField(
             value = confirmPassword,
-            onValueChange = {
                 confirmPassword = it
                 confirmPasswordError = if (it.isNotBlank() && it != password) "Passwords do not match" else null
-            },
             label = { Text("Confirm Password") },
             isError = confirmPasswordError != null,
             supportingText = { confirmPasswordError?.let { Text(it, color = MaterialTheme.colorScheme.error) } },
-            visualTransformation = if (passwordVisible) VisualTransformation.None else PasswordVisualTransformation(),
-            singleLine = true,
-            colors = OutlinedTextFieldDefaults.colors(
-                focusedBorderColor = MaterialTheme.colorScheme.primary,
-                cursorColor = MaterialTheme.colorScheme.primary,
-            ),
-            modifier = Modifier.fillMaxWidth(),
-        )
         if (authUiState is AuthUiState.Error) {
             Text(
                 text = (authUiState as AuthUiState.Error).message,
@@ -195,7 +150,6 @@ fun SignUpScreen(
                 style = MaterialTheme.typography.bodySmall,
                 modifier = Modifier.padding(top = 8.dp),
             )
-        }
         Spacer(modifier = Modifier.height(24.dp))
         Button(
             onClick = {
@@ -203,45 +157,27 @@ fun SignUpScreen(
                 if (fullName.isBlank()) {
                     fullNameError = "Full name is required"
                     valid = false
-                }
                 if (!email.isEmailValid()) {
                     emailError = "Invalid email"
-                    valid = false
-                }
                 if (password.length < 8) {
                     passwordError = "At least 8 characters"
-                    valid = false
-                }
                 if (confirmPassword != password) {
                     confirmPasswordError = "Passwords do not match"
-                    valid = false
-                }
                 if (valid) {
                     authViewModel.signUp(email, password, fullName)
-                }
-            },
             modifier = Modifier
                 .fillMaxWidth()
                 .height(56.dp),
             shape = RoundedCornerShape(16.dp),
             enabled = fullName.isNotBlank() && email.isNotBlank() && password.isNotBlank() && confirmPassword.isNotBlank() && authUiState !is AuthUiState.Loading,
         ) {
-            Text(
                 text = if (authUiState is AuthUiState.Loading) "CREATING ACCOUNT..." else "SIGN UP",
                 fontSize = 16.sp,
                 fontWeight = androidx.compose.ui.text.font.FontWeight.SemiBold,
-            )
-        }
-        Spacer(modifier = Modifier.height(16.dp))
         TextButton(
             onClick = { navController.navigate(com.guidetradeai.ui.navigation.NavRoutes.LOGIN) },
             enabled = authUiState !is AuthUiState.Loading,
-        ) {
-            Text(
                 text = "Already have an account? Login",
                 color = MaterialTheme.colorScheme.primary,
                 textAlign = TextAlign.Center,
-            )
-        }
-    }
 }

@@ -69,7 +69,6 @@ import androidx.compose.material3.TextButton
 import androidx.compose.material3.TextField
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.TextFieldDefaults
-import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.rememberModalBottomSheetState
@@ -148,7 +147,6 @@ import kotlinx.serialization.json.JsonPrimitive
 import kotlinx.serialization.json.buildJsonObject
 import kotlinx.serialization.json.jsonObject
 import kotlinx.serialization.json.jsonPrimitive
-
 @Composable
 fun McpConnectionsScreen(navController: NavHostController) {
     Scaffold(
@@ -177,7 +175,6 @@ fun McpConnectionsScreen(navController: NavHostController) {
                     },
                 )
             }
-            item {
                 GuideTradeCard {
                     Row(modifier = Modifier.fillMaxWidth().padding(16.dp), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.SpaceBetween) {
                         Column(modifier = Modifier.weight(1f)) {
@@ -187,18 +184,9 @@ fun McpConnectionsScreen(navController: NavHostController) {
                         StatusBadge(text = "DISABLED", color = GuideTradeColors.Negative)
                     }
                 }
-            }
-            item {
-                GuideTradeCard {
-                    Row(modifier = Modifier.fillMaxWidth().padding(16.dp), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.SpaceBetween) {
-                        Column(modifier = Modifier.weight(1f)) {
                             Text(text = "Paper Trading", color = GuideTradeColors.TextPrimary, fontSize = 15.sp, fontWeight = FontWeight.Medium)
                             Text(text = "Simulated trading only", color = GuideTradeColors.TextSecondary, fontSize = 12.sp)
-                        }
                         StatusBadge(text = "READ ONLY", color = GuideTradeColors.Positive)
-                    }
-                }
-            }
         }
     }
 }

@@ -45,7 +45,6 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import com.guidetradeai.viewmodel.AuthUiState
 import com.guidetradeai.viewmodel.AuthViewModel
-
 @Composable
 fun EmailVerificationScreen(
     navController: NavHostController,
@@ -53,7 +52,6 @@ fun EmailVerificationScreen(
     email: String,
 ) {
     val authUiState by authViewModel.uiState.collectAsState()
-
     LaunchedEffect(authUiState) {
         if (authUiState is AuthUiState.Authenticated) {
             navController.navigate(com.guidetradeai.ui.navigation.NavRoutes.HOME) {
@@ -61,7 +59,6 @@ fun EmailVerificationScreen(
             }
         }
     }
-
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -87,10 +84,8 @@ fun EmailVerificationScreen(
                 animationSpec = infiniteRepeatable(
                     animation = tween(1800, easing = LinearOutSlowInEasing),
                     repeatMode = RepeatMode.Reverse,
-                ),
                 label = "mail_scale",
             )
-
             Box(
                 modifier = Modifier
                     .size(120.dp)
@@ -103,7 +98,6 @@ fun EmailVerificationScreen(
                                 MaterialTheme.colorScheme.tertiary,
                             ),
                         ),
-                    ),
                 contentAlignment = Alignment.Center,
             ) {
                 Text(
@@ -112,94 +106,46 @@ fun EmailVerificationScreen(
                     color = Color.White,
                     modifier = Modifier.scale(scale),
                 )
-            }
-
             Spacer(modifier = Modifier.height(48.dp))
-
             Text(
                 text = "Verify Your Email",
                 style = MaterialTheme.typography.headlineMedium,
                 color = MaterialTheme.colorScheme.onBackground,
                 fontWeight = FontWeight.W700,
                 textAlign = TextAlign.Center,
-            )
-
             Spacer(modifier = Modifier.height(16.dp))
-
-            Text(
                 text = "We sent a verification link to",
                 style = MaterialTheme.typography.bodyLarge,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
-                textAlign = TextAlign.Center,
-            )
-
-            Text(
                 text = email,
-                style = MaterialTheme.typography.bodyLarge,
                 color = MaterialTheme.colorScheme.primary,
                 fontWeight = FontWeight.W600,
-                textAlign = TextAlign.Center,
-            )
-
             Spacer(modifier = Modifier.height(12.dp))
-
-            Text(
                 text = "Please check your inbox and tap the link to activate your account.",
                 style = MaterialTheme.typography.bodyMedium,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-                textAlign = TextAlign.Center,
-            )
-
             if (authUiState is AuthUiState.Error) {
                 Spacer(modifier = Modifier.height(16.dp))
-                Text(
                     text = (authUiState as AuthUiState.Error).message,
                     color = MaterialTheme.colorScheme.error,
                     style = MaterialTheme.typography.bodySmall,
                     textAlign = TextAlign.Center,
-                )
-            }
-
-            Spacer(modifier = Modifier.height(48.dp))
-
             Button(
                 onClick = { navController.navigate(com.guidetradeai.ui.navigation.NavRoutes.LOGIN) },
-                modifier = Modifier
                     .fillMaxWidth()
                     .height(56.dp),
                 shape = RoundedCornerShape(16.dp),
                 colors = ButtonDefaults.buttonColors(
                     containerColor = MaterialTheme.colorScheme.primary,
-                ),
-            ) {
-                Text(
                     text = "I'VE VERIFIED MY EMAIL",
                     fontSize = 16.sp,
                     fontWeight = FontWeight.W600,
-                )
-            }
-
-            Spacer(modifier = Modifier.height(12.dp))
-
             TextButton(
                 onClick = { authViewModel.resendVerificationEmail(email) },
                 enabled = authUiState !is AuthUiState.Loading,
-            ) {
-                Text(
                     text = if (authUiState is AuthUiState.Loading) "SENDING..." else "Resend Email",
                     color = MaterialTheme.colorScheme.primary,
-                    fontWeight = FontWeight.W600,
-                )
-            }
-
             Spacer(modifier = Modifier.height(24.dp))
-
             TextButton(onClick = { navController.navigate(com.guidetradeai.ui.navigation.NavRoutes.LOGIN) }) {
-                Text(
                     text = "Back to Login",
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
-                )
-            }
-        }
-    }
 }

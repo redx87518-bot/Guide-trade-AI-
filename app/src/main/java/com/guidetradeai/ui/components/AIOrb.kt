@@ -57,7 +57,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.guidetradeai.utils.Constants
 import androidx.compose.runtime.setValue
-
 @Composable
 fun AIOrb(
     state: com.guidetradeai.voice.VoiceState,
@@ -66,7 +65,6 @@ fun AIOrb(
     onClick: () -> Unit = {},
 ) {
     val transition = updateTransition(targetState = state, label = "orb_state_transition")
-
     val scale by transition.animateFloat(
         transitionSpec = { tween(durationMillis = 300) },
         label = "orb_scale",
@@ -79,33 +77,21 @@ fun AIOrb(
             com.guidetradeai.voice.VoiceState.ERROR -> 1.0f
         }
     }
-
     val pulseAlpha by transition.animateFloat(
-        transitionSpec = { tween(durationMillis = 300) },
         label = "orb_alpha",
-    ) { currentState ->
-        when (currentState) {
             com.guidetradeai.voice.VoiceState.IDLE -> 0.85f
             com.guidetradeai.voice.VoiceState.LISTENING -> 1.0f
             com.guidetradeai.voice.VoiceState.PROCESSING -> 0.65f
             com.guidetradeai.voice.VoiceState.SPEAKING -> 1.0f
             com.guidetradeai.voice.VoiceState.ERROR -> 0.4f
-        }
-    }
-
     val gradientShift by transition.animateFloat(
         transitionSpec = { tween(durationMillis = 500) },
         label = "orb_gradient",
-    ) { currentState ->
-        when (currentState) {
             com.guidetradeai.voice.VoiceState.IDLE -> 0f
             com.guidetradeai.voice.VoiceState.LISTENING -> 1f
             com.guidetradeai.voice.VoiceState.PROCESSING -> 2f
             com.guidetradeai.voice.VoiceState.SPEAKING -> 3f
             com.guidetradeai.voice.VoiceState.ERROR -> 0f
-        }
-    }
-
     val infiniteTransition = rememberInfiniteTransition(label = "orb_idle_pulse")
     val idlePulse by infiniteTransition.animateFloat(
         initialValue = 0.95f,
@@ -116,9 +102,7 @@ fun AIOrb(
         ),
         label = "idle_pulse_scale",
     )
-
     val finalScale = if (state == com.guidetradeai.voice.VoiceState.IDLE) scale * idlePulse else scale
-
     val gradientColors = when (state) {
         com.guidetradeai.voice.VoiceState.IDLE -> listOf(
             Color(0xFF6366F1),
@@ -128,25 +112,14 @@ fun AIOrb(
         com.guidetradeai.voice.VoiceState.LISTENING -> listOf(
             Color(0xFF38BDF8),
             Color(0xFF0EA5E9),
-            Color(0xFF6366F1),
-        )
         com.guidetradeai.voice.VoiceState.PROCESSING -> listOf(
             Color(0xFFF59E0B),
             Color(0xFFD97706),
-            Color(0xFF6366F1),
-        )
         com.guidetradeai.voice.VoiceState.SPEAKING -> listOf(
-            Color(0xFF10B981),
             Color(0xFF059669),
-            Color(0xFF6366F1),
-        )
         com.guidetradeai.voice.VoiceState.ERROR -> listOf(
             Color(0xFFEF4444),
             Color(0xFFDC2626),
-            Color(0xFF6366F1),
-        )
-    }
-
     Box(
         modifier = modifier
             .size(sizeDp.dp)
@@ -178,7 +151,4 @@ fun AIOrb(
                             Color.Transparent,
                         ),
                     ),
-                ),
-        )
-    }
 }

@@ -69,7 +69,6 @@ import androidx.compose.material3.TextButton
 import androidx.compose.material3.TextField
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.TextFieldDefaults
-import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.rememberModalBottomSheetState
@@ -148,19 +147,16 @@ import kotlinx.serialization.json.JsonPrimitive
 import kotlinx.serialization.json.buildJsonObject
 import kotlinx.serialization.json.jsonObject
 import kotlinx.serialization.json.jsonPrimitive
-
 @Composable
 fun MarketsScreen(navController: NavHostController) {
     var selectedMarket by rememberSaveable { mutableStateOf("All") }
     val markets = listOf("All", "Stocks", "Crypto", "Forex", "Commodities")
     val viewModel: MarketsViewModel = viewModel()
     val uiState by viewModel.uiState.collectAsState()
-
     LaunchedEffect(selectedMarket) {
         if (selectedMarket == "All") viewModel.loadSymbols("crypto")
         else viewModel.loadSymbols(selectedMarket.lowercase())
     }
-
     Scaffold(
         topBar = {
             GuideTradeTopBar(
@@ -198,11 +194,9 @@ fun MarketsScreen(navController: NavHostController) {
                             fontSize = 12.sp,
                             fontWeight = if (isSelected) FontWeight.SemiBold else FontWeight.Normal,
                         )
-                    }
                 }
             }
             Spacer(modifier = Modifier.height(16.dp))
-
             when (uiState) {
                 is MarketsUiState.Loading -> LoadingState(modifier = Modifier.fillMaxSize())
                 is MarketsUiState.Error -> ErrorState(
@@ -218,10 +212,8 @@ fun MarketsScreen(navController: NavHostController) {
                             title = "No symbols found",
                             description = "Try selecting a different market category.",
                             modifier = Modifier.fillMaxSize(),
-                        )
                     } else {
                         LazyColumn(
-                            modifier = Modifier.fillMaxSize(),
                             contentPadding = PaddingValues(horizontal = 20.dp, vertical = 8.dp),
                             verticalArrangement = Arrangement.spacedBy(8.dp),
                         ) {
@@ -255,7 +247,6 @@ fun MarketsScreen(navController: NavHostController) {
                                             Column {
                                                 Text(text = symbol.symbol, color = GuideTradeColors.TextPrimary, fontSize = 15.sp, fontWeight = FontWeight.SemiBold)
                                                 Text(text = symbol.name.ifBlank { symbol.market }, color = GuideTradeColors.TextSecondary, fontSize = 12.sp)
-                                            }
                                         }
                                         Icon(
                                             imageVector = Icons.Default.ArrowForward,
@@ -267,9 +258,5 @@ fun MarketsScreen(navController: NavHostController) {
                                 }
                             }
                         }
-                    }
-                }
-            }
         }
-    }
 }

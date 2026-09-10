@@ -69,7 +69,6 @@ import androidx.compose.material3.TextButton
 import androidx.compose.material3.TextField
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.TextFieldDefaults
-import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.rememberModalBottomSheetState
@@ -148,7 +147,6 @@ import kotlinx.serialization.json.JsonPrimitive
 import kotlinx.serialization.json.buildJsonObject
 import kotlinx.serialization.json.jsonObject
 import kotlinx.serialization.json.jsonPrimitive
-
 @Composable
 fun HomeScreen(
     navController: NavHostController,
@@ -157,7 +155,6 @@ fun HomeScreen(
 ) {
     val uiState by homeViewModel.uiState.collectAsState()
     LaunchedEffect(Unit) { homeViewModel.loadHome() }
-
     Scaffold(
         topBar = {
             GuideTradeTopBar(
@@ -190,18 +187,11 @@ fun HomeScreen(
                     },
                     onAnalyzeAsset = {
                         navController.navigate(NavRoutes.MARKETS)
-                    },
                 )
             }
-
-            item {
                 SectionHeader(
                     title = "Market Overview",
                     modifier = Modifier.padding(horizontal = 20.dp, vertical = 8.dp),
-                )
-            }
-
-            item {
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -213,30 +203,15 @@ fun HomeScreen(
                         value = "Neutral",
                         modifier = Modifier.weight(1f),
                     )
-                    InfoCard(
                         title = "Risk",
                         value = "Moderate",
-                        modifier = Modifier.weight(1f),
                         tint = GuideTradeColors.Warning,
-                    )
-                    InfoCard(
                         title = "Status",
                         value = "Active",
-                        modifier = Modifier.weight(1f),
                         tint = GuideTradeColors.Positive,
-                    )
                 }
-            }
-
             item { Divider(modifier = Modifier.padding(horizontal = 20.dp), color = GuideTradeColors.SubtleBorder) }
-
-            item {
-                SectionHeader(
                     title = "Latest Intelligence",
-                    modifier = Modifier.padding(horizontal = 20.dp, vertical = 8.dp),
-                )
-            }
-
             items(listOf(
                 "Latest Signal" to "BTC/USD",
                 "Market Risk" to "Moderate",
@@ -244,11 +219,7 @@ fun HomeScreen(
                 "Market Regime" to "Neutral",
             )) { (title, value) ->
                 GuideTradeCard(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = 20.dp),
                     onClick = { /* TODO */ },
-                ) {
                     Row(
                         modifier = Modifier
                             .fillMaxWidth()
@@ -263,11 +234,9 @@ fun HomeScreen(
                                 fontSize = 14.sp,
                                 fontWeight = FontWeight.SemiBold,
                             )
-                            Text(
                                 text = "Just now",
                                 color = GuideTradeColors.MutedText,
                                 fontSize = 11.sp,
-                            )
                         }
                         Text(
                             text = value,
@@ -276,25 +245,10 @@ fun HomeScreen(
                             fontWeight = FontWeight.SemiBold,
                             textAlign = TextAlign.End,
                         )
-                    }
-                }
-            }
-
-            item { Divider(modifier = Modifier.padding(horizontal = 20.dp), color = GuideTradeColors.SubtleBorder) }
-
-            item {
-                SectionHeader(
                     title = "Watchlist",
-                    modifier = Modifier.padding(horizontal = 20.dp, vertical = 8.dp),
                     action = {
                         TextButton(onClick = { /* TODO */ }) {
                             Text(text = "Add", color = GuideTradeColors.BrightPurple, fontSize = 12.sp)
-                        }
-                    },
-                )
-            }
-
-            items(listOf(
                 Triple("BTC", "Bitcoin", 67421.32 to 2.34),
                 Triple("ETH", "Ethereum", 3456.78 to -1.23),
                 Triple("AAPL", "Apple Inc.", 189.55 to 0.87),
@@ -308,17 +262,12 @@ fun HomeScreen(
                     price = price,
                     changePercent = change,
                     onClick = { navController.navigate(NavRoutes.assetDetailRoute(symbol)) },
-                )
-            }
         }
     }
 }
-
-@Composable
 fun HeroCard(
     onAskGuideTrade: () -> Unit,
     onAnalyzeAsset: () -> Unit,
-) {
     GuideTradeCard(
         modifier = Modifier
             .fillMaxWidth()
@@ -326,7 +275,6 @@ fun HeroCard(
         containerColor = Color.Transparent,
     ) {
         Box(
-            modifier = Modifier
                 .fillMaxWidth()
                 .height(180.dp)
                 .background(
@@ -340,9 +288,7 @@ fun HeroCard(
                         radius = 500f,
                     ),
                     shape = RoundedCornerShape(20.dp),
-                )
                 .border(1.dp, GuideTradeColors.SubtleBorder, RoundedCornerShape(20.dp)),
-        ) {
             Column(
                 modifier = Modifier
                     .fillMaxSize()
@@ -355,31 +301,15 @@ fun HeroCard(
                         color = GuideTradeColors.TextPrimary,
                         fontSize = 22.sp,
                         fontWeight = FontWeight.Light,
-                    )
                     Spacer(modifier = Modifier.height(4.dp))
-                    Text(
                         text = "What's happening in the markets?",
                         color = GuideTradeColors.TextSecondary,
                         fontSize = 15.sp,
-                    )
-                }
-                Row(
-                    horizontalArrangement = Arrangement.spacedBy(12.dp),
-                ) {
                     PrimaryButton(
                         text = "Ask GuideTrade",
                         onClick = onAskGuideTrade,
-                        modifier = Modifier.weight(1f),
                         icon = Icons.Default.Sparkles,
-                    )
                     SecondaryButton(
                         text = "Analyze an asset",
                         onClick = onAnalyzeAsset,
-                        modifier = Modifier.weight(1f),
                         icon = Icons.Default.Analytics,
-                    )
-                }
-            }
-        }
-    }
-}

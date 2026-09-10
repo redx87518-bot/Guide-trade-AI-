@@ -69,7 +69,6 @@ import androidx.compose.material3.TextButton
 import androidx.compose.material3.TextField
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.TextFieldDefaults
-import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.rememberModalBottomSheetState
@@ -148,15 +147,12 @@ import kotlinx.serialization.json.JsonPrimitive
 import kotlinx.serialization.json.buildJsonObject
 import kotlinx.serialization.json.jsonObject
 import kotlinx.serialization.json.jsonPrimitive
-
 @Composable
 fun ResearchHistoryScreen(navController: NavHostController) {
     val researchViewModel: ResearchViewModel = viewModel()
     val uiState by researchViewModel.uiState.collectAsState()
     val results = (uiState as? ResearchHistoryUiState.Success)?.results ?: emptyList()
-
     LaunchedEffect(Unit) { researchViewModel.loadResearchHistory() }
-
     Scaffold(
         topBar = {
             GuideTradeTopBar(
@@ -175,10 +171,8 @@ fun ResearchHistoryScreen(navController: NavHostController) {
                 action = {
                     PrimaryButton(text = "Open AI Chat", onClick = { navController.navigate(NavRoutes.AGENT) })
                 },
-            )
         } else {
             LazyColumn(
-                modifier = Modifier.fillMaxSize().padding(padding),
                 contentPadding = PaddingValues(20.dp),
                 verticalArrangement = Arrangement.spacedBy(8.dp),
             ) {

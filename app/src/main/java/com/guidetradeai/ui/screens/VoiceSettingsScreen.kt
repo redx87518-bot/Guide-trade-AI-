@@ -69,7 +69,6 @@ import androidx.compose.material3.TextButton
 import androidx.compose.material3.TextField
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.TextFieldDefaults
-import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.rememberModalBottomSheetState
@@ -148,12 +147,10 @@ import kotlinx.serialization.json.JsonPrimitive
 import kotlinx.serialization.json.buildJsonObject
 import kotlinx.serialization.json.jsonObject
 import kotlinx.serialization.json.jsonPrimitive
-
 @Composable
 fun VoiceSettingsScreen(navController: NavHostController) {
     val settingsViewModel: SettingsViewModel = viewModel()
     val uiState by settingsViewModel.uiState.collectAsState()
-
     Scaffold(
         topBar = {
             GuideTradeTopBar(
@@ -188,24 +185,10 @@ fun VoiceSettingsScreen(navController: NavHostController) {
                     }
                 }
             }
-            item {
-                GuideTradeCard {
-                    Row(
-                        modifier = Modifier.fillMaxWidth().padding(16.dp),
-                        horizontalArrangement = Arrangement.SpaceBetween,
-                        verticalAlignment = Alignment.CenterVertically,
-                    ) {
-                        Column(modifier = Modifier.weight(1f)) {
                             Text(text = "Auto-play Responses", color = GuideTradeColors.TextPrimary, fontSize = 15.sp, fontWeight = FontWeight.Medium)
                             Text(text = "Automatically speak AI responses", color = GuideTradeColors.TextSecondary, fontSize = 12.sp)
-                        }
-                        androidx.compose.material3.Switch(
                             checked = (uiState as? SettingsUiState.Success)?.settings?.autoSpeak ?: false,
                             onCheckedChange = { settingsViewModel.updateAutoSpeak(it) },
-                        )
-                    }
-                }
-            }
         }
     }
 }

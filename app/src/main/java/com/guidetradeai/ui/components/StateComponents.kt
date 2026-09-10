@@ -25,7 +25,6 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.guidetradeai.ui.theme.GuideTradeColors
-
 @Composable
 fun LoadingState(
     modifier: Modifier = Modifier,
@@ -56,25 +55,12 @@ fun LoadingState(
         )
     }
 }
-
-@Composable
 fun EmptyState(
     title: String,
     description: String? = null,
-    modifier: Modifier = Modifier,
     action: (@Composable () -> Unit)? = null,
-) {
-    Column(
-        modifier = modifier.fillMaxSize(),
-        verticalArrangement = Arrangement.Center,
-        horizontalAlignment = Alignment.CenterHorizontally,
-    ) {
-        Box(
-            modifier = Modifier
                 .size(72.dp)
                 .background(GuideTradeColors.PrimarySurface, RoundedCornerShape(20.dp)),
-            contentAlignment = Alignment.Center,
-        ) {
             Box(
                 modifier = Modifier
                     .size(40.dp)
@@ -95,15 +81,12 @@ fun EmptyState(
                         .background(GuideTradeColors.PrimaryPurple, CircleShape),
                 )
             }
-        }
         Spacer(modifier = Modifier.height(20.dp))
-        Text(
             text = title,
             color = GuideTradeColors.TextPrimary,
             fontSize = 16.sp,
             fontWeight = FontWeight.SemiBold,
             textAlign = TextAlign.Center,
-        )
         if (description != null) {
             Spacer(modifier = Modifier.height(8.dp))
             Text(
@@ -112,71 +95,26 @@ fun EmptyState(
                 fontSize = 14.sp,
                 textAlign = TextAlign.Center,
                 lineHeight = 20.sp,
-            )
-        }
         if (action != null) {
             Spacer(modifier = Modifier.height(20.dp))
             action()
-        }
-    }
-}
-
-@Composable
 fun ErrorState(
     title: String = "Something went wrong",
     message: String? = null,
     onRetry: (() -> Unit)? = null,
-    modifier: Modifier = Modifier,
-) {
-    Column(
-        modifier = modifier.fillMaxSize(),
-        verticalArrangement = Arrangement.Center,
-        horizontalAlignment = Alignment.CenterHorizontally,
-    ) {
-        Box(
-            modifier = Modifier
-                .size(72.dp)
                 .background(GuideTradeColors.NegativeSoft, RoundedCornerShape(20.dp)),
-            contentAlignment = Alignment.Center,
-        ) {
-            Text(
                 text = "!",
                 color = GuideTradeColors.Negative,
                 fontSize = 32.sp,
                 fontWeight = FontWeight.Bold,
-            )
-        }
-        Spacer(modifier = Modifier.height(20.dp))
-        Text(
-            text = title,
-            color = GuideTradeColors.TextPrimary,
-            fontSize = 16.sp,
-            fontWeight = FontWeight.SemiBold,
-            textAlign = TextAlign.Center,
-        )
         if (message != null) {
-            Spacer(modifier = Modifier.height(8.dp))
-            Text(
                 text = message,
-                color = GuideTradeColors.TextSecondary,
-                fontSize = 14.sp,
-                textAlign = TextAlign.Center,
-                lineHeight = 20.sp,
-            )
-        }
         if (onRetry != null) {
-            Spacer(modifier = Modifier.height(20.dp))
             TextButton(
                 onClick = onRetry,
                 shape = RoundedCornerShape(10.dp),
-            ) {
                 Text(
                     text = "Retry",
                     color = GuideTradeColors.BrightPurple,
                     fontSize = 14.sp,
                     fontWeight = FontWeight.SemiBold,
-                )
-            }
-        }
-    }
-}

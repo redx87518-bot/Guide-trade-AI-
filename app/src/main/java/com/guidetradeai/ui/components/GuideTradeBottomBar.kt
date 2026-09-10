@@ -32,7 +32,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.material.icons.filled.SmartToy
 import androidx.compose.material.icons.filled.Star
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -44,20 +43,16 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.compose.ui.draw.scale
-import androidx.compose.ui.draw.clip
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import com.guidetradeai.ui.theme.GuideTradeColors
-
 data class BottomNavItem(
     val title: String,
     val icon: ImageVector,
     val route: String,
     val isCenter: Boolean = false,
 )
-
 @Composable
 fun GuideTradeBottomBar(
     navController: NavHostController,
@@ -72,7 +67,6 @@ fun GuideTradeBottomBar(
 ) {
     val navBackStackEntry = navController.currentBackStackEntryAsState()
     val currentRoute = navBackStackEntry.value?.destination?.route
-
     NavigationBar(
         modifier = modifier
             .fillMaxWidth()
@@ -96,7 +90,6 @@ fun GuideTradeBottomBar(
                 animationSpec = tween(150),
                 label = "nav_scale",
             )
-
             NavigationBarItem(
                 selected = selected,
                 onClick = {
@@ -138,7 +131,6 @@ fun GuideTradeBottomBar(
                                 tint = GuideTradeColors.White,
                                 modifier = Modifier.size(22.dp),
                             )
-                        }
                     } else {
                         Icon(
                             imageVector = item.icon,
@@ -146,8 +138,6 @@ fun GuideTradeBottomBar(
                             tint = if (selected) GuideTradeColors.BrightPurple else GuideTradeColors.MutedText,
                             modifier = Modifier.size(24.dp),
                         )
-                    }
-                },
                 label = {
                     Text(
                         text = item.title,
@@ -156,15 +146,12 @@ fun GuideTradeBottomBar(
                         fontWeight = if (selected) FontWeight.SemiBold else FontWeight.Normal,
                         letterSpacing = 0.3.sp,
                     )
-                },
                 colors = NavigationBarItemDefaults.colors(
                     indicatorColor = Color.Transparent,
                     selectedIconColor = GuideTradeColors.BrightPurple,
                     unselectedIconColor = GuideTradeColors.MutedText,
                     selectedTextColor = GuideTradeColors.TextPrimary,
                     unselectedTextColor = GuideTradeColors.MutedText,
-                ),
-            )
         }
     }
 }

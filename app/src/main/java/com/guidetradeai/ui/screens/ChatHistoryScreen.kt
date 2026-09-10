@@ -69,7 +69,6 @@ import androidx.compose.material3.TextButton
 import androidx.compose.material3.TextField
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.TextFieldDefaults
-import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.rememberModalBottomSheetState
@@ -148,15 +147,12 @@ import kotlinx.serialization.json.JsonPrimitive
 import kotlinx.serialization.json.buildJsonObject
 import kotlinx.serialization.json.jsonObject
 import kotlinx.serialization.json.jsonPrimitive
-
 @Composable
 fun ChatHistoryScreen(navController: NavHostController) {
     val chatHistoryViewModel: ChatHistoryViewModel = viewModel()
     val uiState by chatHistoryViewModel.uiState.collectAsState()
     val sessions = (uiState as? ChatHistoryUiState.Success)?.sessions ?: emptyList()
-
     LaunchedEffect(Unit) { chatHistoryViewModel.loadSessions() }
-
     Scaffold(
         floatingActionButton = {
             FloatingActionButton(
@@ -200,7 +196,6 @@ fun ChatHistoryScreen(navController: NavHostController) {
                 )
             } else {
                 LazyColumn(
-                    modifier = Modifier.fillMaxSize(),
                     contentPadding = PaddingValues(vertical = 8.dp),
                     verticalArrangement = Arrangement.spacedBy(8.dp),
                 ) {
@@ -221,19 +216,15 @@ fun ChatHistoryScreen(navController: NavHostController) {
                                 Column(modifier = Modifier.weight(1f)) {
                                     Text(text = session.title, color = GuideTradeColors.TextPrimary, fontSize = 16.sp, fontWeight = FontWeight.SemiBold, maxLines = 1, overflow = TextOverflow.Ellipsis)
                                     Text(text = session.updatedAt.formatDate("MMM dd"), color = GuideTradeColors.TextSecondary, fontSize = 12.sp)
-                                }
                                 Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(4.dp)) {
                                     IconButton(onClick = {
                                         chatHistoryViewModel.deleteSession(session.id)
                                     }) {
                                         Icon(imageVector = Icons.Default.Delete, contentDescription = "Delete", tint = GuideTradeColors.Negative, modifier = Modifier.size(18.dp))
                                     }
-                                }
                             }
                         }
-                    }
                 }
-            }
         }
     }
 }

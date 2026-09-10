@@ -36,16 +36,9 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Brush
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import com.guidetradeai.ui.theme.GuideTradeColors
-
 @Composable
 fun ExpandableSection(
     title: String,
@@ -82,20 +75,14 @@ fun ExpandableSection(
                 modifier = Modifier
                     .size(16.dp)
                     .graphicsLayer(rotationZ = rotation),
-            )
         }
         if (isExpanded) {
             content()
-        }
     }
 }
-
-@Composable
 fun CopyableText(
     text: String,
-    modifier: Modifier = Modifier,
     color: Color = GuideTradeColors.TextPrimary,
-) {
     Row(
         modifier = modifier,
         verticalAlignment = Alignment.CenterVertically,
@@ -117,34 +104,18 @@ fun CopyableText(
                 android.widget.Toast.makeText(android.compose.ui.platform.LocalContext.current, "Copied", android.widget.Toast.LENGTH_SHORT).show()
             },
             modifier = Modifier.height(24.dp),
-        ) {
-            Icon(
                 imageVector = androidx.compose.material.icons.filled.ContentCopy,
                 contentDescription = "Copy",
-                tint = GuideTradeColors.MutedText,
                 modifier = Modifier.size(14.dp),
-            )
-        }
-    }
-}
-
-@Composable
 fun GradientCard(
-    modifier: Modifier = Modifier,
     colors: List<Color> = listOf(
         GuideTradeColors.PrimaryPurple.copy(alpha = 0.15f),
         GuideTradeColors.PrimarySurface,
     ),
-    content: @Composable () -> Unit,
-) {
     Box(
         modifier = modifier
             .background(
                 brush = Brush.linearGradient(colors = colors),
                 shape = RoundedCornerShape(16.dp),
-            )
             .border(1.dp, GuideTradeColors.SubtleBorder, RoundedCornerShape(16.dp)),
-    ) {
         content()
-    }
-}

@@ -43,7 +43,6 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.guidetradeai.ui.theme.GuideTradeColors
-
 @Composable
 fun PrimaryButton(
     text: String,
@@ -105,33 +104,17 @@ fun PrimaryButton(
         }
     }
 }
-
-@Composable
 fun SecondaryButton(
-    text: String,
-    onClick: () -> Unit,
-    modifier: Modifier = Modifier,
-    enabled: Boolean = true,
-    icon: ImageVector? = null,
-) {
     OutlinedButton(
-        onClick = onClick,
-        modifier = modifier
-            .fillMaxWidth()
-            .height(52.dp),
         enabled = enabled,
-        shape = RoundedCornerShape(14.dp),
         colors = ButtonDefaults.outlinedButtonColors(
             contentColor = GuideTradeColors.TextPrimary,
             disabledContentColor = GuideTradeColors.Disabled,
-        ),
         border = ButtonDefaults.outlinedButtonBorder.copy(
             brush = Brush.linearGradient(
                 colors = listOf(GuideTradeColors.PrimaryPurple, GuideTradeColors.PrimaryPurple.copy(alpha = 0.3f)),
             ),
             width = 1.dp,
-        ),
-    ) {
         Row(
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.Center,
@@ -143,51 +126,20 @@ fun SecondaryButton(
                     contentDescription = null,
                     tint = GuideTradeColors.BrightPurple,
                     modifier = Modifier.size(18.dp),
-                )
                 Spacer(modifier = Modifier.width(8.dp))
-            }
             Text(
                 text = text.uppercase(),
                 fontSize = 14.sp,
                 fontWeight = FontWeight.SemiBold,
                 letterSpacing = 0.5.sp,
                 textAlign = TextAlign.Center,
-            )
-        }
-    }
-}
-
-@Composable
 fun GhostButton(
-    text: String,
-    onClick: () -> Unit,
-    modifier: Modifier = Modifier,
-    icon: ImageVector? = null,
-) {
     TextButton(
-        onClick = onClick,
         modifier = modifier,
         shape = RoundedCornerShape(10.dp),
-    ) {
-        Row(
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.Center,
-        ) {
-            if (icon != null) {
-                Icon(
-                    imageVector = icon,
-                    contentDescription = null,
-                    tint = GuideTradeColors.BrightPurple,
                     modifier = Modifier.size(16.dp),
-                )
                 Spacer(modifier = Modifier.width(6.dp))
-            }
-            Text(
                 text = text,
                 color = GuideTradeColors.BrightPurple,
                 fontSize = 13.sp,
                 fontWeight = FontWeight.Medium,
-            )
-        }
-    }
-}
