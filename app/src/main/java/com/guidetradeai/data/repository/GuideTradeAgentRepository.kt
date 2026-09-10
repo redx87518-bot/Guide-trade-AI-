@@ -101,7 +101,6 @@ class GuideTradeAgentRepository(
                             AgentSession(
                                 id = obj["id"]?.jsonPrimitive?.content ?: "",
                                 title = obj["title"]?.jsonPrimitive?.content ?: "",
-                                provider = obj["provider"]?.jsonPrimitive?.content,
                                 createdAt = obj["created_at"]?.jsonPrimitive?.content,
                                 updatedAt = obj["updated_at"]?.jsonPrimitive?.content,
                             )

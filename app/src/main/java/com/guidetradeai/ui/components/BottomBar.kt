@@ -39,7 +39,7 @@ import com.guidetradeai.ui.theme.AccentGlow
 import com.guidetradeai.ui.theme.SurfaceDark
 import com.guidetradeai.ui.theme.TextSecondary
 
-data class BottomNavItem(
+data class ChatChatBottomNavItem(
     val title: String,
     val icon: ImageVector,
     val route: String,
@@ -51,10 +51,10 @@ fun BottomBar(
     modifier: Modifier = Modifier,
 ) {
     val items = listOf(
-        BottomNavItem("Chat", Icons.Default.Chat, NavRoutes.CHAT_NEW),
-        BottomNavItem("Research", Icons.Default.Analytics, NavRoutes.RESEARCH_HISTORY),
-        BottomNavItem("Voice", Icons.Default.Mic, NavRoutes.ORB),
-        BottomNavItem("Settings", Icons.Default.Settings, NavRoutes.SETTINGS),
+        ChatBottomNavItem("Chat", Icons.Default.Chat, NavRoutes.CHAT_NEW),
+        ChatBottomNavItem("Research", Icons.Default.Analytics, NavRoutes.RESEARCH_HISTORY),
+        ChatBottomNavItem("Voice", Icons.Default.Mic, NavRoutes.ORB),
+        ChatBottomNavItem("Settings", Icons.Default.Settings, NavRoutes.SETTINGS),
     )
     val currentRoute = navController.currentDestination?.route
     val hideRoutes = setOf(
