@@ -1,21 +1,34 @@
 package com.guidetradeai.ui.components
+import androidx.compose.foundation.shape.Shape
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.CheckCircle
+import androidx.compose.material.icons.filled.Star
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.guidetradeai.ui.theme.GuideTradeColors
@@ -23,44 +36,44 @@ import com.guidetradeai.ui.theme.GuideTradeColors
 @Composable
 fun GuideTradeCard(
     modifier: Modifier = Modifier,
-    containerColor: Color = GuideTradeColors.CardSurface,
     onClick: (() -> Unit)? = null,
+    containerColor: Color = GuideTradeColors.CardSurface,
+    contentColor: Color = GuideTradeColors.TextPrimary,
+    shape: androidx.compose.foundation.shape.Shape = RoundedCornerShape(16.dp),
     content: @Composable () -> Unit,
 ) {
     Card(
         modifier = modifier,
-        shape = RoundedCornerShape(16.dp),
-        colors = CardDefaults.cardColors(containerColor = containerColor),
+        onClick = onClick ?: {},
+        shape = shape,
+        colors = CardDefaults.cardColors(
+            containerColor = containerColor,
+            contentColor = contentColor,
+        ),
         elevation = CardDefaults.cardElevation(defaultElevation = 0.dp),
-        onClick = { onClick?.invoke() },
     ) {
-        content()
+        Box(modifier = Modifier.padding(16.dp)) {
+            content()
+        }
     }
 }
 
 @Composable
 fun StatusBadge(
     text: String,
-    color: Color,
+    color: Color = GuideTradeColors.BrightPurple,
     modifier: Modifier = Modifier,
 ) {
-    val bgColor = when (color) {
-        GuideTradeColors.Positive -> GuideTradeColors.PositiveSoft
-        GuideTradeColors.Negative -> GuideTradeColors.NegativeSoft
-        GuideTradeColors.Warning -> GuideTradeColors.WarningSoft
-        else -> GuideTradeColors.SecondarySurface
-    }
     Box(
         modifier = modifier
-            .background(bgColor, RoundedCornerShape(8.dp))
-            .border(1.dp, color.copy(alpha = 0.3f), RoundedCornerShape(8.dp)),
+            .background(color.copy(alpha = 0.15f), RoundedCornerShape(6.dp))
+            .padding(horizontal = 8.dp, vertical = 4.dp),
     ) {
         Text(
             text = text,
             color = color,
-            fontSize = 10.sp,
+            fontSize = 11.sp,
             fontWeight = FontWeight.SemiBold,
-            modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
         )
     }
 }
@@ -69,7 +82,7 @@ fun StatusBadge(
 fun SectionHeader(
     title: String,
     modifier: Modifier = Modifier,
-    action: (@Composable () -> Unit)? = null,
+    action: @Composable (() -> Unit)? = null,
 ) {
     Row(
         modifier = modifier.fillMaxWidth(),
@@ -77,11 +90,10 @@ fun SectionHeader(
         verticalAlignment = Alignment.CenterVertically,
     ) {
         Text(
-            text = title.uppercase(),
-            color = GuideTradeColors.MutedText,
-            fontSize = 11.sp,
+            text = title,
+            color = GuideTradeColors.TextPrimary,
+            fontSize = 16.sp,
             fontWeight = FontWeight.SemiBold,
-            letterSpacing = 1.sp,
         )
         if (action != null) {
             action()
@@ -92,27 +104,17 @@ fun SectionHeader(
 @Composable
 fun PriceText(
     value: Double?,
-    modifier: Modifier = Modifier,
+    fontSize: Float = 16f,
     color: Color = GuideTradeColors.TextPrimary,
-    fontSize: Float = 18f,
+    modifier: Modifier = Modifier,
 ) {
-    if (value == null) {
-        Text(
-            text = "—",
-            color = GuideTradeColors.MutedText,
-            fontSize = fontSize.sp,
-            fontWeight = FontWeight.Bold,
-            modifier = modifier,
-        )
-    } else {
-        Text(
-            text = "$${"%.2f".format(value)}",
-            color = color,
-            fontSize = fontSize.sp,
-            fontWeight = FontWeight.Bold,
-            modifier = modifier,
-        )
-    }
+    Text(
+        text = value?.let { "$${"%.2f".format(it)}" } ?: "—",
+        color = color,
+        fontSize = fontSize.sp,
+        fontWeight = FontWeight.Medium,
+        modifier = modifier,
+    )
 }
 
 @Composable
@@ -121,44 +123,23 @@ fun ChangeText(
     changePercent: Double?,
     modifier: Modifier = Modifier,
 ) {
-    if (change == null && changePercent == null) return
-    val isPositive = (change ?: 0.0) >= 0
-    val color = if (isPositive) GuideTradeColors.Positive else GuideTradeColors.Negative
-    val sign = if (isPositive) "+" else ""
-    Row(modifier = modifier, verticalAlignment = Alignment.CenterVertically) {
-        if (changePercent != null) {
-            Text(
-                text = "${sign}${"%.2f".format(changePercent)}%",
-                color = color,
-                fontSize = 14.sp,
-                fontWeight = FontWeight.SemiBold,
-            )
-        }
-        if (change != null && changePercent == null) {
-            Text(
-                text = "${sign}${"%.2f".format(change)}",
-                color = color,
-                fontSize = 14.sp,
-                fontWeight = FontWeight.SemiBold,
-            )
-        }
-    }
-}
-
-@Composable
-fun TrendIndicator(
-    trend: String,
-    modifier: Modifier = Modifier,
-) {
-    val (color, icon) = when (trend.lowercase()) {
-        "up", "bullish", "positive", "rise", "rising" -> GuideTradeColors.Positive to "▲"
-        "down", "bearish", "negative", "fall", "falling" -> GuideTradeColors.Negative to "▼"
-        else -> GuideTradeColors.MutedText to "•"
-    }
-    Text(
-        text = icon,
-        color = color,
-        fontSize = 12.sp,
+    val sign = if ((change ?: 0.0) >= 0) "+" else ""
+    val color = if ((change ?: 0.0) >= 0) GuideTradeColors.Positive else GuideTradeColors.Negative
+    Row(
         modifier = modifier,
-    )
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(4.dp),
+    ) {
+        Text(
+            text = "$sign${"%.2f".format(change ?: 0.0)}",
+            color = color,
+            fontSize = 13.sp,
+            fontWeight = FontWeight.Medium,
+        )
+        Text(
+            text = "($sign${"%.2f".format(changePercent ?: 0.0)}%)",
+            color = color,
+            fontSize = 12.sp,
+        )
+    }
 }
