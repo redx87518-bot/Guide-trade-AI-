@@ -6,7 +6,6 @@ import com.guidetradeai.data.repository.AuthRepository
 import com.guidetradeai.data.repository.ResearchRepository
 import com.guidetradeai.di.AppModule
 import com.guidetradeai.domain.Result
-import com.guidetradeai.domain.model.ResearchResult
 import com.guidetradeai.domain.model.User
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -17,9 +16,7 @@ sealed class HomeUiState {
     object Loading : HomeUiState()
     data class Success(
         val user: User,
-        val recentResearch: List<ResearchResult>,
-        val marketRegime: String? = null,
-        val riskLevel: String? = null,
+        val recentResearch: List<com.guidetradeai.domain.model.ResearchResult>,
     ) : HomeUiState()
     data class Error(val message: String) : HomeUiState()
 }
@@ -40,6 +37,7 @@ class HomeViewModel(
                 _uiState.value = HomeUiState.Error("User not authenticated")
                 return@launch
             }
+
             when (val result = researchRepository.getResearchHistory()) {
                 is Result.Success -> {
                     val recent = result.data.take(5)

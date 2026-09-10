@@ -2,6 +2,7 @@ package com.guidetradeai.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.guidetradeai.data.repository.AuthRepository
 import com.guidetradeai.data.repository.ResearchRepository
 import com.guidetradeai.di.AppModule
 import com.guidetradeai.domain.Result
@@ -15,13 +16,6 @@ sealed class ResearchDetailUiState {
     object Loading : ResearchDetailUiState()
     data class Success(val result: ResearchResult) : ResearchDetailUiState()
     data class Error(val message: String) : ResearchDetailUiState()
-}
-
-sealed class TelegramActionState {
-    object Idle : TelegramActionState()
-    object Loading : TelegramActionState()
-    object Success : TelegramActionState()
-    data class Error(val message: String) : TelegramActionState()
 }
 
 class ResearchDetailViewModel(
@@ -74,4 +68,11 @@ class ResearchDetailViewModel(
     fun clearTelegramState() {
         _telegramState.value = TelegramActionState.Idle
     }
+}
+
+sealed class TelegramActionState {
+    object Idle : TelegramActionState()
+    object Loading : TelegramActionState()
+    object Success : TelegramActionState()
+    data class Error(val message: String) : TelegramActionState()
 }

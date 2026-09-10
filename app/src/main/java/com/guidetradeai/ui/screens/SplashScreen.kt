@@ -1,13 +1,7 @@
 package com.guidetradeai.ui.screens
 
-import androidx.compose.animation.core.LinearOutSlowInEasing
-import androidx.compose.animation.core.RepeatMode
-import androidx.compose.animation.core.animateFloat
-import androidx.compose.animation.core.infiniteRepeatable
-import androidx.compose.animation.core.rememberInfiniteTransition
+import android.os.Bundle
 import androidx.compose.animation.core.tween
-import androidx.compose.animation.fadeIn
-import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -15,36 +9,23 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.drawBehind
-import androidx.compose.ui.draw.scale
-import androidx.compose.ui.draw.shadow
-import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
-import com.guidetradeai.ui.theme.GuideTradeColors
-import com.guidetradeai.viewmodel.AuthUiState
+import com.guidetradeai.R
+import com.guidetradeai.di.AppModule
+import com.guidetradeai.ui.navigation.NavRoutes
 import com.guidetradeai.viewmodel.AuthViewModel
 import kotlinx.coroutines.delay
 
@@ -53,134 +34,100 @@ fun SplashScreen(
     navController: NavHostController,
     authViewModel: AuthViewModel,
 ) {
-    val authUiState by authViewModel.uiState.collectAsState()
-    var showContent by remember { mutableStateOf(false) }
-    var exit by remember { mutableStateOf(false) }
-    var typedText by remember { mutableIntStateOf(0) }
-    val tagline = "INTELLIGENCE. PRECISION. EDGE."
+    val context = LocalContext.current
+    val app = context.applicationContext as com.guidetradeai.GuideTradeApp
 
-    LaunchedEffect(authUiState) {
-        if (authUiState is AuthUiState.Loading) return@LaunchedEffect
-        delay(100)
-        showContent = true
-        while (typedText < tagline.length) {
-            delay(60)
-            typedText++
-        }
-        delay(900)
-        exit = true
-        delay(600)
-        val destination = if (authUiState is AuthUiState.Authenticated) "home" else "login"
-        navController.navigate(destination) {
-            popUpTo(0) { inclusive = true }
+    LaunchedEffect(Unit) {
+        delay(2000)
+
+        val isAuthenticated = AppModule.authRepository.isUserAuthenticated()
+        if (isAuthenticated) {
+            navController.navigate(NavRoutes.HOME) {
+                popUpTo(NavRoutes.SPLASH) { inclusive = true }
+            }
+        } else {
+            val onboardingComplete = app.getSharedPreferences().getBoolean("onboarding_complete", false)
+            if (onboardingComplete) {
+                navController.navigate(NavRoutes.LOGIN) {
+                    popUpTo(NavRoutes.SPLASH) { inclusive = true }
+                }
+            } else {
+                navController.navigate(NavRoutes.ONBOARDING) {
+                    popUpTo(NavRoutes.SPLASH) { inclusive = true }
+                }
+            }
         }
     }
 
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(GuideTradeColors.Background),
+            .background(Color(0xFF0F1117)),
         contentAlignment = Alignment.Center,
     ) {
-        androidx.compose.animation.AnimatedVisibility(
-            visible = showContent && !exit,
-            enter = fadeIn(tween(700)),
-            exit = fadeOut(tween(500)),
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Center,
         ) {
-            Column(
-                horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.Center,
-            ) {
-                val infiniteTransition = rememberInfiniteTransition(label = "splash_orb")
-                val scale by infiniteTransition.animateFloat(
-                    initialValue = 0.92f,
-                    targetValue = 1.08f,
-                    animationSpec = infiniteRepeatable(
-                        animation = tween(2200, easing = LinearOutSlowInEasing),
-                        repeatMode = RepeatMode.Reverse,
-                    ),
-                    label = "orb_scale",
-                )
-                val alpha by infiniteTransition.animateFloat(
-                    initialValue = 0.7f,
-                    targetValue = 1f,
-                    animationSpec = infiniteRepeatable(
-                        animation = tween(1800, easing = LinearOutSlowInEasing),
-                        repeatMode = RepeatMode.Reverse,
-                    ),
-                    label = "orb_alpha",
-                )
+            OrbAnimation(modifier = Modifier.size(100.dp))
 
-                Box(
-                    modifier = Modifier
-                        .size(100.dp)
-                        .scale(scale)
-                        .shadow(
-                            elevation = 40.dp,
-                            shape = CircleShape,
-                            spotColor = GuideTradeColors.PrimaryPurple.copy(alpha = 0.45f),
-                        )
-                        .clip(CircleShape)
-                        .background(
-                            Brush.radialGradient(
-                                colors = listOf(
-                                    GuideTradeColors.PrimaryPurple.copy(alpha = 0.25f),
-                                    GuideTradeColors.DeepPurple.copy(alpha = 0.25f),
-                                    Color.Transparent,
-                                ),
-                            ),
-                        ),
-                    contentAlignment = Alignment.Center,
-                ) {
-                    Canvas(modifier = Modifier.fillMaxSize()) {
-                        val center = Offset(size.width / 2f, size.height / 2f)
-                        val baseRadius = size.minDimension / 2f
+            Spacer(modifier = Modifier.height(32.dp))
 
-                        drawCircle(
-                            color = Color.White.copy(alpha = alpha * 0.12f),
-                            radius = baseRadius,
-                        )
-                        drawCircle(
-                            brush = Brush.radialGradient(
-                                colors = listOf(
-                                    GuideTradeColors.BrightPurple.copy(alpha = 0.8f * alpha),
-                                    GuideTradeColors.PrimaryPurple.copy(alpha = 0.6f * alpha),
-                                    GuideTradeColors.Background,
-                                ),
-                                center = Offset(center.x * 0.35f, center.y * 0.3f),
-                            ),
-                            radius = baseRadius * 0.85f,
-                        )
-                        drawCircle(
-                            color = Color.White.copy(alpha = 0.18f),
-                            radius = baseRadius * 0.16f,
-                            center = Offset(center.x * 0.3f, center.y * 0.25f),
-                        )
-                    }
-                }
+            Text(
+                text = "GUIDE TRADE",
+                color = Color.White,
+                fontWeight = FontWeight.W700,
+                fontSize = 36.sp,
+            )
 
-                Spacer(modifier = Modifier.height(40.dp))
+            Spacer(modifier = Modifier.height(8.dp))
 
-                Text(
-                    text = "GUIDETRADE AI",
-                    color = GuideTradeColors.TextPrimary,
-                    fontWeight = FontWeight.Bold,
-                    fontSize = 32.sp,
-                    letterSpacing = 3.sp,
-                    textAlign = TextAlign.Center,
-                )
+            Text(
+                text = "AI RESEARCH ASSISTANT",
+                color = Color(0xFF9CA3AF),
+                fontWeight = FontWeight.W400,
+                fontSize = 14.sp,
+                letterSpacing = 4.sp,
+            )
+        }
+    }
+}
 
-                Spacer(modifier = Modifier.height(12.dp))
+@Composable
+fun OrbAnimation(modifier: Modifier = Modifier) {
+    val infiniteTransition = androidx.compose.animation.core.rememberInfiniteTransition(label = "splash_orb")
+    val scale by infiniteTransition.animateFloat(
+        initialValue = 0.8f,
+        targetValue = 1.1f,
+        animationSpec = androidx.compose.animation.core.infiniteRepeatable(
+            animation = tween(2000),
+            repeatMode = androidx.compose.animation.core.RepeatMode.Reverse,
+        ),
+        label = "orb_pulse",
+    )
+    val alpha by infiniteTransition.animateFloat(
+        initialValue = 0.7f,
+        targetValue = 1f,
+        animationSpec = androidx.compose.animation.core.infiniteRepeatable(
+            animation = tween(1500),
+            repeatMode = androidx.compose.animation.core.RepeatMode.Reverse,
+        ),
+        label = "orb_alpha",
+    )
 
-                Text(
-                    text = tagline.take(typedText),
-                    color = GuideTradeColors.BrightPurple,
-                    fontWeight = FontWeight.W500,
-                    fontSize = 12.sp,
-                    letterSpacing = 0.12.sp,
-                    textAlign = TextAlign.Center,
-                )
-            }
+    Box(
+        modifier = modifier
+            .size(100.dp)
+            .graphicsLayer(scaleX = scale, scaleY = scale, alpha = alpha),
+    ) {
+        Canvas(modifier = Modifier.fillMaxSize()) {
+            drawCircle(
+                color = Color(0xFF6366F1),
+            )
+            drawCircle(
+                color = Color(0xFF10B981).copy(alpha = 0.7f),
+                radius = 30f,
+            )
         }
     }
 }
