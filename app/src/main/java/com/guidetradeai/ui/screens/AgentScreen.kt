@@ -135,9 +135,11 @@ fun AgentScreen(
                 isLoading = isLoading,
                 modifier = Modifier.align(Alignment.BottomCenter),
 }
+@Composable
 fun EmptyChatState(
     onPromptClick: (String) -> Unit,
     modifier: Modifier = Modifier,
+) {
     Column(
         modifier = modifier
             .fillMaxSize()
