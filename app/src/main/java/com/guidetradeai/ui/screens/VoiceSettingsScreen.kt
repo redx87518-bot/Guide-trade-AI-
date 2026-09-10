@@ -62,7 +62,6 @@ import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.ModalNavigationDrawer
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
-import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TextField
@@ -92,7 +91,8 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.NavHostController
 import coil.compose.AsyncImage
 import com.guidetradeai.ui.components.*
@@ -112,9 +112,6 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.delay
-import kotlin.time.Clock
-import kotlin.time.ExperimentalTime
 import java.time.Instant
 import java.time.LocalDateTime
 import java.time.ZoneId
@@ -126,6 +123,7 @@ import android.content.ClipData
 import android.content.ClipboardManager
 import android.content.Context
 import android.content.Intent
+import kotlinx.coroutines.delay
 import android.speech.RecognitionListener
 import android.speech.RecognizerIntent
 import android.speech.SpeechRecognizer
@@ -179,7 +177,7 @@ fun VoiceSettingsScreen(navController: NavHostController) {
                             Text(text = "Voice Responses", color = GuideTradeColors.TextPrimary, fontSize = 15.sp, fontWeight = FontWeight.Medium)
                             Text(text = "Enable voice output", color = GuideTradeColors.TextSecondary, fontSize = 12.sp)
                         }
-                        Switch(
+                        androidx.compose.material3.Switch(
                             checked = (uiState as? SettingsUiState.Success)?.settings?.voiceEnabled ?: true,
                             onCheckedChange = { settingsViewModel.updateVoiceEnabled(it) },
                         )
@@ -189,7 +187,7 @@ fun VoiceSettingsScreen(navController: NavHostController) {
             item {
                 GuideTradeCard {
                     Row(
-                        modifier = fillMaxWidth().padding(16.dp),
+                        modifier = Modifier.fillMaxWidth().padding(16.dp),
                         horizontalArrangement = Arrangement.SpaceBetween,
                         verticalAlignment = Alignment.CenterVertically,
                     ) {
@@ -197,7 +195,7 @@ fun VoiceSettingsScreen(navController: NavHostController) {
                             Text(text = "Auto-play Responses", color = GuideTradeColors.TextPrimary, fontSize = 15.sp, fontWeight = FontWeight.Medium)
                             Text(text = "Automatically speak AI responses", color = GuideTradeColors.TextSecondary, fontSize = 12.sp)
                         }
-                        Switch(
+                        androidx.compose.material3.Switch(
                             checked = (uiState as? SettingsUiState.Success)?.settings?.autoSpeak ?: false,
                             onCheckedChange = { settingsViewModel.updateAutoSpeak(it) },
                         )
