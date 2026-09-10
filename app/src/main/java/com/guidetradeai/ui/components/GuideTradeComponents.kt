@@ -1,4 +1,5 @@
 package com.guidetradeai.ui.components
+import androidx.compose.foundation.shape.Shape
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
