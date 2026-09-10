@@ -1,14 +1,13 @@
 package com.guidetradeai.domain
 
 sealed class Result<out T> {
-    data class Success<T>(val data: T) : Result<T>()
-    data class Error(val message: String, val code: String? = null) : Result<Nothing>()
+    data class Success<out T>(val data: T) : Result<T>()
+    data class Error(val message: String) : Result<Nothing>()
     object Loading : Result<Nothing>()
-    companion object {
-        fun <T> success(data: T): Result<T> = Success(data)
-        fun <T> error(message: String, code: String? = null): Result<T> = Error(message, code)
-        fun <T> loading(): Result<T> = Loading
-    }
-}
 
-fun <T> Result<T>.messageOrNull(): String? = (this as? Result.Error)?.message
+    fun messageOrNull(): String? = if (this is Error) message else null
+    fun getOrNull(): T? = if (this is Success) data else null
+    fun isError(): Boolean = this is Error
+    fun isSuccess(): Boolean = this is Success
+    fun isLoading(): Boolean = this is Loading
+}

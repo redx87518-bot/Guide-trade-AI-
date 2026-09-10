@@ -8,12 +8,10 @@ import com.guidetradeai.data.repository.ChatRepository
 import com.guidetradeai.data.repository.ResearchRepository
 import com.guidetradeai.data.repository.SettingsRepository
 import com.guidetradeai.data.repository.TelegramRepository
-import com.guidetradeai.data.repository.StockupRepository
-import com.guidetradeai.data.repository.SiftingIORepository
-import com.guidetradeai.data.repository.MarketIntelligenceRepository
 import com.guidetradeai.data.repository.GuideTradeAgentRepository
 import com.guidetradeai.audio.VoiceManager
 import com.guidetradeai.data.local.AppPreferences
+import com.guidetradeai.data.repository.PaperTradingRepository
 
 val Context.dataStore by preferencesDataStore("app_prefs")
 
@@ -24,10 +22,8 @@ object AppModule {
     val researchRepository: ResearchRepository by lazy { ResearchRepository(supabaseClient) }
     val settingsRepository: SettingsRepository by lazy { SettingsRepository(supabaseClient) }
     val telegramRepository: TelegramRepository by lazy { TelegramRepository(supabaseClient) }
-    val stockupRepository: StockupRepository by lazy { StockupRepository(supabaseClient) }
-    val siftingIORepository: SiftingIORepository by lazy { SiftingIORepository(supabaseClient) }
-    val marketIntelligenceRepository: MarketIntelligenceRepository by lazy { MarketIntelligenceRepository(supabaseClient) }
     val guideTradeAgentRepository: GuideTradeAgentRepository by lazy { GuideTradeAgentRepository(supabaseClient) }
+    val paperTradingRepository: PaperTradingRepository by lazy { PaperTradingRepository(supabaseClient) }
     lateinit var applicationContext: Context
     val voiceManager: VoiceManager by lazy {
         VoiceManager(context = applicationContext, supabase = supabaseClient)

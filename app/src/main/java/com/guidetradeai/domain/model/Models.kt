@@ -74,24 +74,6 @@ data class TelegramSettings(
     val updatedAt: String = "",
 )
 
-data class MarketIntelligenceRequest(
-    val provider: String,
-    val feature: String,
-    val market: String? = null,
-    val symbol: String? = null,
-    val timeframe: String? = null,
-    val query: String? = null,
-)
-
-data class MarketIntelligenceResponse(
-    val provider: String,
-    val feature: String,
-    val market: String? = null,
-    val symbol: String? = null,
-    val timeframe: String? = null,
-    val result: JsonObject? = null,
-)
-
 @Serializable
 data class MarketDataResponse(
     val provider: String = "",
@@ -149,7 +131,6 @@ data class SymbolItem(
 data class AgentRequest(
     val goal: String,
     val sessionId: String? = null,
-    val provider: String? = null,
     val market: String? = null,
     val symbol: String? = null,
     val timeframe: String? = null,
@@ -171,6 +152,7 @@ data class AgentResponse(
     val tasks: List<AgentTask> = emptyList(),
     val marketData: MarketDataResponse? = null,
     val timestamp: String? = null,
+    val rawPayload: JsonObject? = null,
 )
 
 @Serializable
@@ -193,7 +175,87 @@ data class AgentTask(
 data class AgentSession(
     val id: String,
     val title: String,
-    val provider: String? = null,
     val createdAt: String? = null,
     val updatedAt: String? = null,
+)
+
+@Serializable
+data class McpConnection(
+    val id: String = "",
+    val userId: String = "",
+    val name: String = "",
+    val provider: String = "",
+    val type: String = "",
+    val status: String = "disconnected",
+    val permissions: String = "read_only",
+    val createdAt: String = "",
+    val updatedAt: String = "",
+)
+
+@Serializable
+data class PaperAccount(
+    val id: String = "",
+    val userId: String = "",
+    val balance: Double = 0.0,
+    val equity: Double = 0.0,
+    val buyingPower: Double = 0.0,
+    val createdAt: String = "",
+    val updatedAt: String = "",
+)
+
+@Serializable
+data class PaperPosition(
+    val id: String = "",
+    val userId: String = "",
+    val symbol: String = "",
+    val quantity: Double = 0.0,
+    val avgEntry: Double = 0.0,
+    val currentPrice: Double = 0.0,
+    val marketValue: Double = 0.0,
+    val unrealizedPnl: Double = 0.0,
+    val unrealizedPnlPercent: Double = 0.0,
+    val createdAt: String = "",
+    val updatedAt: String = "",
+)
+
+@Serializable
+data class PaperOrder(
+    val id: String = "",
+    val userId: String = "",
+    val symbol: String = "",
+    val side: String = "",
+    val quantity: Double = 0.0,
+    val price: Double = 0.0,
+    val notionalValue: Double = 0.0,
+    val orderType: String = "",
+    val status: String = "",
+    val createdAt: String = "",
+)
+
+data class PaperOrderRequest(
+    val symbol: String,
+    val side: String,
+    val quantity: Double,
+    val orderType: String = "market",
+    val limitPrice: Double? = null,
+)
+
+@Serializable
+data class PaperTrade(
+    val id: String = "",
+    val orderId: String = "",
+    val userId: String = "",
+    val symbol: String = "",
+    val side: String = "",
+    val quantity: Double = 0.0,
+    val price: Double = 0.0,
+    val notionalValue: Double = 0.0,
+    val createdAt: String = "",
+)
+
+data class PaperDashboardData(
+    val account: PaperAccount?,
+    val positions: List<PaperPosition>,
+    val orders: List<PaperOrder>,
+    val trades: List<PaperTrade>,
 )
