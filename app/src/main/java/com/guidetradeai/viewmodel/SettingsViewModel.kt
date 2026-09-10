@@ -1,8 +1,7 @@
-package com.guidetradeai.viewmodel
+package com.guidetradeai.viewModel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.guidetradeai.data.local.AppPreferences
 import com.guidetradeai.data.repository.SettingsRepository
 import com.guidetradeai.di.AppModule
 import com.guidetradeai.domain.Result
@@ -38,47 +37,30 @@ class SettingsViewModel(
 
     fun updateVoiceEnabled(enabled: Boolean) {
         viewModelScope.launch {
-            when (val result = settingsRepository.updateVoiceEnabled(enabled)) {
-                is Result.Success -> {
-                    val current = (uiState.value as? SettingsUiState.Success)?.settings
-                    if (current != null) {
-                        _uiState.value = SettingsUiState.Success(current.copy(voiceEnabled = enabled))
-                    }
-                    AppModule.appPreferences.setVoiceEnabled(enabled)
-                }
-                is Result.Error -> {}
-                is Result.Loading -> {}
+            settingsRepository.updateVoiceEnabled(enabled)
+            val current = (uiState.value as? SettingsUiState.Success)?.settings
+            if (current != null) {
+                _uiState.value = SettingsUiState.Success(current.copy(voiceEnabled = enabled))
             }
         }
     }
 
     fun updateAutoSpeak(enabled: Boolean) {
         viewModelScope.launch {
-            when (val result = settingsRepository.updateAutoSpeak(enabled)) {
-                is Result.Success -> {
-                    val current = (uiState.value as? SettingsUiState.Success)?.settings
-                    if (current != null) {
-                        _uiState.value = SettingsUiState.Success(current.copy(autoSpeak = enabled))
-                    }
-                    AppModule.appPreferences.setAutoSpeak(enabled)
-                }
-                is Result.Error -> {}
-                is Result.Loading -> {}
+            settingsRepository.updateAutoSpeak(enabled)
+            val current = (uiState.value as? SettingsUiState.Success)?.settings
+            if (current != null) {
+                _uiState.value = SettingsUiState.Success(current.copy(autoSpeak = enabled))
             }
         }
     }
 
     fun updateTheme(theme: String) {
         viewModelScope.launch {
-            when (val result = settingsRepository.updateTheme(theme)) {
-                is Result.Success -> {
-                    val current = (uiState.value as? SettingsUiState.Success)?.settings
-                    if (current != null) {
-                        _uiState.value = SettingsUiState.Success(current.copy(theme = theme))
-                    }
-                }
-                is Result.Error -> {}
-                is Result.Loading -> {}
+            settingsRepository.updateTheme(theme)
+            val current = (uiState.value as? SettingsUiState.Success)?.settings
+            if (current != null) {
+                _uiState.value = SettingsUiState.Success(current.copy(theme = theme))
             }
         }
     }

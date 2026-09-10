@@ -1,253 +1,104 @@
 package com.guidetradeai.ui.navigation
 
-import androidx.compose.animation.AnimatedContentTransitionScope
-import androidx.compose.animation.core.tween
-import androidx.compose.animation.fadeIn
-import androidx.compose.animation.fadeOut
-import androidx.compose.animation.scaleIn
-import androidx.compose.animation.scaleOut
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Analytics
-import androidx.compose.material.icons.filled.Chat
-import androidx.compose.material.icons.filled.Mic
-import androidx.compose.material.icons.filled.Settings
-import androidx.compose.material3.NavigationBar
-import androidx.compose.material3.NavigationBarItem
-import androidx.compose.material3.NavigationBarItemDefaults
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import androidx.navigation.NavDestination.Companion.hierarchy
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
-import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
-import androidx.navigation.navArgument
-import androidx.navigation.NavType
-import com.guidetradeai.ui.screens.ChatScreen
-import com.guidetradeai.ui.screens.EmailVerificationScreen
-import com.guidetradeai.ui.screens.ForgotPasswordScreen
-import com.guidetradeai.ui.screens.HomeScreen
-import com.guidetradeai.ui.screens.LoginScreen
-import com.guidetradeai.ui.screens.OrbScreen
-import com.guidetradeai.ui.screens.ResearchHistoryScreen
-import com.guidetradeai.ui.screens.ResearchDetailScreen
-import com.guidetradeai.ui.screens.SettingsScreen
-import com.guidetradeai.ui.screens.SignUpScreen
-import com.guidetradeai.ui.screens.SplashScreen
-import com.guidetradeai.ui.screens.TelegramSettingsScreen
-import com.guidetradeai.ui.screens.VoiceSettingsScreen
-import com.guidetradeai.ui.screens.AboutScreen
-import com.guidetradeai.ui.screens.ChatHistoryScreen
-import com.guidetradeai.ui.screens.ProfileScreen
-import com.guidetradeai.ui.screens.OnboardingScreen
-import com.guidetradeai.viewmodel.AuthUiState
-import com.guidetradeai.viewmodel.AuthViewModel
-
-sealed class BottomNavItem(val title: String, val icon: ImageVector, val route: String) {
-    data object Chat : BottomNavItem("Chat", Icons.Default.Chat, NavRoutes.CHAT_NEW)
-    data object Research : BottomNavItem("Research", Icons.Default.Analytics, NavRoutes.RESEARCH_HISTORY)
-    data object Voice : BottomNavItem("Voice", Icons.Default.Mic, NavRoutes.ORB)
-    data object Settings : BottomNavItem("Settings", Icons.Default.Settings, NavRoutes.SETTINGS)
-}
+import com.guidetradeai.ui.screens.*
+import com.guidetradeai.viewModel.AuthViewModel
+import com.guidetradeai.viewModel.ChatViewModel
+import com.guidetradeai.viewModel.GuideTradeAgentViewModel
+import com.guidetradeai.viewModel.HomeViewModel
+import com.guidetradeai.viewModel.MarketsViewModel
+import com.guidetradeai.viewModel.PaperTradingViewModel
+import com.guidetradeai.viewModel.ResearchViewModel
+import com.guidetradeai.viewModel.SettingsViewModel
 
 @Composable
-fun NavGraph(
-    modifier: Modifier = Modifier,
-    startDestination: String = NavRoutes.SPLASH,
-    authViewModel: AuthViewModel,
+fun GuideTradeNavGraph(
     navController: NavHostController = rememberNavController(),
+    startDestination: String = NavRoutes.HOME,
+    authViewModel: AuthViewModel = hiltViewModel(),
 ) {
-    val items = listOf(
-        BottomNavItem.Chat,
-        BottomNavItem.Research,
-        BottomNavItem.Voice,
-        BottomNavItem.Settings,
-    )
-    val navBackStackEntry by navController.currentBackStackEntryAsState()
-    val currentRoute = navBackStackEntry?.destination?.route
-    val authUiState by authViewModel.uiState.collectAsState()
-    val isAuthenticated = authUiState is AuthUiState.Authenticated
-    val hideBottomBarRoutes = setOf(
-        NavRoutes.SPLASH,
-        NavRoutes.ONBOARDING,
-        NavRoutes.LOGIN,
-        NavRoutes.SIGNUP,
-        NavRoutes.FORGOT_PASSWORD,
-        NavRoutes.ABOUT,
-        NavRoutes.TELEGRAM_SETTINGS,
-        NavRoutes.VOICE_SETTINGS,
-        NavRoutes.PROFILE,
-        NavRoutes.CHAT,
-        NavRoutes.CHAT_NEW,
-    )
-    val showBottomBar = currentRoute != null && !hideBottomBarRoutes.any { currentRoute == it || currentRoute?.startsWith(it) == true }
+    val authState by authViewModel.uiState.collectAsState()
+    val isAuthenticated = authState is com.guidetradeai.viewModel.AuthUiState.Authenticated
 
-    NavHost(
-        modifier = modifier,
-        navController = navController,
-        startDestination = startDestination,
-        enterTransition = { fadeIn(tween(200)) + scaleIn(initialScale = 0.96f) },
-        exitTransition = { fadeOut(tween(150)) },
-        popEnterTransition = { fadeIn(tween(200)) + scaleIn(initialScale = 0.96f) },
-        popExitTransition = { fadeOut(tween(150)) },
-    ) {
-        composable(NavRoutes.SPLASH) {
-            SplashScreen(navController = navController, authViewModel = authViewModel)
+    if (!isAuthenticated && startDestination != NavRoutes.LOGIN) {
+        navController.navigate(NavRoutes.LOGIN) {
+            popUpTo(NavRoutes.HOME) { inclusive = true }
         }
-        composable(NavRoutes.ONBOARDING) {
-            OnboardingScreen(navController = navController)
-        }
-        composable(NavRoutes.LOGIN) {
-            LoginScreen(navController = navController, authViewModel = authViewModel)
-        }
-        composable(NavRoutes.SIGNUP) {
-            SignUpScreen(navController = navController, authViewModel = authViewModel)
-        }
-        composable(
-            route = NavRoutes.VERIFICATION,
-            arguments = listOf(navArgument("email") { type = NavType.StringType }),
-        ) {
-            EmailVerificationScreen(
-                navController = navController,
-                authViewModel = authViewModel,
-                email = it.arguments?.getString("email") ?: "",
-            )
-        }
-        composable(NavRoutes.FORGOT_PASSWORD) {
-            ForgotPasswordScreen(navController = navController, authViewModel = authViewModel)
-        }
+        return
+    }
+
+    NavHost(navController = navController, startDestination = startDestination) {
         composable(NavRoutes.HOME) {
-            if (isAuthenticated) {
-                HomeScreen(navController = navController, authViewModel = authViewModel)
-            } else {
-                LaunchedEffect(Unit) {
-                    navController.navigate(NavRoutes.LOGIN) {
-                        popUpTo(0) { inclusive = true }
-                    }
-                }
-            }
+            HomeScreen(navController = navController)
+        }
+        composable(NavRoutes.MARKETS) {
+            MarketsScreen(navController = navController)
+        }
+        composable(NavRoutes.AGENT) {
+            AgentScreen(navController = navController)
         }
         composable(NavRoutes.CHAT_NEW) {
-            if (isAuthenticated) {
-                ChatScreen(navController = navController, sessionId = null)
-            } else {
-                LaunchedEffect(Unit) {
-                    navController.navigate(NavRoutes.LOGIN) {
-                        popUpTo(0) { inclusive = true }
-                    }
-                }
-            }
-        }
-        composable(
-            route = NavRoutes.CHAT,
-            arguments = listOf(navArgument("sessionId") { type = NavType.StringType }),
-        ) {
-            if (isAuthenticated) {
-                ChatScreen(navController = navController, sessionId = it.arguments?.getString("sessionId"))
-            } else {
-                LaunchedEffect(Unit) {
-                    navController.navigate(NavRoutes.LOGIN) {
-                        popUpTo(0) { inclusive = true }
-                    }
-                }
-            }
+            AgentScreen(navController = navController)
         }
         composable(NavRoutes.CHAT_HISTORY) {
-            if (isAuthenticated) {
-                ChatHistoryScreen(navController = navController)
-            } else {
-                LaunchedEffect(Unit) {
-                    navController.navigate(NavRoutes.LOGIN) {
-                        popUpTo(0) { inclusive = true }
-                    }
-                }
-            }
+            ChatHistoryScreen(navController = navController)
         }
-        composable(NavRoutes.RESEARCH_HISTORY) {
-            if (isAuthenticated) {
-                ResearchHistoryScreen(navController = navController)
-            } else {
-                LaunchedEffect(Unit) {
-                    navController.navigate(NavRoutes.LOGIN) {
-                        popUpTo(0) { inclusive = true }
-                    }
-                }
-            }
+        composable(NavRoutes.CHAT) { backStackEntry ->
+            val sessionId = backStackEntry.arguments?.getString("sessionId") ?: ""
+            AgentScreen(navController = navController)
         }
-        composable(
-            route = NavRoutes.RESEARCH_DETAIL,
-            arguments = listOf(navArgument("researchId") { type = NavType.StringType }),
-        ) {
-            if (isAuthenticated) {
-                ResearchDetailScreen(
-                    navController = navController,
-                    researchId = it.arguments?.getString("researchId") ?: "",
-                )
-            } else {
-                LaunchedEffect(Unit) {
-                    navController.navigate(NavRoutes.LOGIN) {
-                        popUpTo(0) { inclusive = true }
-                    }
-                }
-            }
-        }
-        composable(NavRoutes.PROFILE) {
-            if (isAuthenticated) {
-                ProfileScreen(navController = navController, authViewModel = authViewModel)
-            } else {
-                LaunchedEffect(Unit) {
-                    navController.navigate(NavRoutes.LOGIN) {
-                        popUpTo(0) { inclusive = true }
-                    }
-                }
-            }
+        composable(NavRoutes.PAPER) {
+            PaperTradingScreen(navController = navController)
         }
         composable(NavRoutes.SETTINGS) {
-            if (isAuthenticated) {
-                SettingsScreen(navController = navController, authViewModel = authViewModel)
-            } else {
-                LaunchedEffect(Unit) {
-                    navController.navigate(NavRoutes.LOGIN) {
-                        popUpTo(0) { inclusive = true }
-                    }
-                }
-            }
+            SettingsScreen(navController = navController)
+        }
+        composable(NavRoutes.RESEARCH_HISTORY) {
+            ResearchHistoryScreen(navController = navController)
+        }
+        composable(NavRoutes.RESEARCH_DETAIL) { backStackEntry ->
+            val researchId = backStackEntry.arguments?.getString("researchId") ?: ""
+            ResearchDetailScreen(navController = navController, researchId = researchId)
         }
         composable(NavRoutes.TELEGRAM_SETTINGS) {
-            if (isAuthenticated) {
-                TelegramSettingsScreen(navController = navController)
-            } else {
-                LaunchedEffect(Unit) {
-                    navController.navigate(NavRoutes.LOGIN) {
-                        popUpTo(0) { inclusive = true }
-                    }
-                }
-            }
+            TelegramSettingsScreen(navController = navController)
         }
         composable(NavRoutes.VOICE_SETTINGS) {
-            if (isAuthenticated) {
-                VoiceSettingsScreen(navController = navController)
-            } else {
-                LaunchedEffect(Unit) {
-                    navController.navigate(NavRoutes.LOGIN) {
-                        popUpTo(0) { inclusive = true }
-                    }
-                }
-            }
+            VoiceSettingsScreen(navController = navController)
+        }
+        composable(NavRoutes.MCP_CONNECTIONS) {
+            McpConnectionsScreen(navController = navController)
         }
         composable(NavRoutes.ABOUT) {
             AboutScreen(navController = navController)
         }
-        composable(NavRoutes.ORB) {
-            OrbScreen(navController = navController)
+        composable(NavRoutes.PROFILE) {
+            ProfileScreen(navController = navController)
+        }
+        composable(NavRoutes.ASSET_DETAIL) { backStackEntry ->
+            val symbol = backStackEntry.arguments?.getString("symbol") ?: ""
+            AssetDetailScreen(symbol = symbol, navController = navController)
+        }
+        composable(NavRoutes.SPLASH) {
+            SplashScreen(navController = navController, authViewModel = authViewModel)
+        }
+        composable(NavRoutes.LOGIN) {
+            LoginScreen(navController = navController, authViewModel = authViewModel)
         }
     }
 }

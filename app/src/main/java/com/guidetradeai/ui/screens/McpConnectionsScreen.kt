@@ -146,87 +146,52 @@ import kotlinx.serialization.json.jsonObject
 import kotlinx.serialization.json.jsonPrimitive
 
 @Composable
-fun ChatHistoryScreen(navController: NavHostController) {
-    val chatHistoryViewModel: ChatHistoryViewModel = viewModel()
-    val uiState by chatHistoryViewModel.uiState.collectAsState()
-    val sessions = (uiState as? ChatHistoryUiState.Success)?.sessions ?: emptyList()
-
-    LaunchedEffect(Unit) { chatHistoryViewModel.loadSessions() }
-
+fun McpConnectionsScreen(navController: NavHostController) {
     Scaffold(
-        floatingActionButton = {
-            FloatingActionButton(
-                onClick = {
-                    chatHistoryViewModel.createNewSession { sessionId ->
-                        navController.navigate(NavRoutes.chatRoute(sessionId))
-                    }
-                },
-                containerColor = GuideTradeColors.PrimaryPurple,
-                contentColor = GuideTradeColors.White,
-            ) {
-                Icon(imageVector = Icons.Default.Add, contentDescription = "New Chat")
-            }
+        topBar = {
+            GuideTradeTopBar(
+                title = "MCP Connections",
+                subtitle = "Advanced integrations",
+                navigationIcon = Icons.AutoMirrored.Filled.ArrowBack,
+                onNavigationClick = { navController.popBackStack() },
+            )
         },
         bottomBar = { GuideTradeBottomBar(navController = navController) },
         containerColor = GuideTradeColors.Background,
     ) { padding ->
-        Column(modifier = Modifier.fillMaxSize().padding(padding)) {
-            Text(
-                text = "Chat History",
-                style = MaterialTheme.typography.headlineMedium,
-                color = GuideTradeColors.TextPrimary,
-                modifier = Modifier.padding(24.dp, 24.dp, 24.dp, 8.dp),
-                fontWeight = FontWeight.W600,
-            )
-            if (sessions.isEmpty()) {
+        LazyColumn(
+            modifier = Modifier.fillMaxSize().padding(padding),
+            contentPadding = PaddingValues(20.dp),
+            verticalArrangement = Arrangement.spacedBy(16.dp),
+        ) {
+            item {
                 EmptyState(
-                    title = "No chat sessions yet.",
-                    description = "Start a new conversation with GuideTrade Agent.",
-                    modifier = Modifier.fillMaxSize(),
+                    title = "No connections yet",
+                    description = "Connect an MCP provider to enable advanced trading integrations.",
                     action = {
-                        PrimaryButton(
-                            text = "New Chat",
-                            onClick = {
-                                chatHistoryViewModel.createNewSession { sessionId ->
-                                    navController.navigate(NavRoutes.chatRoute(sessionId))
-                                }
-                            },
-                        )
+                        PrimaryButton(text = "Add Connection", onClick = { /* TODO */ })
                     },
                 )
-            } else {
-                LazyColumn(
-                    modifier = Modifier.fillMaxSize(),
-                    contentPadding = PaddingValues(vertical = 8.dp),
-                    verticalArrangement = Arrangement.spacedBy(8.dp),
-                ) {
-                    items(sessions, key = { it.id }) { session ->
-                        GuideTradeCard(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(horizontal = 16.dp, vertical = 4.dp)
-                                .clickable { navController.navigate(NavRoutes.chatRoute(session.id)) },
-                        ) {
-                            Row(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .padding(16.dp),
-                                horizontalArrangement = Arrangement.SpaceBetween,
-                                verticalAlignment = Alignment.CenterVertically,
-                            ) {
-                                Column(modifier = Modifier.weight(1f)) {
-                                    Text(text = session.title, color = GuideTradeColors.TextPrimary, fontSize = 16.sp, fontWeight = FontWeight.SemiBold, maxLines = 1, overflow = TextOverflow.Ellipsis)
-                                    Text(text = session.updatedAt.formatDate("MMM dd"), color = GuideTradeColors.TextSecondary, fontSize = 12.sp)
-                                }
-                                Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(4.dp)) {
-                                    IconButton(onClick = {
-                                        chatHistoryViewModel.deleteSession(session.id)
-                                    }) {
-                                        Icon(imageVector = Icons.Default.Delete, contentDescription = "Delete", tint = GuideTradeColors.Negative, modifier = Modifier.size(18.dp))
-                                    }
-                                }
-                            }
+            }
+            item {
+                GuideTradeCard {
+                    Row(modifier = Modifier.fillMaxWidth().padding(16.dp), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.SpaceBetween) {
+                        Column(modifier = Modifier.weight(1f)) {
+                            Text(text = "Live Trading", color = GuideTradeColors.TextPrimary, fontSize = 15.sp, fontWeight = FontWeight.Medium)
+                            Text(text = "Not available in GuideTrade AI", color = GuideTradeColors.TextSecondary, fontSize = 12.sp)
                         }
+                        StatusBadge(text = "DISABLED", color = GuideTradeColors.Negative)
+                    }
+                }
+            }
+            item {
+                GuideTradeCard {
+                    Row(modifier = Modifier.fillMaxWidth().padding(16.dp), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.SpaceBetween) {
+                        Column(modifier = Modifier.weight(1f)) {
+                            Text(text = "Paper Trading", color = GuideTradeColors.TextPrimary, fontSize = 15.sp, fontWeight = FontWeight.Medium)
+                            Text(text = "Simulated trading only", color = GuideTradeColors.TextSecondary, fontSize = 12.sp)
+                        }
+                        StatusBadge(text = "READ ONLY", color = GuideTradeColors.Positive)
                     }
                 }
             }

@@ -146,83 +146,119 @@ import kotlinx.serialization.json.jsonObject
 import kotlinx.serialization.json.jsonPrimitive
 
 @Composable
-fun ChatHistoryScreen(navController: NavHostController) {
-    val chatHistoryViewModel: ChatHistoryViewModel = viewModel()
-    val uiState by chatHistoryViewModel.uiState.collectAsState()
-    val sessions = (uiState as? ChatHistoryUiState.Success)?.sessions ?: emptyList()
+fun MarketsScreen(navController: NavHostController) {
+    var selectedMarket by rememberSaveable { mutableStateOf("All") }
+    val markets = listOf("All", "Stocks", "Crypto", "Forex", "Commodities")
+    val viewModel: MarketsViewModel = viewModel()
+    val uiState by viewModel.uiState.collectAsState()
 
-    LaunchedEffect(Unit) { chatHistoryViewModel.loadSessions() }
+    LaunchedEffect(selectedMarket) {
+        if (selectedMarket == "All") viewModel.loadSymbols("crypto")
+        else viewModel.loadSymbols(selectedMarket.lowercase())
+    }
 
     Scaffold(
-        floatingActionButton = {
-            FloatingActionButton(
-                onClick = {
-                    chatHistoryViewModel.createNewSession { sessionId ->
-                        navController.navigate(NavRoutes.chatRoute(sessionId))
+        topBar = {
+            GuideTradeTopBar(
+                title = "Markets",
+                navigationIcon = null,
+                actions = {
+                    IconButton(onClick = { /* TODO search */ }) {
+                        Icon(imageVector = Icons.Default.Search, contentDescription = "Search", tint = GuideTradeColors.TextPrimary)
                     }
                 },
-                containerColor = GuideTradeColors.PrimaryPurple,
-                contentColor = GuideTradeColors.White,
-            ) {
-                Icon(imageVector = Icons.Default.Add, contentDescription = "New Chat")
-            }
+            )
         },
         bottomBar = { GuideTradeBottomBar(navController = navController) },
         containerColor = GuideTradeColors.Background,
     ) { padding ->
         Column(modifier = Modifier.fillMaxSize().padding(padding)) {
-            Text(
-                text = "Chat History",
-                style = MaterialTheme.typography.headlineMedium,
-                color = GuideTradeColors.TextPrimary,
-                modifier = Modifier.padding(24.dp, 24.dp, 24.dp, 8.dp),
-                fontWeight = FontWeight.W600,
-            )
-            if (sessions.isEmpty()) {
-                EmptyState(
-                    title = "No chat sessions yet.",
-                    description = "Start a new conversation with GuideTrade Agent.",
-                    modifier = Modifier.fillMaxSize(),
-                    action = {
-                        PrimaryButton(
-                            text = "New Chat",
-                            onClick = {
-                                chatHistoryViewModel.createNewSession { sessionId ->
-                                    navController.navigate(NavRoutes.chatRoute(sessionId))
-                                }
-                            },
+            Row(
+                modifier = Modifier.fillMaxWidth().padding(horizontal = 20.dp),
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
+            ) {
+                markets.forEach { market ->
+                    val isSelected = selectedMarket == market
+                    Box(
+                        modifier = Modifier
+                            .background(
+                                if (isSelected) GuideTradeColors.PrimaryPurple else GuideTradeColors.SecondarySurface,
+                                RoundedCornerShape(10.dp),
+                            )
+                            .clickable { selectedMarket = market }
+                            .padding(horizontal = 14.dp, vertical = 8.dp),
+                    ) {
+                        Text(
+                            text = market,
+                            color = if (isSelected) GuideTradeColors.White else GuideTradeColors.TextSecondary,
+                            fontSize = 12.sp,
+                            fontWeight = if (isSelected) FontWeight.SemiBold else FontWeight.Normal,
                         )
-                    },
-                )
-            } else {
-                LazyColumn(
+                    }
+                }
+            }
+            Spacer(modifier = Modifier.height(16.dp))
+
+            when (uiState) {
+                is MarketsUiState.Loading -> LoadingState(modifier = Modifier.fillMaxSize())
+                is MarketsUiState.Error -> ErrorState(
+                    title = "Failed to load markets",
+                    message = (uiState as MarketsUiState.Error).message,
+                    onRetry = { viewModel.loadSymbols(selectedMarket.lowercase()) },
                     modifier = Modifier.fillMaxSize(),
-                    contentPadding = PaddingValues(vertical = 8.dp),
-                    verticalArrangement = Arrangement.spacedBy(8.dp),
-                ) {
-                    items(sessions, key = { it.id }) { session ->
-                        GuideTradeCard(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(horizontal = 16.dp, vertical = 4.dp)
-                                .clickable { navController.navigate(NavRoutes.chatRoute(session.id)) },
+                )
+                is MarketsUiState.Success -> {
+                    val symbols = (uiState as MarketsUiState.Success).symbols
+                    if (symbols.isEmpty()) {
+                        EmptyState(
+                            title = "No symbols found",
+                            description = "Try selecting a different market category.",
+                            modifier = Modifier.fillMaxSize(),
+                        )
+                    } else {
+                        LazyColumn(
+                            modifier = Modifier.fillMaxSize(),
+                            contentPadding = PaddingValues(horizontal = 20.dp, vertical = 8.dp),
+                            verticalArrangement = Arrangement.spacedBy(8.dp),
                         ) {
-                            Row(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .padding(16.dp),
-                                horizontalArrangement = Arrangement.SpaceBetween,
-                                verticalAlignment = Alignment.CenterVertically,
-                            ) {
-                                Column(modifier = Modifier.weight(1f)) {
-                                    Text(text = session.title, color = GuideTradeColors.TextPrimary, fontSize = 16.sp, fontWeight = FontWeight.SemiBold, maxLines = 1, overflow = TextOverflow.Ellipsis)
-                                    Text(text = session.updatedAt.formatDate("MMM dd"), color = GuideTradeColors.TextSecondary, fontSize = 12.sp)
-                                }
-                                Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(4.dp)) {
-                                    IconButton(onClick = {
-                                        chatHistoryViewModel.deleteSession(session.id)
-                                    }) {
-                                        Icon(imageVector = Icons.Default.Delete, contentDescription = "Delete", tint = GuideTradeColors.Negative, modifier = Modifier.size(18.dp))
+                            items(symbols) { symbol ->
+                                GuideTradeCard(
+                                    modifier = Modifier.fillMaxWidth(),
+                                    onClick = { navController.navigate(NavRoutes.assetDetailRoute(symbol.symbol)) },
+                                ) {
+                                    Row(
+                                        modifier = Modifier
+                                            .fillMaxWidth()
+                                            .padding(16.dp),
+                                        horizontalArrangement = Arrangement.SpaceBetween,
+                                        verticalAlignment = Alignment.CenterVertically,
+                                    ) {
+                                        Row(verticalAlignment = Alignment.CenterVertically) {
+                                            Box(
+                                                modifier = Modifier
+                                                    .size(40.dp)
+                                                    .background(GuideTradeColors.PrimarySurface, CircleShape),
+                                                contentAlignment = Alignment.Center,
+                                            ) {
+                                                Text(
+                                                    text = symbol.symbol.take(2).uppercase(),
+                                                    color = GuideTradeColors.BrightPurple,
+                                                    fontSize = 14.sp,
+                                                    fontWeight = FontWeight.Bold,
+                                                )
+                                            }
+                                            Spacer(modifier = Modifier.width(12.dp))
+                                            Column {
+                                                Text(text = symbol.symbol, color = GuideTradeColors.TextPrimary, fontSize = 15.sp, fontWeight = FontWeight.SemiBold)
+                                                Text(text = symbol.name.ifBlank { symbol.market }, color = GuideTradeColors.TextSecondary, fontSize = 12.sp)
+                                            }
+                                        }
+                                        Icon(
+                                            imageVector = Icons.Default.ArrowForward,
+                                            contentDescription = null,
+                                            tint = GuideTradeColors.MutedText,
+                                            modifier = Modifier.size(18.dp),
+                                        )
                                     }
                                 }
                             }

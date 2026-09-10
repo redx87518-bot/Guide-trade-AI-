@@ -1,4 +1,4 @@
-package com.guidetradeai.viewmodel
+package com.guidetradeai.viewModel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -18,6 +18,8 @@ sealed class HomeUiState {
     data class Success(
         val user: User,
         val recentResearch: List<ResearchResult>,
+        val marketRegime: String? = null,
+        val riskLevel: String? = null,
     ) : HomeUiState()
     data class Error(val message: String) : HomeUiState()
 }

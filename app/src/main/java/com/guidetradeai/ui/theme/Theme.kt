@@ -1,11 +1,6 @@
 package com.guidetradeai.ui.theme
 
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.ColorScheme
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Shape
 import androidx.compose.material3.Typography
 import androidx.compose.material3.darkColorScheme
@@ -137,15 +132,20 @@ fun GuideTradeTheme(
     content: @Composable () -> Unit,
 ) {
     val colorScheme = if (darkTheme) DarkColorScheme else LightColorScheme
-    MaterialTheme(
+    androidx.compose.material3.MaterialTheme(
         colorScheme = colorScheme,
         typography = GuideTradeTypography,
-        shapes = GuideTradeShapes,
+        shapes = androidx.compose.material3.Shapes(
+            extraSmall = RoundedCornerShape(8.dp),
+            small = RoundedCornerShape(12.dp),
+            medium = RoundedCornerShape(16.dp),
+            large = RoundedCornerShape(20.dp),
+            extraLarge = RoundedCornerShape(28.dp),
+        ),
         content = content,
     )
 }
 
-// Convenience accessors for GuideTrade-specific colors that aren't in the standard ColorScheme
 object GuideTradeTheme {
     val colors: GuideTradeColors get() = GuideTradeColors
 }

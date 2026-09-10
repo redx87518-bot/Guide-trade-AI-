@@ -3,30 +3,35 @@ package com.guidetradeai
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.activity.enableEdgeToEdge
-import com.guidetradeai.data.remote.SupabaseClient
-import com.guidetradeai.ui.navigation.NavGraph
-import com.guidetradeai.ui.theme.AppTheme
-import com.guidetradeai.viewmodel.AuthViewModel
-import io.github.jan.supabase.gotrue.auth
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.ui.Modifier
+import androidx.lifecycle.viewmodel.compose.viewModel
+import com.guidetradeai.ui.navigation.GuideTradeNavGraph
+import com.guidetradeai.ui.theme.GuideTradeTheme
+import com.guidetradeai.viewModel.AuthViewModel
+import androidx.compose.runtime.LaunchedEffect
+import androidx.navigation.compose.rememberNavController
 
 class MainActivity : ComponentActivity() {
-    private val authViewModel by lazy { AuthViewModel() }
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        enableEdgeToEdge()
-        val startDestination = if (SupabaseClient.client.auth.currentSessionOrNull() != null) {
-            com.guidetradeai.ui.navigation.NavRoutes.HOME
-        } else {
-            com.guidetradeai.ui.navigation.NavRoutes.SPLASH
-        }
         setContent {
-            AppTheme(darkTheme = true) {
-                NavGraph(
-                    startDestination = startDestination,
-                    authViewModel = authViewModel,
-                )
+            GuideTradeTheme(darkTheme = true) {
+                Surface(
+                    modifier = Modifier.fillMaxSize(),
+                    color = MaterialTheme.colorScheme.background,
+                ) {
+                    val authViewModel: AuthViewModel = viewModel()
+                    val navController = rememberNavController()
+                    GuideTradeNavGraph(
+                        navController = navController,
+                        authViewModel = authViewModel,
+                    )
+                }
             }
         }
     }

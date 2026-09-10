@@ -1,4 +1,4 @@
-package com.guidetradeai.viewmodel
+package com.guidetradeai.viewModel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -16,7 +16,6 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
-import java.time.Instant
 import java.util.UUID
 import android.util.Log
 
@@ -44,9 +43,6 @@ class GuideTradeAgentViewModel(
     private val _selectedTimeframe = MutableStateFlow<String?>(null)
     val selectedTimeframe: StateFlow<String?> = _selectedTimeframe.asStateFlow()
 
-    private val _selectedFeature = MutableStateFlow<String>("Full Analysis")
-    val selectedFeature: StateFlow<String> = _selectedFeature.asStateFlow()
-
     private var currentRequestJob: kotlinx.coroutines.Job? = null
 
     fun initialize() {
@@ -71,11 +67,9 @@ class GuideTradeAgentViewModel(
             val request = AgentRequest(
                 goal = goal,
                 sessionId = sessionId,
-                provider = "guidetrade_agent",
                 market = _selectedMarket.value,
                 symbol = _selectedSymbol.value,
                 timeframe = _selectedTimeframe.value,
-                feature = _selectedFeature.value,
                 query = goal,
             )
 
@@ -110,25 +104,10 @@ class GuideTradeAgentViewModel(
         }
     }
 
-    fun setMarket(market: String?) {
-        _selectedMarket.value = market
-    }
-
-    fun setSymbol(symbol: String?) {
-        _selectedSymbol.value = symbol
-    }
-
-    fun setTimeframe(timeframe: String?) {
-        _selectedTimeframe.value = timeframe
-    }
-
-    fun setFeature(feature: String) {
-        _selectedFeature.value = feature
-    }
-
-    fun clearError() {
-        _uiState.value = AgentUiState.Idle
-    }
+    fun setMarket(market: String?) { _selectedMarket.value = market }
+    fun setSymbol(symbol: String?) { _selectedSymbol.value = symbol }
+    fun setTimeframe(timeframe: String?) { _selectedTimeframe.value = timeframe }
+    fun clearError() { _uiState.value = AgentUiState.Idle }
 
     private fun loadSessions(userId: String) {
         viewModelScope.launch {

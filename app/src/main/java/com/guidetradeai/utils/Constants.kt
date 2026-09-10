@@ -3,7 +3,7 @@ package com.guidetradeai.utils
 object Constants {
     const val SUPABASE_URL = "https://dnfutvafibliysnsetwm.supabase.co"
     const val SUPABASE_ANON_KEY = "sb_publishable_Y-kuMPpPKDT9NKKi9fCKcw_YaVdkIpL"
-    const val EDGE_FUNCTION_AI_CHAT = "ai-chat"
+    const val EDGE_FUNCTION_AGENT = "agent-orchestrator"
     const val EDGE_FUNCTION_TTS = "text-to-speech"
     const val EDGE_FUNCTION_TELEGRAM_TEST = "telegram-test"
     const val EDGE_FUNCTION_TELEGRAM_SEND = "telegram-send"

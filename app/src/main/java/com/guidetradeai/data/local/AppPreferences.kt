@@ -2,7 +2,6 @@ package com.guidetradeai.data.local
 
 import android.content.Context
 import androidx.datastore.preferences.core.Preferences
-import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
@@ -12,34 +11,29 @@ import kotlinx.coroutines.flow.map
 val Context.dataStore by preferencesDataStore("app_prefs")
 
 class AppPreferences(private val context: Context) {
-    companion object {
-        val LAST_SESSION_ID = stringPreferencesKey("last_session_id")
-        val VOICE_ENABLED = booleanPreferencesKey("voice_enabled")
-        val AUTO_SPEAK = booleanPreferencesKey("auto_speak")
+    private val LAST_SESSION_ID = stringPreferencesKey("last_session_id")
+
+    val lastSessionId: Flow<String?> = context.dataStore.data.map { prefs ->
+        prefs[LAST_SESSION_ID]
     }
 
-    val lastSessionId: Flow<String?> = context.dataStore.data
-        .map { it[LAST_SESSION_ID] }
-
-    suspend fun saveLastSessionId(id: String) {
-        context.dataStore.edit { prefs -> prefs[LAST_SESSION_ID] = id }
+    val voiceEnabled: Flow<Boolean> = context.dataStore.data.map { prefs ->
+        prefs[stringPreferencesKey("voice_enabled")]?.toBooleanStrictOrNull() ?: true
     }
 
-    suspend fun clearLastSessionId() {
-        context.dataStore.edit { prefs -> prefs.remove(LAST_SESSION_ID) }
+    val autoSpeak: Flow<Boolean> = context.dataStore.data.map { prefs ->
+        prefs[stringPreferencesKey("auto_speak")]?.toBooleanStrictOrNull() ?: false
     }
 
-    val voiceEnabled: Flow<Boolean> = context.dataStore.data
-        .map { it[VOICE_ENABLED] ?: true }
+    suspend fun saveLastSessionId(sessionId: String) {
+        context.dataStore.edit { prefs -> prefs[LAST_SESSION_ID] = sessionId }
+    }
 
     suspend fun setVoiceEnabled(enabled: Boolean) {
-        context.dataStore.edit { prefs -> prefs[VOICE_ENABLED] = enabled }
+        context.dataStore.edit { prefs -> prefs[stringPreferencesKey("voice_enabled")] = enabled.toString() }
     }
 
-    val autoSpeak: Flow<Boolean> = context.dataStore.data
-        .map { it[AUTO_SPEAK] ?: false }
-
     suspend fun setAutoSpeak(enabled: Boolean) {
-        context.dataStore.edit { prefs -> prefs[AUTO_SPEAK] = enabled }
+        context.dataStore.edit { prefs -> prefs[stringPreferencesKey("auto_speak")] = enabled.toString() }
     }
 }

@@ -62,6 +62,8 @@ import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.ModalNavigationDrawer
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
+import androidx.compose.material3.Tab
+import androidx.compose.material3.TabRow
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TextField
@@ -146,90 +148,129 @@ import kotlinx.serialization.json.jsonObject
 import kotlinx.serialization.json.jsonPrimitive
 
 @Composable
-fun ChatHistoryScreen(navController: NavHostController) {
-    val chatHistoryViewModel: ChatHistoryViewModel = viewModel()
-    val uiState by chatHistoryViewModel.uiState.collectAsState()
-    val sessions = (uiState as? ChatHistoryUiState.Success)?.sessions ?: emptyList()
+fun AssetDetailScreen(
+    symbol: String,
+    navController: NavHostController,
+    chatViewModel: ChatViewModel = viewModel(),
+) {
+    var selectedTab by rememberSaveable { mutableIntStateOf(0) }
+    val tabs = listOf("Overview", "Chart", "Signals", "Analysis", "Risk", "Events")
+    val chatVm: ChatViewModel = viewModel()
 
-    LaunchedEffect(Unit) { chatHistoryViewModel.loadSessions() }
+    LaunchedEffect(symbol) {
+        chatVm.setSymbol(symbol)
+    }
 
     Scaffold(
-        floatingActionButton = {
-            FloatingActionButton(
-                onClick = {
-                    chatHistoryViewModel.createNewSession { sessionId ->
-                        navController.navigate(NavRoutes.chatRoute(sessionId))
+        topBar = {
+            GuideTradeTopBar(
+                title = symbol.uppercase(),
+                subtitle = "Asset Details",
+                navigationIcon = Icons.AutoMirrored.Filled.ArrowBack,
+                onNavigationClick = { navController.popBackStack() },
+                actions = {
+                    IconButton(onClick = {
+                        chatViewModel.sendMessage("Analyze $symbol")
+                        navController.navigate(NavRoutes.AGENT)
+                    }) {
+                        Icon(imageVector = Icons.Default.Sparkles, contentDescription = "Analyze", tint = GuideTradeColors.TextPrimary)
                     }
                 },
-                containerColor = GuideTradeColors.PrimaryPurple,
-                contentColor = GuideTradeColors.White,
-            ) {
-                Icon(imageVector = Icons.Default.Add, contentDescription = "New Chat")
-            }
+            )
         },
         bottomBar = { GuideTradeBottomBar(navController = navController) },
         containerColor = GuideTradeColors.Background,
     ) { padding ->
         Column(modifier = Modifier.fillMaxSize().padding(padding)) {
-            Text(
-                text = "Chat History",
-                style = MaterialTheme.typography.headlineMedium,
-                color = GuideTradeColors.TextPrimary,
-                modifier = Modifier.padding(24.dp, 24.dp, 24.dp, 8.dp),
-                fontWeight = FontWeight.W600,
-            )
-            if (sessions.isEmpty()) {
-                EmptyState(
-                    title = "No chat sessions yet.",
-                    description = "Start a new conversation with GuideTrade Agent.",
-                    modifier = Modifier.fillMaxSize(),
-                    action = {
-                        PrimaryButton(
-                            text = "New Chat",
-                            onClick = {
-                                chatHistoryViewModel.createNewSession { sessionId ->
-                                    navController.navigate(NavRoutes.chatRoute(sessionId))
-                                }
-                            },
-                        )
-                    },
-                )
-            } else {
-                LazyColumn(
-                    modifier = Modifier.fillMaxSize(),
-                    contentPadding = PaddingValues(vertical = 8.dp),
-                    verticalArrangement = Arrangement.spacedBy(8.dp),
-                ) {
-                    items(sessions, key = { it.id }) { session ->
-                        GuideTradeCard(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(horizontal = 16.dp, vertical = 4.dp)
-                                .clickable { navController.navigate(NavRoutes.chatRoute(session.id)) },
-                        ) {
-                            Row(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .padding(16.dp),
-                                horizontalArrangement = Arrangement.SpaceBetween,
-                                verticalAlignment = Alignment.CenterVertically,
-                            ) {
-                                Column(modifier = Modifier.weight(1f)) {
-                                    Text(text = session.title, color = GuideTradeColors.TextPrimary, fontSize = 16.sp, fontWeight = FontWeight.SemiBold, maxLines = 1, overflow = TextOverflow.Ellipsis)
-                                    Text(text = session.updatedAt.formatDate("MMM dd"), color = GuideTradeColors.TextSecondary, fontSize = 12.sp)
-                                }
-                                Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(4.dp)) {
-                                    IconButton(onClick = {
-                                        chatHistoryViewModel.deleteSession(session.id)
-                                    }) {
-                                        Icon(imageVector = Icons.Default.Delete, contentDescription = "Delete", tint = GuideTradeColors.Negative, modifier = Modifier.size(18.dp))
-                                    }
-                                }
-                            }
-                        }
+            TabRow(
+                selectedTabIndex = selectedTab,
+                containerColor = GuideTradeColors.PrimarySurface,
+                contentColor = GuideTradeColors.BrightPurple,
+                indicatorColor = GuideTradeColors.PrimaryPurple,
+            ) {
+                tabs.forEachIndexed { index, title ->
+                    Tab(
+                        selected = selectedTab == index,
+                        onClick = { selectedTab = index },
+                        text = { Text(title, fontSize = 12.sp, fontWeight = if (selectedTab == index) FontWeight.SemiBold else FontWeight.Normal) },
+                    )
+                }
+            }
+
+            when (selectedTab) {
+                0 -> OverviewTab(symbol = symbol)
+                1 -> ChartTab(symbol = symbol)
+                2 -> SignalsTab(symbol = symbol)
+                3 -> AnalysisTab(symbol = symbol)
+                4 -> RiskTab(symbol = symbol)
+                5 -> EventsTab(symbol = symbol)
+            }
+        }
+    }
+}
+
+@Composable
+fun OverviewTab(symbol: String) {
+    LazyColumn(
+        modifier = Modifier.fillMaxSize(),
+        contentPadding = PaddingValues(20.dp),
+        verticalArrangement = Arrangement.spacedBy(16.dp),
+    ) {
+        item {
+            Text(text = symbol.uppercase(), color = GuideTradeColors.TextPrimary, fontSize = 28.sp, fontWeight = FontWeight.Bold)
+            Text(text = "Loading price data...", color = GuideTradeColors.TextSecondary, fontSize = 14.sp)
+        }
+        item {
+            GuideTradeCard {
+                Column(modifier = Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
+                    Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+                        InfoCard(title = "Regime", value = "Neutral", modifier = Modifier.weight(1f))
+                        InfoCard(title = "Risk", value = "Moderate", modifier = Modifier.weight(1f), tint = GuideTradeColors.Warning)
                     }
                 }
             }
         }
+        item {
+            PrimaryButton(
+                text = "Analyze with GuideTrade Agent",
+                onClick = { /* handled by top bar */ },
+                icon = Icons.Default.Sparkles,
+            )
+        }
+    }
+}
+
+@Composable
+fun ChartTab(symbol: String) {
+    Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+        Text(text = "Chart data for $symbol", color = GuideTradeColors.TextSecondary)
+    }
+}
+
+@Composable
+fun SignalsTab(symbol: String) {
+    Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+        Text(text = "Signals for $symbol", color = GuideTradeColors.TextSecondary)
+    }
+}
+
+@Composable
+fun AnalysisTab(symbol: String) {
+    Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+        Text(text = "Analysis for $symbol", color = GuideTradeColors.TextSecondary)
+    }
+}
+
+@Composable
+fun RiskTab(symbol: String) {
+    Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+        Text(text = "Risk assessment for $symbol", color = GuideTradeColors.TextSecondary)
+    }
+}
+
+@Composable
+fun EventsTab(symbol: String) {
+    Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+        Text(text = "Events for $symbol", color = GuideTradeColors.TextSecondary)
     }
 }

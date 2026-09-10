@@ -43,10 +43,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
-import com.guidetradeai.ui.theme.AccentCyan
-import com.guidetradeai.ui.theme.AccentPurple
-import com.guidetradeai.ui.theme.Background
-import com.guidetradeai.ui.theme.TextPrimary
+import com.guidetradeai.ui.theme.GuideTradeColors
 import com.guidetradeai.viewmodel.AuthUiState
 import com.guidetradeai.viewmodel.AuthViewModel
 import kotlinx.coroutines.delay
@@ -64,7 +61,6 @@ fun SplashScreen(
 
     LaunchedEffect(authUiState) {
         if (authUiState is AuthUiState.Loading) return@LaunchedEffect
-
         delay(100)
         showContent = true
         while (typedText < tagline.length) {
@@ -83,7 +79,7 @@ fun SplashScreen(
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(Background),
+            .background(GuideTradeColors.Background),
         contentAlignment = Alignment.Center,
     ) {
         androidx.compose.animation.AnimatedVisibility(
@@ -122,14 +118,14 @@ fun SplashScreen(
                         .shadow(
                             elevation = 40.dp,
                             shape = CircleShape,
-                            spotColor = AccentCyan.copy(alpha = 0.45f),
+                            spotColor = GuideTradeColors.PrimaryPurple.copy(alpha = 0.45f),
                         )
                         .clip(CircleShape)
                         .background(
                             Brush.radialGradient(
                                 colors = listOf(
-                                    AccentCyan.copy(alpha = 0.25f),
-                                    AccentPurple.copy(alpha = 0.25f),
+                                    GuideTradeColors.PrimaryPurple.copy(alpha = 0.25f),
+                                    GuideTradeColors.DeepPurple.copy(alpha = 0.25f),
                                     Color.Transparent,
                                 ),
                             ),
@@ -147,9 +143,9 @@ fun SplashScreen(
                         drawCircle(
                             brush = Brush.radialGradient(
                                 colors = listOf(
-                                    AccentCyan.copy(alpha = 0.8f * alpha),
-                                    AccentPurple.copy(alpha = 0.6f * alpha),
-                                    Background,
+                                    GuideTradeColors.BrightPurple.copy(alpha = 0.8f * alpha),
+                                    GuideTradeColors.PrimaryPurple.copy(alpha = 0.6f * alpha),
+                                    GuideTradeColors.Background,
                                 ),
                                 center = Offset(center.x * 0.35f, center.y * 0.3f),
                             ),
@@ -166,8 +162,8 @@ fun SplashScreen(
                 Spacer(modifier = Modifier.height(40.dp))
 
                 Text(
-                    text = "QUAN",
-                    color = TextPrimary,
+                    text = "GUIDETRADE AI",
+                    color = GuideTradeColors.TextPrimary,
                     fontWeight = FontWeight.Bold,
                     fontSize = 32.sp,
                     letterSpacing = 3.sp,
@@ -178,7 +174,7 @@ fun SplashScreen(
 
                 Text(
                     text = tagline.take(typedText),
-                    color = AccentCyan,
+                    color = GuideTradeColors.BrightPurple,
                     fontWeight = FontWeight.W500,
                     fontSize = 12.sp,
                     letterSpacing = 0.12.sp,

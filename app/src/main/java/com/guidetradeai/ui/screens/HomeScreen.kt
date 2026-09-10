@@ -13,345 +13,369 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Analytics
+import androidx.compose.material.icons.filled.Briefcase
+import androidx.compose.material.icons.filled.ChartArea
+import androidx.compose.material.icons.filled.CheckCircle
+import androidx.compose.material.icons.filled.Close
+import androidx.compose.material.icons.filled.ContentCopy
+import androidx.compose.material.icons.filled.DateRange
+import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.filled.Edit
+import androidx.compose.material.icons.filled.ExitToApp
+import androidx.compose.material.icons.filled.Info
+import androidx.compose.material.icons.filled.Lock
+import androidx.compose.material.icons.filled.Mic
+import androidx.compose.material.icons.filled.Notifications
+import androidx.compose.material.icons.filled.Palette
+import androidx.compose.material.icons.filled.PlayArrow
+import androidx.compose.material.icons.filled.Search
+import androidx.compose.material.icons.filled.Send
+import androidx.compose.material.icons.filled.Share
+import androidx.compose.material.icons.filled.SmartToy
+import androidx.compose.material.icons.filled.Speaker
+import androidx.compose.material.icons.filled.Sparkles
+import androidx.compose.material.icons.filled.Star
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.Divider
+import androidx.compose.material3.DrawerState
+import androidx.compose.material3.DrawerValue
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.ListItem
+import androidx.compose.material3.ListItemDefaults
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.ModalBottomSheet
+import androidx.compose.material3.ModalNavigationDrawer
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Chat
-import androidx.compose.material.icons.filled.Mic
+import androidx.compose.material3.TextField
+import androidx.compose.material3.TextFieldDefaults
+import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
+import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.scale
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.NavHostController
 import coil.compose.AsyncImage
-import com.guidetradeai.domain.model.ResearchResult
-import com.guidetradeai.ui.components.AIOrb
-import com.guidetradeai.ui.components.BottomBar
-import com.guidetradeai.utils.formatDate
-import com.guidetradeai.utils.toGreeting
-import com.guidetradeai.viewmodel.AuthUiState
-import com.guidetradeai.viewmodel.AuthViewModel
-import com.guidetradeai.viewmodel.HomeUiState
-import com.guidetradeai.viewmodel.HomeViewModel
-import com.guidetradeai.viewmodel.ChatViewModel
+import com.guidetradeai.ui.components.*
+import com.guidetradeai.ui.theme.GuideTradeColors
 import com.guidetradeai.voice.VoiceState
+import com.guidetradeai.viewModel.*
+import com.guidetradeai.data.repository.AuthRepository
+import com.guidetradeai.data.repository.ChatRepository
+import com.guidetradeai.data.repository.GuideTradeAgentRepository
+import com.guidetradeai.data.local.AppPreferences
+import com.guidetradeai.di.AppModule
+import com.guidetradeai.domain.Result
+import com.guidetradeai.domain.model.*
+import com.guidetradeai.audio.VoiceManager
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.launch
+import java.time.Instant
 import java.time.LocalDateTime
+import java.time.ZoneId
 import java.time.format.DateTimeFormatter
-import androidx.compose.runtime.setValue
+import java.util.UUID
+import android.util.Log
+import android.widget.Toast
+import android.content.ClipData
+import android.content.ClipboardManager
+import android.content.Context
+import android.content.Intent
+import kotlinx.coroutines.delay
+import android.speech.RecognitionListener
+import android.speech.RecognizerIntent
+import android.speech.SpeechRecognizer
+import android.os.Bundle
+import android.media.AudioAttributes
+import android.media.MediaPlayer
+import android.util.Base64
+import java.io.File
+import java.util.Locale
+import io.github.jan.supabase.SupabaseClient
+import io.github.jan.supabase.functions.functions
+import io.github.jan.supabase.postgrest.postgrest
+import io.github.jan.supabase.postgrest.query.Order
+import io.ktor.client.statement.bodyAsText
+import kotlinx.serialization.json.Json
+import kotlinx.serialization.json.JsonObject
+import kotlinx.serialization.json.JsonPrimitive
+import kotlinx.serialization.json.buildJsonObject
+import kotlinx.serialization.json.jsonObject
+import kotlinx.serialization.json.jsonPrimitive
 
 @Composable
 fun HomeScreen(
     navController: NavHostController,
-    authViewModel: AuthViewModel,
+    homeViewModel: HomeViewModel = viewModel(),
+    chatViewModel: ChatViewModel = viewModel(),
 ) {
-    val homeViewModel: HomeViewModel = viewModel()
-    val homeUiState by homeViewModel.uiState.collectAsState()
-    val authState by authViewModel.uiState.collectAsState()
-    val chatViewModel: ChatViewModel = viewModel()
-    val isListening by chatViewModel.isListening.collectAsState()
-    val isSpeaking by chatViewModel.isSpeaking.collectAsState()
-
-    LaunchedEffect(authState) {
-        if (authState is AuthUiState.Authenticated) {
-            homeViewModel.loadHome()
-        }
-    }
+    val uiState by homeViewModel.uiState.collectAsState()
+    LaunchedEffect(Unit) { homeViewModel.loadHome() }
 
     Scaffold(
-        bottomBar = { BottomBar(navController = navController) },
+        topBar = {
+            GuideTradeTopBar(
+                title = "GUIDETRADE AI",
+                subtitle = "Market intelligence, simplified.",
+                navigationIcon = null,
+                actions = {
+                    IconButton(onClick = { /* TODO */ }) {
+                        Icon(imageVector = Icons.Default.Notifications, contentDescription = "Notifications", tint = GuideTradeColors.TextPrimary)
+                    }
+                },
+            )
+        },
+        bottomBar = { GuideTradeBottomBar(navController = navController) },
+        containerColor = GuideTradeColors.Background,
     ) { padding ->
-        Column(
+        val listState = rememberLazyListState()
+        LazyColumn(
             modifier = Modifier
                 .fillMaxSize()
-                .verticalScroll(rememberScrollState())
-                .padding(padding)
-                .padding(horizontal = 20.dp, vertical = 16.dp),
+                .padding(padding),
+            state = listState,
+            contentPadding = PaddingValues(bottom = 80.dp),
+            verticalArrangement = Arrangement.spacedBy(16.dp),
         ) {
-            val greeting = when (authState) {
-                is AuthUiState.Authenticated -> {
-                    val name = (authState as? AuthUiState.Authenticated)?.user?.fullName
-                        ?.takeIf { !it.isNullOrEmpty() } ?: ""
-                    val greetingWord = getTimeBasedGreeting()
-                    "$greetingWord, ${name.toGreeting()}"
-                }
-                else -> "Welcome"
+            item {
+                HeroCard(
+                    onAskGuideTrade = {
+                        navController.navigate(NavRoutes.AGENT)
+                    },
+                    onAnalyzeAsset = {
+                        navController.navigate(NavRoutes.MARKETS)
+                    },
+                )
             }
 
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically,
-            ) {
-                Column {
-                    Text(
-                        text = greeting,
-                        style = MaterialTheme.typography.headlineSmall,
-                        color = MaterialTheme.colorScheme.onBackground,
-                        fontWeight = FontWeight.W700,
+            item {
+                SectionHeader(
+                    title = "Market Overview",
+                    modifier = Modifier.padding(horizontal = 20.dp, vertical = 8.dp),
+                )
+            }
+
+            item {
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 20.dp),
+                    horizontalArrangement = Arrangement.spacedBy(12.dp),
+                ) {
+                    InfoCard(
+                        title = "Regime",
+                        value = "Neutral",
+                        modifier = Modifier.weight(1f),
                     )
-                    Text(
-                        text = "Ready to explore the markets?",
-                        style = MaterialTheme.typography.bodyMedium,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    InfoCard(
+                        title = "Risk",
+                        value = "Moderate",
+                        modifier = Modifier.weight(1f),
+                        tint = GuideTradeColors.Warning,
+                    )
+                    InfoCard(
+                        title = "Status",
+                        value = "Active",
+                        modifier = Modifier.weight(1f),
+                        tint = GuideTradeColors.Positive,
                     )
                 }
-                val avatarUrl = (authState as? AuthUiState.Authenticated)?.user?.avatarUrl
-                if (!avatarUrl.isNullOrEmpty()) {
-                    AsyncImage(
-                        model = avatarUrl,
-                        contentDescription = "Profile",
+            }
+
+            item { Divider(modifier = Modifier.padding(horizontal = 20.dp), color = GuideTradeColors.SubtleBorder) }
+
+            item {
+                SectionHeader(
+                    title = "Latest Intelligence",
+                    modifier = Modifier.padding(horizontal = 20.dp, vertical = 8.dp),
+                )
+            }
+
+            items(listOf(
+                "Latest Signal" to "BTC/USD",
+                "Market Risk" to "Moderate",
+                "Major Event" to "Fed Rate Decision",
+                "Market Regime" to "Neutral",
+            )) { (title, value) ->
+                GuideTradeCard(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 20.dp),
+                    onClick = { /* TODO */ },
+                ) {
+                    Row(
                         modifier = Modifier
-                            .size(44.dp)
-                            .clip(CircleShape)
-                            .clickable { navController.navigate(com.guidetradeai.ui.navigation.NavRoutes.PROFILE) },
-                        contentScale = androidx.compose.ui.layout.ContentScale.Crop,
-                    )
+                            .fillMaxWidth()
+                            .padding(16.dp),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically,
+                    ) {
+                        Column(modifier = Modifier.weight(1f)) {
+                            Text(
+                                text = title,
+                                color = GuideTradeColors.TextPrimary,
+                                fontSize = 14.sp,
+                                fontWeight = FontWeight.SemiBold,
+                            )
+                            Text(
+                                text = "Just now",
+                                color = GuideTradeColors.MutedText,
+                                fontSize = 11.sp,
+                            )
+                        }
+                        Text(
+                            text = value,
+                            color = GuideTradeColors.BrightPurple,
+                            fontSize = 14.sp,
+                            fontWeight = FontWeight.SemiBold,
+                            textAlign = TextAlign.End,
+                        )
+                    }
                 }
             }
 
-            Spacer(modifier = Modifier.height(28.dp))
+            item { Divider(modifier = Modifier.padding(horizontal = 20.dp), color = GuideTradeColors.SubtleBorder) }
 
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(220.dp),
-                contentAlignment = Alignment.Center,
-            ) {
-                val voiceState = when {
-                    isSpeaking -> com.guidetradeai.voice.VoiceState.SPEAKING
-                    isListening -> com.guidetradeai.voice.VoiceState.LISTENING
-                    else -> com.guidetradeai.voice.VoiceState.IDLE
-                }
-                AIOrb(
-                    state = voiceState,
-                    modifier = Modifier.size(160.dp),
-                    onClick = { 
-                        if (!isListening && !isSpeaking) {
-                            chatViewModel.startVoiceInput()
+            item {
+                SectionHeader(
+                    title = "Watchlist",
+                    modifier = Modifier.padding(horizontal = 20.dp, vertical = 8.dp),
+                    action = {
+                        TextButton(onClick = { /* TODO */ }) {
+                            Text(text = "Add", color = GuideTradeColors.BrightPurple, fontSize = 12.sp)
                         }
                     },
                 )
             }
 
-            Spacer(modifier = Modifier.height(16.dp))
-
-            Text(
-                text = "Ask Guide Trade",
-                style = MaterialTheme.typography.headlineSmall,
-                color = MaterialTheme.colorScheme.onBackground,
-                textAlign = TextAlign.Center,
-                fontWeight = FontWeight.W700,
-            )
-
-            Text(
-                text = "Tap the orb or type your question",
-                style = MaterialTheme.typography.bodyMedium,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-                textAlign = TextAlign.Center,
-            )
-
-            Spacer(modifier = Modifier.height(24.dp))
-
-            Text(
-                text = "Quick Actions",
-                style = MaterialTheme.typography.titleLarge,
-                color = MaterialTheme.colorScheme.onBackground,
-                fontWeight = FontWeight.W700,
-                modifier = Modifier.padding(bottom = 12.dp),
-            )
-
-            val quickActions = listOf(
-                "Research Market", "Analyze Asset", "Explain Indicator", "Market Overview"
-            )
-
-            quickActions.chunked(2).forEach { rowActions ->
-                Row(
-                    horizontalArrangement = Arrangement.spacedBy(10.dp),
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(bottom = 10.dp),
-                ) {
-                    rowActions.forEach { action ->
-                        Button(
-                            onClick = { navController.navigate(com.guidetradeai.ui.navigation.NavRoutes.CHAT_NEW) },
-                            modifier = Modifier
-                                .weight(1f)
-                                .height(50.dp),
-                            shape = RoundedCornerShape(14.dp),
-                            colors = ButtonDefaults.buttonColors(
-                                containerColor = MaterialTheme.colorScheme.surface,
-                                contentColor = MaterialTheme.colorScheme.onSurface,
-                            ),
-                            elevation = ButtonDefaults.buttonElevation(defaultElevation = 0.dp, pressedElevation = 2.dp),
-                        ) {
-                            Text(
-                                text = action,
-                                fontSize = 13.sp,
-                                fontWeight = FontWeight.Medium,
-                                textAlign = TextAlign.Center,
-                            )
-                        }
-                    }
-                }
-            }
-
-            Spacer(modifier = Modifier.height(24.dp))
-
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(bottom = 12.dp),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically,
-            ) {
-                Text(
-                    text = "Recent Research",
-                    style = MaterialTheme.typography.titleLarge,
-                    color = MaterialTheme.colorScheme.onBackground,
-                    fontWeight = FontWeight.W700,
+            items(listOf(
+                Triple("BTC", "Bitcoin", 67421.32 to 2.34),
+                Triple("ETH", "Ethereum", 3456.78 to -1.23),
+                Triple("AAPL", "Apple Inc.", 189.55 to 0.87),
+            )) { (symbol, name, data) ->
+                val parts = data.toString().split(" to ")
+                val price = parts[0].toDoubleOrNull()
+                val change = parts.getOrNull(1)?.toDoubleOrNull()
+                AssetRow(
+                    symbol = symbol,
+                    name = name,
+                    price = price,
+                    changePercent = change,
+                    onClick = { navController.navigate(NavRoutes.assetDetailRoute(symbol)) },
                 )
-            }
-
-            when (val state = homeUiState) {
-                is HomeUiState.Success -> {
-                    if (state.recentResearch.isNotEmpty()) {
-                        Column(
-                            verticalArrangement = Arrangement.spacedBy(10.dp),
-                            modifier = Modifier.fillMaxWidth(),
-                        ) {
-                            state.recentResearch.take(5).forEach { research ->
-                                ResearchCard(
-                                    research = research,
-                                    onOpen = {
-                                        navController.navigate(
-                                            com.guidetradeai.ui.navigation.NavRoutes.researchDetailRoute(research.id)
-                                        )
-                                    },
-                                )
-                            }
-                        }
-                    } else {
-                        Card(
-                            modifier = Modifier.fillMaxWidth(),
-                            shape = RoundedCornerShape(16.dp),
-                            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
-                        ) {
-                            Column(
-                                modifier = Modifier.padding(20.dp),
-                                horizontalAlignment = Alignment.CenterHorizontally,
-                            ) {
-                                Text(
-                                    text = "No research yet",
-                                    style = MaterialTheme.typography.titleMedium,
-                                    color = MaterialTheme.colorScheme.onSurface,
-                                    fontWeight = FontWeight.W600,
-                                )
-                                Spacer(modifier = Modifier.height(8.dp))
-                                Text(
-                                    text = "Ask the AI a question to get started.",
-                                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                                    style = MaterialTheme.typography.bodyMedium,
-                                    textAlign = TextAlign.Center,
-                                )
-                            }
-                        }
-                    }
-                }
-                is HomeUiState.Loading -> {
-                    Text("Loading...", color = MaterialTheme.colorScheme.onSurfaceVariant)
-                }
-                is HomeUiState.Error -> {
-                    Text(
-                        text = state.message,
-                        color = MaterialTheme.colorScheme.error,
-                        style = MaterialTheme.typography.bodyMedium,
-                    )
-                }
             }
         }
     }
 }
 
 @Composable
-fun ResearchCard(
-    research: ResearchResult,
-    onOpen: () -> Unit,
-    modifier: Modifier = Modifier,
+fun HeroCard(
+    onAskGuideTrade: () -> Unit,
+    onAnalyzeAsset: () -> Unit,
 ) {
-    Card(
-        modifier = modifier
+    GuideTradeCard(
+        modifier = Modifier
             .fillMaxWidth()
-            .clickable(onClick = onOpen),
-        shape = RoundedCornerShape(16.dp),
-        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
-        elevation = CardDefaults.cardElevation(defaultElevation = 1.dp),
+            .padding(horizontal = 20.dp, vertical = 8.dp),
+        containerColor = Color.Transparent,
     ) {
-        Column(modifier = Modifier.padding(16.dp)) {
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically,
-            ) {
-                Text(
-                    text = research.title,
-                    style = MaterialTheme.typography.titleMedium,
-                    color = MaterialTheme.colorScheme.onSurface,
-                    fontWeight = FontWeight.W600,
-                    modifier = Modifier.weight(1f),
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(180.dp)
+                .background(
+                    brush = Brush.radialGradient(
+                        colors = listOf(
+                            GuideTradeColors.PrimaryPurple.copy(alpha = 0.25f),
+                            GuideTradeColors.PrimarySurface.copy(alpha = 0.9f),
+                            GuideTradeColors.PrimarySurface,
+                        ),
+                        center = Alignment.TopCenter,
+                        radius = 500f,
+                    ),
+                    shape = RoundedCornerShape(20.dp),
                 )
-                if (!research.asset.isNullOrEmpty()) {
+                .border(1.dp, GuideTradeColors.SubtleBorder, RoundedCornerShape(20.dp)),
+        ) {
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(20.dp),
+                verticalArrangement = Arrangement.SpaceBetween,
+            ) {
+                Column {
                     Text(
-                        text = research.asset,
-                        style = MaterialTheme.typography.labelSmall,
-                        color = MaterialTheme.colorScheme.primary,
-                        modifier = Modifier.padding(start = 8.dp),
+                        text = "Good evening.",
+                        color = GuideTradeColors.TextPrimary,
+                        fontSize = 22.sp,
+                        fontWeight = FontWeight.Light,
+                    )
+                    Spacer(modifier = Modifier.height(4.dp))
+                    Text(
+                        text = "What's happening in the markets?",
+                        color = GuideTradeColors.TextSecondary,
+                        fontSize = 15.sp,
+                    )
+                }
+                Row(
+                    horizontalArrangement = Arrangement.spacedBy(12.dp),
+                ) {
+                    PrimaryButton(
+                        text = "Ask GuideTrade",
+                        onClick = onAskGuideTrade,
+                        modifier = Modifier.weight(1f),
+                        icon = Icons.Default.Sparkles,
+                    )
+                    SecondaryButton(
+                        text = "Analyze an asset",
+                        onClick = onAnalyzeAsset,
+                        modifier = Modifier.weight(1f),
+                        icon = Icons.Default.Analytics,
                     )
                 }
             }
-            Spacer(modifier = Modifier.height(6.dp))
-            Text(
-                text = research.response,
-                style = MaterialTheme.typography.bodySmall,
-                maxLines = 2,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-            )
-            Spacer(modifier = Modifier.height(10.dp))
-            Text(
-                text = research.createdAt.formatDate("MMM dd, yyyy"),
-                style = MaterialTheme.typography.labelSmall,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-            )
         }
-    }
-}
-
-private fun getTimeBasedGreeting(): String {
-    val hour = LocalDateTime.now().hour
-    return when {
-        hour in 5..11 -> "Good morning"
-        hour in 12..16 -> "Good afternoon"
-        else -> "Good evening"
     }
 }
