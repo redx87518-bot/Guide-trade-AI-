@@ -23,7 +23,6 @@ class GuideTradeAgentRepository(
             val body = buildJsonObject {
                 put("goal", JsonPrimitive(request.goal))
                 request.sessionId?.let { put("session_id", JsonPrimitive(it)) }
-                request.provider?.let { put("provider", JsonPrimitive(it)) }
                 request.market?.let { put("market", JsonPrimitive(it)) }
                 request.symbol?.let { put("symbol", JsonPrimitive(it)) }
                 request.timeframe?.let { put("timeframe", JsonPrimitive(it)) }
