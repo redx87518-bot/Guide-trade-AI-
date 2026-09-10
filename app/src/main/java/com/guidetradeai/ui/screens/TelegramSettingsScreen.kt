@@ -53,6 +53,7 @@ import com.guidetradeai.ui.components.BottomBar
 import com.guidetradeai.viewmodel.TelegramTestState
 import com.guidetradeai.viewmodel.TelegramUiState
 import com.guidetradeai.viewmodel.TelegramViewModel
+import androidx.compose.runtime.collectAsState
 
 @Composable
 fun TelegramSettingsScreen(

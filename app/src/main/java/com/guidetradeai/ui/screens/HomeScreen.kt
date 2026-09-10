@@ -69,6 +69,7 @@ import com.guidetradeai.viewmodel.HomeUiState
 import com.guidetradeai.viewmodel.HomeViewModel
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
+import androidx.compose.runtime.collectAsState
 
 @Composable
 fun HomeScreen(

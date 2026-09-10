@@ -57,6 +57,8 @@ import com.guidetradeai.viewmodel.ChatHistoryUiState
 import com.guidetradeai.viewmodel.ChatHistoryViewModel
 import java.time.Instant
 import java.time.ZoneId
+import com.guidetradeai.ui.navigation.NavRoutes
+import androidx.compose.runtime.collectAsState
 
 @Composable
 fun ChatHistoryScreen(

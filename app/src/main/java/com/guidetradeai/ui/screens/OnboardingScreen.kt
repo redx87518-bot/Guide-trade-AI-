@@ -34,6 +34,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import kotlinx.coroutines.launch
+import com.guidetradeai.ui.navigation.NavRoutes
 
 @Composable
 fun OnboardingScreen(navController: NavHostController) {

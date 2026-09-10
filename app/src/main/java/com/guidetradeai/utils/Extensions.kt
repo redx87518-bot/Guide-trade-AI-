@@ -16,7 +16,8 @@ fun String?.formatDate(pattern: String = "MMM dd, yyyy"): String {
     }
 }
 
-fun String.toGreeting(): String {
+fun String?.toGreeting(): String {
+    if (this.isNullOrBlank()) return "there"
     return this
 }
 

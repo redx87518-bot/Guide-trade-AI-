@@ -49,6 +49,8 @@ import com.guidetradeai.viewmodel.ResearchDetailUiState
 import com.guidetradeai.viewmodel.ResearchDetailViewModel
 import com.guidetradeai.viewmodel.ResearchHistoryUiState
 import com.guidetradeai.viewmodel.ResearchViewModel
+import com.guidetradeai.ui.navigation.NavRoutes
+import androidx.compose.runtime.collectAsState
 
 @Composable
 fun ResearchHistoryScreen(

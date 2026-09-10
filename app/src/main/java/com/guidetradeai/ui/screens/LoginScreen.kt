@@ -42,6 +42,7 @@ import androidx.navigation.NavHostController
 import com.guidetradeai.utils.isEmailValid
 import com.guidetradeai.utils.isPasswordValid
 import com.guidetradeai.viewmodel.AuthViewModel
+import com.guidetradeai.ui.navigation.NavRoutes
 
 @Composable
 fun LoginScreen(

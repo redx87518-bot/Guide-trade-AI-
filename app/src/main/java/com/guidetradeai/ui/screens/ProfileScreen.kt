@@ -62,6 +62,10 @@ import com.guidetradeai.viewmodel.AuthUiState
 import com.guidetradeai.viewmodel.AuthViewModel
 import com.guidetradeai.viewmodel.ProfileUiState
 import com.guidetradeai.viewmodel.ProfileViewModel
+import com.guidetradeai.ui.navigation.NavRoutes
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.OutlinedTextFieldDefaults
+import androidx.compose.runtime.collectAsState
 
 @Composable
 fun ProfileScreen(

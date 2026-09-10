@@ -58,6 +58,9 @@ import com.guidetradeai.viewmodel.ChatUiState
 import com.guidetradeai.viewmodel.ChatViewModel
 import com.guidetradeai.viewmodel.ResearchDetailViewModel
 import androidx.compose.material3.Divider
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.OutlinedTextFieldDefaults
+import androidx.compose.runtime.collectAsState
 
 @Composable
 fun ChatScreen(

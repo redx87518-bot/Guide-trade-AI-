@@ -44,6 +44,7 @@ import androidx.navigation.NavHostController
 import com.guidetradeai.ui.components.BottomBar
 import com.guidetradeai.viewmodel.SettingsUiState
 import com.guidetradeai.viewmodel.SettingsViewModel
+import androidx.compose.runtime.collectAsState
 
 @Composable
 fun VoiceSettingsScreen(

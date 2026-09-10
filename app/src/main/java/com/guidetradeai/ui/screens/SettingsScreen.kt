@@ -53,6 +53,8 @@ import com.guidetradeai.ui.components.BottomBar
 import com.guidetradeai.viewmodel.AuthViewModel
 import com.guidetradeai.viewmodel.SettingsUiState
 import com.guidetradeai.viewmodel.SettingsViewModel
+import com.guidetradeai.ui.navigation.NavRoutes
+import androidx.compose.runtime.collectAsState
 
 @Composable
 fun SettingsScreen(

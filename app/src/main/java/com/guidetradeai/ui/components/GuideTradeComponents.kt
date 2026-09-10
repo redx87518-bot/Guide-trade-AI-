@@ -144,3 +144,62 @@ fun GuideTradeCard(
         content()
     }
 }
+
+@Composable
+fun StatusBadge(
+    text: String,
+    modifier: Modifier = Modifier,
+    color: Color = GuideTradeColors.BrightPurple,
+) {
+    Badge(
+        text = text,
+        modifier = modifier,
+        containerColor = color.copy(alpha = 0.15f),
+        contentColor = color,
+    )
+}
+
+@Composable
+fun PriceText(
+    value: String,
+    modifier: Modifier = Modifier,
+    fontSize: androidx.compose.ui.unit.TextUnit = 14.sp,
+    color: Color = GuideTradeColors.TextPrimary,
+) {
+    Text(
+        text = value,
+        modifier = modifier,
+        color = color,
+        fontSize = fontSize,
+        fontWeight = FontWeight.SemiBold,
+    )
+}
+
+@Composable
+fun ChangeText(
+    change: String,
+    changePercent: String,
+    modifier: Modifier = Modifier,
+    isPositive: Boolean = change.toDoubleOrNull() ?: 0.0 >= 0,
+) {
+    val color = if (isPositive) GuideTradeColors.Positive else GuideTradeColors.Negative
+    val sign = if (isPositive) "+" else ""
+    Row(
+        modifier = modifier,
+        horizontalArrangement = Arrangement.spacedBy(4.dp),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        Text(
+            text = "$sign$change",
+            color = color,
+            fontSize = 12.sp,
+            fontWeight = FontWeight.Medium,
+        )
+        Text(
+            text = "($sign$changePercent%)",
+            color = color,
+            fontSize = 12.sp,
+            fontWeight = FontWeight.Medium,
+        )
+    }
+}
