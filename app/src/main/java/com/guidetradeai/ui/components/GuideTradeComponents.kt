@@ -127,3 +127,21 @@ fun SectionHeader(
         Spacer(modifier = Modifier.height(8.dp))
     }
 }
+
+@Composable
+fun GuideTradeCard(
+    modifier: Modifier = Modifier,
+    containerColor: Color = GuideTradeColors.CardSurface,
+    onClick: (() -> Unit)? = null,
+    content: @Composable () -> Unit,
+) {
+    androidx.compose.material3.Card(
+        modifier = modifier,
+        shape = RoundedCornerShape(16.dp),
+        colors = androidx.compose.material3.CardDefaults.cardColors(containerColor = containerColor),
+        elevation = androidx.compose.material3.CardDefaults.cardElevation(defaultElevation = 0.dp),
+        onClick = { onClick?.invoke() },
+    ) {
+        content()
+    }
+}
