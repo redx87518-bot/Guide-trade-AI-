@@ -112,7 +112,7 @@ fun MiniAgentOrb(
             imageVector = Icons.Default.SmartToy,
             contentDescription = "Mini Agent Orb",
             tint = Color.White,
-            modifier = Modifier.size(sizeDp * 0.4f),
+            modifier = Modifier.size((sizeDp * 0.4f).dp),
         )
     }
 }
