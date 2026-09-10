@@ -85,7 +85,7 @@ fun GuideTradeBottomBar(
                 onClick = {
                     if (currentRoute != item.route) {
                         navController.navigate(item.route) {
-                            popUpTo(navController.graph.findStartDestination().id) {
+                            popUpTo(navController.graph.startDestinationId) {
                                 saveState = true
                             }
                             launchSingleTop = true

@@ -1,23 +1,19 @@
 package com.guidetradeai.data.repository
 
 import com.guidetradeai.domain.Result
-import com.guidetradeai.domain.model.AgentRequest
-import com.guidetradeai.domain.model.AgentResponse
-import com.guidetradeai.domain.model.AgentSession
 import com.guidetradeai.domain.model.PaperAccount
+import com.guidetradeai.domain.model.PaperDashboardData
 import com.guidetradeai.domain.model.PaperOrder
 import com.guidetradeai.domain.model.PaperOrderRequest
 import com.guidetradeai.domain.model.PaperPosition
 import com.guidetradeai.domain.model.PaperTrade
-import com.guidetradeai.domain.model.SymbolItem
 import io.github.jan.supabase.SupabaseClient
 import io.github.jan.supabase.functions.functions
+import io.github.jan.supabase.gotrue.auth
 import io.github.jan.supabase.postgrest.postgrest
 import io.github.jan.supabase.postgrest.query.Order
 import io.ktor.client.statement.bodyAsText
 import kotlinx.serialization.json.Json
-import kotlinx.serialization.json.JsonArray
-import kotlinx.serialization.json.JsonElement
 import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.JsonPrimitive
 import kotlinx.serialization.json.buildJsonObject
@@ -27,8 +23,6 @@ import kotlinx.serialization.json.jsonPrimitive
 class PaperTradingRepository(
     private val supabase: SupabaseClient,
 ) {
-    private val json = Json { ignoreUnknownKeys = true }
-
     private fun currentUserId(): String {
         return supabase.auth.currentUserOrNull()?.id ?: ""
     }
@@ -89,5 +83,62 @@ class PaperTradingRepository(
         "REAL_TRADING_DISABLED" -> "Live trading is disabled."
         "ORDER_FAILED" -> "The simulated order could not be completed."
         else -> error
+    }
+
+    private fun mapToPaperAccount(json: JsonObject): PaperAccount {
+        return PaperAccount(
+            id = json["id"]?.jsonPrimitive?.content ?: "",
+            userId = json["user_id"]?.jsonPrimitive?.content ?: "",
+            balance = json["balance"]?.jsonPrimitive?.content?.toDoubleOrNull() ?: 0.0,
+            equity = json["equity"]?.jsonPrimitive?.content?.toDoubleOrNull() ?: 0.0,
+            buyingPower = json["buying_power"]?.jsonPrimitive?.content?.toDoubleOrNull() ?: 0.0,
+            createdAt = json["created_at"]?.jsonPrimitive?.content ?: "",
+            updatedAt = json["updated_at"]?.jsonPrimitive?.content ?: "",
+        )
+    }
+
+    private fun mapToPaperPosition(json: JsonObject): PaperPosition {
+        return PaperPosition(
+            id = json["id"]?.jsonPrimitive?.content ?: "",
+            userId = json["user_id"]?.jsonPrimitive?.content ?: "",
+            symbol = json["symbol"]?.jsonPrimitive?.content ?: "",
+            quantity = json["quantity"]?.jsonPrimitive?.content?.toDoubleOrNull() ?: 0.0,
+            avgEntry = json["avg_entry"]?.jsonPrimitive?.content?.toDoubleOrNull() ?: 0.0,
+            currentPrice = json["current_price"]?.jsonPrimitive?.content?.toDoubleOrNull() ?: 0.0,
+            marketValue = json["market_value"]?.jsonPrimitive?.content?.toDoubleOrNull() ?: 0.0,
+            unrealizedPnl = json["unrealized_pnl"]?.jsonPrimitive?.content?.toDoubleOrNull() ?: 0.0,
+            unrealizedPnlPercent = json["unrealized_pnl_percent"]?.jsonPrimitive?.content?.toDoubleOrNull() ?: 0.0,
+            createdAt = json["created_at"]?.jsonPrimitive?.content ?: "",
+            updatedAt = json["updated_at"]?.jsonPrimitive?.content ?: "",
+        )
+    }
+
+    private fun mapToPaperOrder(json: JsonObject): PaperOrder {
+        return PaperOrder(
+            id = json["id"]?.jsonPrimitive?.content ?: "",
+            userId = json["user_id"]?.jsonPrimitive?.content ?: "",
+            symbol = json["symbol"]?.jsonPrimitive?.content ?: "",
+            side = json["side"]?.jsonPrimitive?.content ?: "",
+            quantity = json["quantity"]?.jsonPrimitive?.content?.toDoubleOrNull() ?: 0.0,
+            price = json["price"]?.jsonPrimitive?.content?.toDoubleOrNull() ?: 0.0,
+            notionalValue = json["notional_value"]?.jsonPrimitive?.content?.toDoubleOrNull() ?: 0.0,
+            orderType = json["order_type"]?.jsonPrimitive?.content ?: "",
+            status = json["status"]?.jsonPrimitive?.content ?: "",
+            createdAt = json["created_at"]?.jsonPrimitive?.content ?: "",
+        )
+    }
+
+    private fun mapToPaperTrade(json: JsonObject): PaperTrade {
+        return PaperTrade(
+            id = json["id"]?.jsonPrimitive?.content ?: "",
+            orderId = json["order_id"]?.jsonPrimitive?.content ?: "",
+            userId = json["user_id"]?.jsonPrimitive?.content ?: "",
+            symbol = json["symbol"]?.jsonPrimitive?.content ?: "",
+            side = json["side"]?.jsonPrimitive?.content ?: "",
+            quantity = json["quantity"]?.jsonPrimitive?.content?.toDoubleOrNull() ?: 0.0,
+            price = json["price"]?.jsonPrimitive?.content?.toDoubleOrNull() ?: 0.0,
+            notionalValue = json["notional_value"]?.jsonPrimitive?.content?.toDoubleOrNull() ?: 0.0,
+            createdAt = json["created_at"]?.jsonPrimitive?.content ?: "",
+        )
     }
 }

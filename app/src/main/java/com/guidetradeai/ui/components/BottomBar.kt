@@ -32,8 +32,6 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.navigation.NavDestination
-import androidx.navigation.NavGraph
 import androidx.navigation.NavHostController
 import com.guidetradeai.ui.navigation.NavRoutes
 import com.guidetradeai.ui.theme.AccentCyan
@@ -90,8 +88,8 @@ fun BottomBar(
                     onClick = {
                         navController.navigate(item.route) {
                             popUpTo(navController.graph.startDestinationId) {
-                                launchSingleTop = true
-                                restoreState = true
+                                launchSingleTop()
+                                restoreState()
                             }
                         }
                     },
@@ -155,10 +153,4 @@ fun BottomBar(
     }
 }
 
-private val NavGraph.startDestinationId: Int
-    get() = findStartDestination().id
 
-private fun NavGraph.findStartDestination(): NavDestination {
-    val destinations = destinations.filterIsInstance<NavDestination>()
-    return destinations.first { it.id == startDestinationId }
-}

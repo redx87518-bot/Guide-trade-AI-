@@ -111,11 +111,8 @@ fun AgentOrb(
     Box(
         modifier = modifier
             .size(sizeDp.dp)
-            .graphicsLayer(
-                scaleX = finalScale,
-                scaleY = finalScale,
-                alpha = pulseAlpha,
-            )
+            .scale(finalScale)
+            .alpha(pulseAlpha)
             .clickable(onClick = onClick)
             .background(
                 brush = Brush.radialGradient(
