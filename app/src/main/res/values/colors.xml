@@ -1,26 +1,55 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="primary">#6366F1</color>
-    <color name="primary_variant">#4345D8</color>
-    <color name="secondary">#10B981</color>
-    <color name="tertiary">#F59E0B</color>
-    <color name="background">#0F1117</color>
-    <color name="background_card">#1A1D27</color>
-    <color name="surface">#151821</color>
-    <color name="on_background">#E5E7EB</color>
-    <color name="on_surface">#D1D5DB</color>
-    <color name="on_surface_variant">#9CA3AF</color>
-    <color name="on_primary">#FFFFFF</color>
-    <color name="on_secondary">#FFFFFF</color>
-    <color name="on_tertiary">#FFFFFF</color>
-    <color name="outline">#374151</color>
-    <color name="outline_variant">#4B5563</color>
-    <color name="error">#F87171</color>
-    <color name="error_container">#7F1D1D</color>
-    <color name="on_error">#FFFFFF</color>
-    <color name="on_error_container">#FEE2E2</color>
-    <color name="green_success">#10B981</color>
-    <color name="orange_warning">#F59E0B</color>
-    <color name="blue_info">#3B82F6</color>
-    <color name="grey_disabled">#9CA3AF</color>
+    <!-- GuideTrade AI Dark Theme Colors -->
+    <color name="gt_background">#07070B</color>
+    <color name="gt_primary_surface">#0D0D14</color>
+    <color name="gt_secondary_surface">#12121B</color>
+    <color name="gt_elevated_surface">#171722</color>
+    <color name="gt_card_surface">#101018</color>
+
+    <color name="gt_border">#242431</color>
+    <color name="gt_subtle_border">#1B1B25</color>
+
+    <color name="gt_primary_purple">#8B5CF6</color>
+    <color name="gt_bright_purple">#A78BFA</color>
+    <color name="gt_deep_purple">#6D28D9</color>
+    <color name="gt_secondary_accent">#C084FC</color>
+
+    <color name="gt_positive">#22C55E</color>
+    <color name="gt_positive_soft">#16351F</color>
+    <color name="gt_warning">#F59E0B</color>
+    <color name="gt_warning_soft">#392A0A</color>
+    <color name="gt_negative">#EF4444</color>
+    <color name="gt_negative_soft">#351719</color>
+    <color name="gt_information">#38BDF8</color>
+
+    <color name="gt_text_primary">#F8F7FC</color>
+    <color name="gt_text_secondary">#A7A6B3</color>
+    <color name="gt_muted_text">#6F6E7C</color>
+    <color name="gt_disabled">#484753</color>
+    <color name="gt_white">#FFFFFF</color>
+
+    <!-- Light Theme Colors -->
+    <color name="gt_light_background">#F7F7FA</color>
+    <color name="gt_light_primary_surface">#FFFFFF</color>
+    <color name="gt_light_secondary_surface">#F0F0F5</color>
+    <color name="gt_light_elevated_surface">#FFFFFF</color>
+    <color name="gt_light_card_surface">#FFFFFF</color>
+    <color name="gt_light_border">#E5E5EA</color>
+    <color name="gt_light_subtle_border">#ECECEC</color>
+    <color name="gt_light_primary_purple">#6D28D9</color>
+    <color name="gt_light_bright_purple">#7C3AED</color>
+    <color name="gt_light_deep_purple">#5B21B6</color>
+    <color name="gt_light_secondary_accent">#8B5CF6</color>
+    <color name="gt_light_positive">#16A34A</color>
+    <color name="gt_light_positive_soft">#DCFCE7</color>
+    <color name="gt_light_warning">#D97706</color>
+    <color name="gt_light_warning_soft">#FEF3C7</color>
+    <color name="gt_light_negative">#DC2626</color>
+    <color name="gt_light_negative_soft">#FEE2E2</color>
+    <color name="gt_light_information">#0284C7</color>
+    <color name="gt_light_text_primary">#17171F</color>
+    <color name="gt_light_text_secondary">#646471</color>
+    <color name="gt_light_muted_text">#9A9AA5</color>
+    <color name="gt_light_disabled">#B0B0B8</color>
 </resources>

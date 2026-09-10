@@ -6,7 +6,7 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ColorScheme
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextFieldDefaults
-import androidx.compose.material3.Shapes
+import androidx.compose.material3.Shape
 import androidx.compose.material3.Typography
 import androidx.compose.material3.darkColorScheme
 import androidx.compose.material3.lightColorScheme
@@ -18,109 +18,134 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
 val DarkColorScheme = darkColorScheme(
-    primary = Color(0xFF6366F1),
-    onPrimary = Color(0xFFFFFFFF),
-    secondary = Color(0xFF10B981),
-    onSecondary = Color(0xFFFFFFFF),
-    tertiary = Color(0xFFF59E0B),
-    onTertiary = Color(0xFFFFFFFF),
-    background = Color(0xFF0F1117),
-    onBackground = Color(0xFFE5E7EB),
-    surface = Color(0xFF151821),
-    onSurface = Color(0xFFD1D5DB),
-    surfaceVariant = Color(0xFF374151),
-    onSurfaceVariant = Color(0xFF9CA3AF),
-    outline = Color(0xFF4B5563),
-    inverseOnSurface = Color(0xFF1F2937),
-    inverseSurface = Color(0xFFF3F4F6),
+    primary = GuideTradeColors.PrimaryPurple,
+    onPrimary = GuideTradeColors.White,
+    secondary = GuideTradeColors.SecondaryAccent,
+    onSecondary = GuideTradeColors.White,
+    tertiary = GuideTradeColors.BrightPurple,
+    onTertiary = GuideTradeColors.White,
+    background = GuideTradeColors.Background,
+    onBackground = GuideTradeColors.TextPrimary,
+    surface = GuideTradeColors.PrimarySurface,
+    onSurface = GuideTradeColors.TextPrimary,
+    surfaceVariant = GuideTradeColors.SecondarySurface,
+    onSurfaceVariant = GuideTradeColors.TextSecondary,
+    outline = GuideTradeColors.Border,
+    inverseOnSurface = GuideTradeColors.TextPrimary,
+    inverseSurface = GuideTradeColors.ElevatedSurface,
 )
 
 val LightColorScheme = lightColorScheme(
-    primary = Color(0xFF6366F1),
-    onPrimary = Color(0xFFFFFFFF),
-    secondary = Color(0xFF10B981),
-    onSecondary = Color(0xFFFFFFFF),
-    tertiary = Color(0xFFF59E0B),
-    onTertiary = Color(0xFFFFFFFF),
-    background = Color(0xFFFFFFFF),
-    onBackground = Color(0xFF1F2937),
-    surface = Color(0xFFF9FAFB),
-    onSurface = Color(0xFF111827),
-    surfaceVariant = Color(0xFFE5E7EB),
-    onSurfaceVariant = Color(0xFF6B7280),
-    outline = Color(0xFFD1D5DB),
+    primary = GuideTradeLightColors.PrimaryPurple,
+    onPrimary = GuideTradeLightColors.White,
+    secondary = GuideTradeLightColors.SecondaryAccent,
+    onSecondary = GuideTradeLightColors.White,
+    tertiary = GuideTradeLightColors.BrightPurple,
+    onTertiary = GuideTradeLightColors.White,
+    background = GuideTradeLightColors.Background,
+    onBackground = GuideTradeLightColors.TextPrimary,
+    surface = GuideTradeLightColors.PrimarySurface,
+    onSurface = GuideTradeLightColors.TextPrimary,
+    surfaceVariant = GuideTradeLightColors.SecondarySurface,
+    onSurfaceVariant = GuideTradeLightColors.TextSecondary,
+    outline = GuideTradeLightColors.Border,
+    inverseOnSurface = GuideTradeLightColors.TextPrimary,
+    inverseSurface = GuideTradeLightColors.ElevatedSurface,
 )
 
-val AppShapes = Shapes(
+val GuideTradeShapes = Shape(
     extraSmall = RoundedCornerShape(8.dp),
     small = RoundedCornerShape(12.dp),
     medium = RoundedCornerShape(16.dp),
-    large = RoundedCornerShape(24.dp),
-    extraLarge = RoundedCornerShape(32.dp),
+    large = RoundedCornerShape(20.dp),
+    extraLarge = RoundedCornerShape(28.dp),
 )
 
-val AppTypography = Typography(
-    bodyLarge = TextStyle(
-        fontSize = 17.sp,
-        lineHeight = 24.sp,
-        fontWeight = FontWeight.W400,
-        letterSpacing = 0.25.sp,
-    ),
-    bodyMedium = TextStyle(
-        fontSize = 15.sp,
-        lineHeight = 20.sp,
-        letterSpacing = 0.15.sp,
-    ),
-    bodySmall = TextStyle(
-        fontSize = 13.sp,
-        lineHeight = 16.sp,
-        letterSpacing = 0.4.sp,
-    ),
-    titleLarge = TextStyle(
-        fontSize = 20.sp,
-        lineHeight = 28.sp,
-        fontWeight = FontWeight.W600,
-    ),
-    titleMedium = TextStyle(
-        fontSize = 18.sp,
-        fontWeight = FontWeight.W500,
+val GuideTradeTypography = Typography(
+    displayLarge = TextStyle(
+        fontSize = 34.sp,
+        lineHeight = 42.sp,
+        fontWeight = FontWeight.W700,
+        letterSpacing = (-0.5.sp),
     ),
     headlineLarge = TextStyle(
-        fontSize = 32.sp,
-        lineHeight = 40.sp,
-        fontWeight = FontWeight.W700,
-    ),
-    headlineMedium = TextStyle(
         fontSize = 28.sp,
         lineHeight = 36.sp,
         fontWeight = FontWeight.W700,
+        letterSpacing = (-0.3.sp),
     ),
-    headlineSmall = TextStyle(
+    headlineMedium = TextStyle(
         fontSize = 24.sp,
         lineHeight = 32.sp,
         fontWeight = FontWeight.W600,
     ),
-    displayLarge = TextStyle(
-        fontSize = 48.sp,
-        lineHeight = 56.sp,
-        fontWeight = FontWeight.W700,
+    headlineSmall = TextStyle(
+        fontSize = 20.sp,
+        lineHeight = 28.sp,
+        fontWeight = FontWeight.W600,
+    ),
+    titleLarge = TextStyle(
+        fontSize = 18.sp,
+        lineHeight = 24.sp,
+        fontWeight = FontWeight.W600,
+    ),
+    titleMedium = TextStyle(
+        fontSize = 16.sp,
+        lineHeight = 22.sp,
+        fontWeight = FontWeight.W500,
+    ),
+    titleSmall = TextStyle(
+        fontSize = 14.sp,
+        lineHeight = 20.sp,
+        fontWeight = FontWeight.W500,
+    ),
+    bodyLarge = TextStyle(
+        fontSize = 16.sp,
+        lineHeight = 24.sp,
+        fontWeight = FontWeight.W400,
+    ),
+    bodyMedium = TextStyle(
+        fontSize = 14.sp,
+        lineHeight = 20.sp,
+        fontWeight = FontWeight.W400,
+    ),
+    bodySmall = TextStyle(
+        fontSize = 12.sp,
+        lineHeight = 16.sp,
+        fontWeight = FontWeight.W400,
+    ),
+    labelLarge = TextStyle(
+        fontSize = 13.sp,
+        lineHeight = 18.sp,
+        fontWeight = FontWeight.W500,
+    ),
+    labelMedium = TextStyle(
+        fontSize = 12.sp,
+        lineHeight = 16.sp,
+        fontWeight = FontWeight.W500,
+    ),
+    labelSmall = TextStyle(
+        fontSize = 11.sp,
+        lineHeight = 15.sp,
+        fontWeight = FontWeight.W500,
     ),
 )
 
 @Composable
 fun GuideTradeTheme(
     darkTheme: Boolean = true,
-    dynamicColor: Boolean = false,
     content: @Composable () -> Unit,
 ) {
-    val colorScheme = when {
-        darkTheme -> DarkColorScheme
-        else -> LightColorScheme
-    }
+    val colorScheme = if (darkTheme) DarkColorScheme else LightColorScheme
     MaterialTheme(
         colorScheme = colorScheme,
-        typography = AppTypography,
+        typography = GuideTradeTypography,
+        shapes = GuideTradeShapes,
         content = content,
-        shapes = AppShapes,
     )
+}
+
+// Convenience accessors for GuideTrade-specific colors that aren't in the standard ColorScheme
+object GuideTradeTheme {
+    val colors: GuideTradeColors get() = GuideTradeColors
 }
