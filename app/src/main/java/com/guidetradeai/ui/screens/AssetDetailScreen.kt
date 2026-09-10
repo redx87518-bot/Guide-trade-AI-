@@ -100,7 +100,7 @@ import coil.compose.AsyncImage
 import com.guidetradeai.ui.components.*
 import com.guidetradeai.ui.theme.GuideTradeColors
 import com.guidetradeai.voice.VoiceState
-import com.guidetradeai.viewModel.*
+import com.guidetradeai.viewmodel.*
 import com.guidetradeai.data.repository.AuthRepository
 import com.guidetradeai.data.repository.ChatRepository
 import com.guidetradeai.data.repository.GuideTradeAgentRepository
