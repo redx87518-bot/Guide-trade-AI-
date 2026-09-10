@@ -144,6 +144,7 @@ import kotlinx.serialization.json.JsonPrimitive
 import kotlinx.serialization.json.buildJsonObject
 import kotlinx.serialization.json.jsonObject
 import kotlinx.serialization.json.jsonPrimitive
+import androidx.compose.runtime.saveable.rememberSaveable
 
 @Composable
 fun ResearchDetailScreen(navController: NavHostController, researchId: String) {

@@ -144,6 +144,9 @@ import kotlinx.serialization.json.JsonPrimitive
 import kotlinx.serialization.json.buildJsonObject
 import kotlinx.serialization.json.jsonObject
 import kotlinx.serialization.json.jsonPrimitive
+import com.guidetradeai.BuildConfig
+import androidx.compose.material.icons.filled.ArrowForward
+import androidx.compose.runtime.saveable.rememberSaveable
 
 @Composable
 fun AboutScreen(navController: NavHostController) {

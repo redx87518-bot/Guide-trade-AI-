@@ -34,6 +34,9 @@ import androidx.navigation.NavHostController
 import com.guidetradeai.utils.isEmailValid
 import com.guidetradeai.viewmodel.AuthViewModel
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.material3.TextField
+import androidx.compose.material3.Surface
 
 @Composable
 fun ForgotPasswordScreen(

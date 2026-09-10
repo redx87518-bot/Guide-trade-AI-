@@ -42,6 +42,10 @@ import com.guidetradeai.utils.isPasswordValid
 import com.guidetradeai.viewmodel.AuthUiState
 import com.guidetradeai.viewmodel.AuthViewModel
 import androidx.compose.runtime.setValue
+import com.guidetradeai.ui.navigation.NavRoutes
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.material3.TextField
+import androidx.compose.material3.Surface
 
 @Composable
 fun SignUpScreen(

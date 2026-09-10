@@ -43,6 +43,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import kotlinx.coroutines.launch
+import com.guidetradeai.ui.navigation.NavRoutes
+import androidx.compose.material3.Surface
 
 @Composable
 fun OnboardingScreen(navController: NavHostController) {

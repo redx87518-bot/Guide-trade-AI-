@@ -144,6 +144,15 @@ import kotlinx.serialization.json.JsonPrimitive
 import kotlinx.serialization.json.buildJsonObject
 import kotlinx.serialization.json.jsonObject
 import kotlinx.serialization.json.jsonPrimitive
+import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.OutlinedTextFieldDefaults
+import androidx.compose.foundation.border
+import androidx.compose.foundation.layout.widthIn
+import com.guidetradeai.ui.components.StatusBadge
+import com.guidetradeai.ui.components.PriceText
+import com.guidetradeai.ui.components.ChangeText
+import androidx.compose.runtime.saveable.rememberSaveable
 
 @Composable
 fun AgentScreen(
