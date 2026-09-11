@@ -20,7 +20,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.guidetradeai.viewModel.ChatViewModel
+import com.guidetradeai.viewmodel.ChatViewModel
 import com.guidetradeai.domain.model.ChatMessage
 
 @Composable
