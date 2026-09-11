@@ -5,10 +5,10 @@ import androidx.lifecycle.viewModelScope
 import com.guidetradeai.data.repository.PaperTradingRepository
 import com.guidetradeai.di.AppModule
 import com.guidetradeai.domain.Result
+import com.guidetradeai.domain.model.PaperOrderRequest
 import com.guidetradeai.data.remote.PaperPositionData
 import com.guidetradeai.data.remote.PaperOrderData
 import com.guidetradeai.data.remote.PaperTradeData
-import com.guidetradeai.data.remote.PaperOrderRequest
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
