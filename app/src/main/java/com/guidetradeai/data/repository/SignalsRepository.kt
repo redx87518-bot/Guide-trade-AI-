@@ -7,7 +7,6 @@ import com.guidetradeai.domain.model.AnalysisResult
 import com.guidetradeai.domain.model.Signal
 import com.guidetradeai.domain.model.SignalFilter
 import com.guidetradeai.domain.model.WatchlistItem
-import io.github.jan.supabase.postgrest.query.eq
 import io.ktor.client.statement.bodyAsText
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonObject
@@ -57,11 +56,7 @@ class SignalsRepository(private val supabase: SupabaseClient = SupabaseClient) {
             val userId = supabase.auth.currentUserOrNull()?.id ?: return Result.Error("Not authenticated")
             val response = supabase.postgrest
                 .from("watchlist")
-                .select {
-                    filter {
-                        eq("user_id", userId)
-                    }
-                }
+                .select()
             val data = response.bodyAsText()
             val items = parseWatchlist(data)
             Result.Success(items)

@@ -12,12 +12,12 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.background
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -41,18 +41,18 @@ fun AgentProgressIndicator(
                 modifier = Modifier.fillMaxWidth(),
             ) {
                 Box(
-                    modifier = Modifier
-                        .size(24.dp)
-                        .clip(CircleShape)
-                        .background(
-                            when {
-                                isDone -> Color(0xFF22C55E)
-                                isCurrent -> Color(0xFF7B61FF)
-                                else -> Color(0xFF111E33)
-                            }
-                        ),
+                    modifier = Modifier.size(24.dp),
                     contentAlignment = Alignment.Center,
                 ) {
+                    Surface(
+                        shape = CircleShape,
+                        color = when {
+                            isDone -> Color(0xFF22C55E)
+                            isCurrent -> Color(0xFF7B61FF)
+                            else -> Color(0xFF111E33)
+                        },
+                        modifier = Modifier.fillMaxWidth(),
+                    ) {}
                     if (isDone) {
                         Text(text = "✓", color = Color.White, fontSize = 14.sp, fontWeight = FontWeight.Bold)
                     } else if (isCurrent) {

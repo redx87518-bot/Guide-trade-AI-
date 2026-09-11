@@ -3,9 +3,18 @@ package com.guidetradeai
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Analytics
+import androidx.compose.material.icons.filled.Chat
+import androidx.compose.material.icons.filled.Home
+import androidx.compose.material.icons.filled.Settings
+import androidx.compose.material.icons.filled.ShowChart
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.setValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
@@ -30,11 +39,11 @@ class MainActivity : ComponentActivity() {
                     val currentRoute = navBackStackEntry?.destination?.route ?: NavRoutes.Splash.route
 
                     val bottomNavItems = listOf(
-                        BottomNavItem("Home", androidx.compose.material.icons.Icons.Default.Home, NavRoutes.Home.route),
-                        BottomNavItem("Signals", androidx.compose.material.icons.Icons.Default.ShowChart, NavRoutes.Signals.route),
-                        BottomNavItem("Analyze", androidx.compose.material.icons.Icons.Default.Analytics, NavRoutes.Analyze.route),
-                        BottomNavItem("Agent", androidx.compose.material.icons.Icons.Default.Chat, NavRoutes.Agent.route),
-                        BottomNavItem("Settings", androidx.compose.material.icons.Icons.Default.Settings, NavRoutes.Settings.route),
+                        BottomNavItem("Home", Icons.Default.Home, NavRoutes.Home.route),
+                        BottomNavItem("Signals", Icons.Default.ShowChart, NavRoutes.Signals.route),
+                        BottomNavItem("Analyze", Icons.Default.Analytics, NavRoutes.Analyze.route),
+                        BottomNavItem("Agent", Icons.Default.Chat, NavRoutes.Agent.route),
+                        BottomNavItem("Settings", Icons.Default.Settings, NavRoutes.Settings.route),
                     )
                     val bottomNavRoutes: List<String> = bottomNavItems.map { it.route }
                     val showBottomNav = currentRoute in bottomNavRoutes

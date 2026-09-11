@@ -5,12 +5,12 @@ import androidx.lifecycle.viewModelScope
 import com.guidetradeai.data.repository.AgentRepository
 import com.guidetradeai.di.AppModule
 import com.guidetradeai.domain.Result
-import com.guidetradeai.domain.model.AgentRequest
 import com.guidetradeai.domain.model.AgentResponse
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
+import java.util.UUID
 
 sealed class AgentUiState {
     object Idle : AgentUiState()
@@ -26,14 +26,11 @@ class AgentViewModel(
     private val _uiState = MutableStateFlow<AgentUiState>(AgentUiState.Idle)
     val uiState: StateFlow<AgentUiState> = _uiState.asStateFlow()
 
-    fun sendMessage(query: String, context: AgentRequest? = null) {
+    fun sendMessage(query: String) {
         viewModelScope.launch {
             _uiState.value = AgentUiState.Loading
-            val request = context ?: AgentRequest(
-                goal = query,
-                query = query,
-            )
-            when (val result = agentRepository.sendMessage(request)) {
+            val sessionId = UUID.randomUUID().toString()
+            when (val result = agentRepository.sendMessage(sessionId, query)) {
                 is Result.Success -> {
                     val response = result.getOrNull()
                     _uiState.value = if (response != null) {
