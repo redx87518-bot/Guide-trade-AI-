@@ -19,7 +19,6 @@ sealed class MarketsUiState {
 }
 
 class MarketsViewModel(
-    private val agentRepository: // GuideTradeAgentRepository = AppModule.guideTradeAgentRepository,
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow<MarketsUiState>(MarketsUiState.Loading)

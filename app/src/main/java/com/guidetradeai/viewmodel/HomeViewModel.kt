@@ -27,7 +27,6 @@ sealed class HomeUiState {
 
 class HomeViewModel(
     private val authRepository: AuthRepository = AppModule.authRepository,
-    private val researchRepository: // ResearchRepository = AppModule.researchRepository,
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow<HomeUiState>(HomeUiState.Loading)
