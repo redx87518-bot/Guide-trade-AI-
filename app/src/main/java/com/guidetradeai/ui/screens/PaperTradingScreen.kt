@@ -9,7 +9,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsStateWithLifecycle
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
@@ -19,6 +18,7 @@ import androidx.navigation.NavHostController
 import com.guidetradeai.ui.components.PrimaryButton
 import com.guidetradeai.viewmodel.PaperTradingUiState
 import com.guidetradeai.viewmodel.PaperTradingViewModel
+import androidx.compose.runtime.collectAsState
 
 @Composable
 fun PaperTradingScreen(navController: NavHostController) {

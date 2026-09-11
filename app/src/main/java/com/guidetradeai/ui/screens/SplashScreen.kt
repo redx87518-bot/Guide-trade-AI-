@@ -34,6 +34,7 @@ import com.guidetradeai.ui.navigation.NavRoutes
 import com.guidetradeai.viewmodel.AuthViewModel
 import com.guidetradeai.viewmodel.AuthUiState
 import kotlinx.coroutines.delay
+import androidx.compose.runtime.collectAsState
 
 @Composable
 fun SplashScreen(navController: NavHostController, authViewModel: AuthViewModel) {

@@ -9,7 +9,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsStateWithLifecycle
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -26,6 +25,7 @@ import com.guidetradeai.ui.components.SecondaryButton
 import com.guidetradeai.ui.navigation.NavRoutes
 import com.guidetradeai.viewmodel.AuthUiState
 import com.guidetradeai.viewmodel.AuthViewModel
+import androidx.compose.runtime.collectAsState
 
 @Composable
 fun SignUpScreen(navController: NavHostController, authViewModel: AuthViewModel) {

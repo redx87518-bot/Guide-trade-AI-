@@ -18,6 +18,7 @@ import androidx.navigation.NavHostController
 import com.guidetradeai.ui.components.SecondaryButton
 import com.guidetradeai.viewmodel.AuthUiState
 import com.guidetradeai.viewmodel.AuthViewModel
+import androidx.compose.runtime.collectAsState
 
 @Composable
 fun ProfileScreen(navController: NavHostController, authViewModel: AuthViewModel) {
