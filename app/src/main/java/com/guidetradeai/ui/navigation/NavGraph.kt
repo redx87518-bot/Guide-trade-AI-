@@ -41,14 +41,14 @@ fun GuideTradeNavGraph(
             ForgotPasswordScreen(navController)
         }
         composable(NavRoutes.Verification.route) { backStackEntry ->
-            val email = backStackEntry.arguments?.get("email") ?: ""
+            val email = backStackEntry.arguments?.getString("email") ?: ""
             EmailVerificationScreen(navController, email)
         }
         composable(NavRoutes.Home.route) {
             HomeScreen(navController)
         }
         composable(NavRoutes.Chat.route) { backStackEntry ->
-            val sessionId = backStackEntry.arguments?.get("sessionId")
+            val sessionId = backStackEntry.arguments?.getString("sessionId")
             ChatScreen(navController, sessionId)
         }
         composable(NavRoutes.Markets.route) {

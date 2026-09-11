@@ -2,15 +2,20 @@ package com.guidetradeai.data.repository
 
 import com.guidetradeai.data.remote.SupabaseClient
 import com.guidetradeai.domain.Result
+import io.github.jan.supabase.gotrue.providers.builtin.Email
 
 class AuthRepository(private val supabase: SupabaseClient = SupabaseClient) {
 
     suspend fun signUp(email: String, password: String, fullName: String? = null): Result<Unit> {
         return try {
-            supabase.auth.signUpWith(com.guidetradeai.data.remote.Email) {
+            supabase.auth.signUpWith(Email) {
                 this.email = email
                 this.password = password
-                fullName?.let { data = kotlinx.serialization.json.buildJsonObject { put("full_name", kotlinx.serialization.json.JsonPrimitive(it)) } }
+                fullName?.let {
+                    data = kotlinx.serialization.json.buildJsonObject {
+                        put("full_name", kotlinx.serialization.json.JsonPrimitive(it))
+                    }
+                }
             }
             Result.Success(Unit)
         } catch (e: Exception) {
@@ -20,7 +25,7 @@ class AuthRepository(private val supabase: SupabaseClient = SupabaseClient) {
 
     suspend fun signIn(email: String, password: String): Result<Unit> {
         return try {
-            supabase.auth.signInWith(com.guidetradeai.data.remote.Email) {
+            supabase.auth.signInWith(Email) {
                 this.email = email
                 this.password = password
             }

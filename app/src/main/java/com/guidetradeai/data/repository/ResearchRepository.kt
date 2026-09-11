@@ -5,6 +5,7 @@ import com.guidetradeai.domain.model.ResearchResult
 import io.github.jan.supabase.SupabaseClient
 import io.github.jan.supabase.functions.functions
 import io.github.jan.supabase.postgrest.postgrest
+import io.github.jan.supabase.postgrest.query.eq
 import io.ktor.client.statement.bodyAsText
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonObject

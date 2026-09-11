@@ -16,7 +16,7 @@ class MainActivity : ComponentActivity() {
         setContent {
             GuideTradeTheme {
                 MaterialTheme {
-                    val navController = rememberNavHostController()
+                    val navController = rememberNavController()
                     GuideTradeNavGraph(navController = navController)
                 }
             }
