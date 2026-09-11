@@ -1,6 +1,7 @@
 package com.guidetradeai.ui.components
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -31,6 +32,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -41,7 +43,7 @@ import androidx.navigation.NavHostController
 fun GuideTradeTopBar(
     title: String,
     subtitle: String = "",
-    navigationIcon: androidx.compose.material.icons.Icons.ImageVector? = null,
+    navigationIcon: ImageVector? = null,
     onNavigationClick: (() -> Unit)? = null,
     actions: @Composable (() -> Unit)? = null,
 ) {
@@ -89,7 +91,6 @@ fun GuideTradeTopBar(
 
 @Composable
 fun GuideTradeBottomBar(navController: NavHostController) {
-    // Bottom bar placeholder for auth-wired screens
     Surface(
         color = Color(0xFF0D0D14),
         tonalElevation = 8.dp,
@@ -110,11 +111,11 @@ fun GuideTradeBottomBar(navController: NavHostController) {
 
 @Composable
 fun GuideTradeCard(
-    modifier: androidx.compose.ui.Modifier = Modifier,
+    modifier: Modifier = Modifier,
     onClick: (() -> Unit)? = null,
     content: @Composable () -> Unit,
 ) {
-    val cardModifier = if (onClick != null) modifier.clickable { onClick() } else modifier
+    val cardModifier = if (onClick != null) modifier.then(Modifier.clickable { onClick() }) else modifier
     Card(
         modifier = cardModifier,
         shape = RoundedCornerShape(16.dp),
@@ -131,7 +132,7 @@ fun GuideTradeCard(
 fun PrimaryButton(
     text: String,
     onClick: () -> Unit,
-    modifier: androidx.compose.ui.Modifier = Modifier,
+    modifier: Modifier = Modifier,
     enabled: Boolean = true,
 ) {
     Button(
@@ -156,7 +157,7 @@ fun PrimaryButton(
 fun SecondaryButton(
     text: String,
     onClick: () -> Unit,
-    modifier: androidx.compose.ui.Modifier = Modifier,
+    modifier: Modifier = Modifier,
 ) {
     Button(
         onClick = onClick,
@@ -232,7 +233,7 @@ fun GuideTradeTextField(
     value: String,
     onValueChange: (String) -> Unit,
     label: String,
-    modifier: androidx.compose.ui.Modifier = Modifier,
+    modifier: Modifier = Modifier,
     isPassword: Boolean = false,
     enabled: Boolean = true,
 ) {

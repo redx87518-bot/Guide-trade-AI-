@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsStateWithLifecycle
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
@@ -16,14 +17,13 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import com.guidetradeai.ui.components.PrimaryButton
-import com.guidetradeai.viewmodel.PaperTradingViewModel
 import com.guidetradeai.viewmodel.PaperTradingUiState
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.guidetradeai.viewmodel.PaperTradingViewModel
 
 @Composable
 fun PaperTradingScreen(navController: NavHostController) {
     val viewModel: PaperTradingViewModel = PaperTradingViewModel()
-    val state by viewModel.uiState.collectAsStateWithLifecycle()
+    val state = viewModel.uiState.collectAsStateWithLifecycle().value
 
     Column(
         modifier = Modifier
@@ -46,7 +46,7 @@ fun PaperTradingScreen(navController: NavHostController) {
         Spacer(modifier = Modifier.height(16.dp))
         when (state) {
             is PaperTradingUiState.Loading -> Text("Loading...")
-            is PaperTradingUiState.Error -> Text("Error: ${(state as PaperTradingUiState.Error).message}")
+            is PaperTradingUiState.Error -> Text("Error: ${state.message}")
             else -> Text("Dashboard ready")
         }
     }

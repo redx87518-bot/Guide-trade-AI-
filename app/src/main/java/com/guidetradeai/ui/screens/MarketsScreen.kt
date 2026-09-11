@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsStateWithLifecycle
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
@@ -17,18 +18,17 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import com.guidetradeai.ui.components.GuideTradeTextField
 import com.guidetradeai.ui.components.PrimaryButton
-import com.guidetradeai.viewmodel.MarketsViewModel
 import com.guidetradeai.viewmodel.MarketsUiState
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.guidetradeai.viewmodel.MarketsViewModel
 
 @Composable
 fun MarketsScreen(
     navController: NavHostController,
     viewModel: MarketsViewModel = MarketsViewModel(),
 ) {
-    var symbol by androidx.compose.runtime.remember { androidx.compose.runtime.mutableStateOf("BTC") }
-    var market by androidx.compose.runtime.remember { androidx.compose.runtime.mutableStateOf("crypto") }
-    val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+    val uiState = viewModel.uiState.collectAsStateWithLifecycle().value
+    val symbolState = androidx.compose.runtime.remember { androidx.compose.runtime.mutableStateOf("BTC") }
+    val marketState = androidx.compose.runtime.remember { androidx.compose.runtime.mutableStateOf("crypto") }
 
     Column(
         modifier = Modifier
@@ -42,26 +42,26 @@ fun MarketsScreen(
         Text("Lookup symbols and market context", fontSize = 13.sp, fontWeight = FontWeight.Medium)
         Spacer(modifier = Modifier.height(20.dp))
         GuideTradeTextField(
-            value = symbol,
-            onValueChange = { symbol = it },
+            value = symbolState.value,
+            onValueChange = { symbolState.value = it },
             label = "Symbol",
         )
         Spacer(modifier = Modifier.height(8.dp))
         GuideTradeTextField(
-            value = market,
-            onValueChange = { market = it },
+            value = marketState.value,
+            onValueChange = { marketState.value = it },
             label = "Market",
         )
         Spacer(modifier = Modifier.height(16.dp))
         PrimaryButton(
             text = "Load Market Data",
-            onClick = { viewModel.loadMarketData(market, symbol) },
+            onClick = { viewModel.loadMarketData(marketState.value, symbolState.value) },
         )
         Spacer(modifier = Modifier.height(16.dp))
         when (uiState) {
             is MarketsUiState.Loading -> Text("Loading...")
-            is MarketsUiState.Success -> Text("Result: ${(uiState as MarketsUiState.Success).data}")
-            is MarketsUiState.Error -> Text("Error: ${(uiState as MarketsUiState.Error).message}")
+            is MarketsUiState.Success -> Text("Result: ${uiState.data}")
+            is MarketsUiState.Error -> Text("Error: ${uiState.message}")
         }
     }
 }

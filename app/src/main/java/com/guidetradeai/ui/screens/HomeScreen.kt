@@ -4,6 +4,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -20,6 +21,7 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsStateWithLifecycle
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -33,11 +35,10 @@ import com.guidetradeai.ui.components.GuideTradeCard
 import com.guidetradeai.ui.navigation.NavRoutes
 import com.guidetradeai.viewmodel.AuthUiState
 import com.guidetradeai.viewmodel.AuthViewModel
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
 
 @Composable
 fun HomeScreen(navController: NavHostController, authViewModel: AuthViewModel) {
-    val authState by authViewModel.uiState.collectAsStateWithLifecycle()
+    val authState = authViewModel.uiState.collectAsStateWithLifecycle().value
     val userName = (authState as? AuthUiState.Authenticated)?.userId ?: "Trader"
 
     Column(
@@ -105,7 +106,6 @@ fun HomeScreen(navController: NavHostController, authViewModel: AuthViewModel) {
                     ) {
                         Icon(imageVector = Icons.Default.Chat, contentDescription = null, tint = Color(0xFF8B5CF6))
                     }
-                    Spacer(modifier = Modifier.height(0.dp))
                     Column(modifier = Modifier.weight(1f)) {
                         Text("AI Chat", color = Color(0xFFF8F7FC), fontSize = 15.sp, fontWeight = FontWeight.SemiBold)
                         Text("Ask anything about markets", color = Color(0xFFA89FB2), fontSize = 12.sp)
