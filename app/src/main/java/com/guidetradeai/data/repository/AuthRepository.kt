@@ -42,7 +42,7 @@ class AuthRepository(
             }
             val u = result
             if (u != null) {
-                Result.Success(
+                Result.success(
                     User(
                         id = u.id,
                         email = u.email ?: "",
@@ -50,7 +50,7 @@ class AuthRepository(
                     ),
                 )
             } else {
-                Result.Success(
+                Result.success(
                     User(
                         id = "pending_verification",
                         email = email,
@@ -60,7 +60,7 @@ class AuthRepository(
             }
         } catch (e: Exception) {
             Log.e("SupabaseAuth", "signUp failed", e)
-            Result.Error(mapAuthError(e.message ?: "Sign up failed"))
+            Result.error(mapAuthError(e.message ?: "Sign up failed"))
         }
     }
 
@@ -72,7 +72,7 @@ class AuthRepository(
             }
             val u = supabase.auth.currentUserOrNull()
             if (u != null) {
-                Result.Success(
+                Result.success(
                     User(
                         id = u.id,
                         email = u.email ?: "",
@@ -83,11 +83,11 @@ class AuthRepository(
                     ),
                 )
             } else {
-                Result.Error("Login succeeded but no user returned")
+                Result.error("Login succeeded but no user returned")
             }
         } catch (e: Exception) {
             Log.e("SupabaseAuth", "signIn failed", e)
-            Result.Error(mapAuthError(e.message ?: "Login failed"))
+            Result.error(mapAuthError(e.message ?: "Login failed"))
         }
     }
 
@@ -96,7 +96,7 @@ class AuthRepository(
             supabase.auth.signInWith(Google)
             val u = supabase.auth.currentUserOrNull()
             if (u != null) {
-                Result.Success(
+                Result.success(
                     User(
                         id = u.id,
                         email = u.email ?: "",
@@ -107,41 +107,41 @@ class AuthRepository(
                     ),
                 )
             } else {
-                Result.Error("Google sign-in was cancelled or failed")
+                Result.error("Google sign-in was cancelled or failed")
             }
         } catch (e: Exception) {
             Log.e("SupabaseAuth", "signInWithGoogle failed", e)
-            Result.Error(e.message ?: "Google sign-in failed")
+            Result.error(e.message ?: "Google sign-in failed")
         }
     }
 
     suspend fun signOut(): Result<Unit> {
         return try {
             supabase.auth.signOut()
-            Result.Success(Unit)
+            Result.success(Unit)
         } catch (e: Exception) {
             Log.e("SupabaseAuth", "signOut failed", e)
-            Result.Error(mapAuthError(e.message ?: "Logout failed"))
+            Result.error(mapAuthError(e.message ?: "Logout failed"))
         }
     }
 
     suspend fun resetPassword(email: String): Result<Unit> {
         return try {
             supabase.auth.resetPasswordForEmail(email)
-            Result.Success(Unit)
+            Result.success(Unit)
         } catch (e: Exception) {
             Log.e("SupabaseAuth", "resetPassword failed", e)
-            Result.Error(mapAuthError(e.message ?: "Failed to send reset email"))
+            Result.error(mapAuthError(e.message ?: "Failed to send reset email"))
         }
     }
 
     suspend fun resendVerificationEmail(email: String): Result<Unit> {
         return try {
             supabase.auth.resendEmail(OtpType.Email.SIGNUP, email)
-            Result.Success(Unit)
+            Result.success(Unit)
         } catch (e: Exception) {
             Log.e("SupabaseAuth", "resendVerificationEmail failed", e)
-            Result.Error(mapAuthError(e.message ?: "Failed to resend verification email"))
+            Result.error(mapAuthError(e.message ?: "Failed to resend verification email"))
         }
     }
 
@@ -155,7 +155,7 @@ class AuthRepository(
             }
             val u = supabase.auth.currentUserOrNull()
             if (u != null) {
-                Result.Success(
+                Result.success(
                     User(
                         id = u.id,
                         email = u.email ?: "",
@@ -166,11 +166,11 @@ class AuthRepository(
                     ),
                 )
             } else {
-                Result.Error("No user found after update")
+                Result.error("No user found after update")
             }
         } catch (e: Exception) {
             Log.e("SupabaseAuth", "updateProfile failed", e)
-            Result.Error(mapAuthError(e.message ?: "Failed to update profile"))
+            Result.error(mapAuthError(e.message ?: "Failed to update profile"))
         }
     }
 

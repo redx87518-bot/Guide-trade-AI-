@@ -25,9 +25,9 @@ class ChatRepository(private val supabase: SupabaseClient) {
                     put("user_id", JsonPrimitive(userId))
                     put("title", JsonPrimitive(title))
                 })
-            Result.Success(sessionId)
+            Result.success(sessionId)
         } catch (e: Exception) {
-            Result.Error(e.message ?: "Failed to create session")
+            Result.error(e.message ?: "Failed to create session")
         }
     }
 
@@ -37,9 +37,9 @@ class ChatRepository(private val supabase: SupabaseClient) {
                 .update(buildJsonObject { put("title", JsonPrimitive(title)) }) {
                     filter { eq("id", sessionId) }
                 }
-            Result.Success(Unit)
+            Result.success(Unit)
         } catch (e: Exception) {
-            Result.Error(e.message ?: "Failed to rename session")
+            Result.error(e.message ?: "Failed to rename session")
         }
     }
 
@@ -57,9 +57,9 @@ class ChatRepository(private val supabase: SupabaseClient) {
                     updatedAt = row["updated_at"]?.jsonPrimitive?.content ?: "",
                 )
             }.sortedByDescending { it.createdAt }
-            Result.Success(sessions)
+            Result.success(sessions)
         } catch (e: Exception) {
-            Result.Error(e.message ?: "Failed to load sessions")
+            Result.error(e.message ?: "Failed to load sessions")
         }
     }
 
@@ -78,9 +78,9 @@ class ChatRepository(private val supabase: SupabaseClient) {
                     createdAt = row["created_at"]?.jsonPrimitive?.content ?: "",
                 )
             }.sortedBy { it.createdAt }
-            Result.Success(messages)
+            Result.success(messages)
         } catch (e: Exception) {
-            Result.Error(e.message ?: "Failed to load messages")
+            Result.error(e.message ?: "Failed to load messages")
         }
     }
 
@@ -96,10 +96,10 @@ class ChatRepository(private val supabase: SupabaseClient) {
             val data = response.bodyAsText()
             val parsed = Json.parseToJsonElement(data).jsonObject
             val content = parsed["content"]?.jsonPrimitive?.content
-                ?: return Result.Error(parsed["error"]?.jsonPrimitive?.content ?: "Empty response")
-            Result.Success(content)
+                ?: return Result.error(parsed["error"]?.jsonPrimitive?.content ?: "Empty response")
+            Result.success(content)
         } catch (e: Exception) {
-            Result.Error(e.message ?: "Failed to send message")
+            Result.error(e.message ?: "Failed to send message")
         }
     }
 
@@ -107,9 +107,9 @@ class ChatRepository(private val supabase: SupabaseClient) {
         return try {
             supabase.postgrest.from("chat_messages").delete { filter { eq("session_id", sessionId) } }
             supabase.postgrest.from("chat_sessions").delete { filter { eq("id", sessionId) } }
-            Result.Success(Unit)
+            Result.success(Unit)
         } catch (e: Exception) {
-            Result.Error(e.message ?: "Failed to delete session")
+            Result.error(e.message ?: "Failed to delete session")
         }
     }
 }

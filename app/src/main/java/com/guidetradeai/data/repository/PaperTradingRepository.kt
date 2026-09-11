@@ -54,9 +54,9 @@ class PaperTradingRepository(
                 order("created_at", Order.DESCENDING)
                 limit(50)
             }.decodeList<JsonObject>().map { mapToPaperTrade(it) }
-            Result.Success(PaperDashboardData(account, positions, orders, trades))
+            Result.success(PaperDashboardData(account, positions, orders, trades))
         } catch (e: Exception) {
-            Result.Error("Failed to load paper trading dashboard: ${e.message}")
+            Result.error("Failed to load paper trading dashboard: ${e.message}")
         }
     }
 
@@ -126,7 +126,7 @@ class PaperTradingRepository(
                 put("notional_value", JsonPrimitive((request.limitPrice ?: 0.0) * request.quantity))
             })
             
-            Result.Success(PaperOrder(
+            Result.success(PaperOrder(
                 id = java.util.UUID.randomUUID().toString(),
                 userId = userId,
                 symbol = request.symbol,
@@ -139,7 +139,7 @@ class PaperTradingRepository(
                 createdAt = java.time.Instant.now().toString()
             ))
         } catch (e: Exception) {
-            Result.Error("Failed to place paper order: ${e.message}")
+            Result.error("Failed to place paper order: ${e.message}")
         }
     }
 

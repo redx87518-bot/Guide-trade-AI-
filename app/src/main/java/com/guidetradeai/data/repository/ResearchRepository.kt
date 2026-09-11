@@ -30,7 +30,7 @@ class ResearchRepository(private val supabase: SupabaseClient) {
             val parsed = Json.parseToJsonElement(data).jsonObject
             val summary = parsed["summary"]?.jsonPrimitive?.contentOrNull
                 ?: parsed["content"]?.jsonPrimitive?.contentOrNull
-                ?: return Result.Error("Empty research response")
+                ?: return Result.error("Empty research response")
             val result = ResearchResult(
                 id = parsed["id"]?.jsonPrimitive?.contentOrNull ?: "",
                 title = query,
@@ -39,9 +39,9 @@ class ResearchRepository(private val supabase: SupabaseClient) {
                 createdAt = Instant.now().atZone(ZoneId.of("UTC")).toString(),
                 updatedAt = Instant.now().atZone(ZoneId.of("UTC")).toString(),
             )
-            Result.Success(result)
+            Result.success(result)
         } catch (e: Exception) {
-            Result.Error(e.message ?: "Failed to generate research")
+            Result.error(e.message ?: "Failed to generate research")
         }
     }
 
@@ -60,9 +60,9 @@ class ResearchRepository(private val supabase: SupabaseClient) {
                     updatedAt = row["updated_at"]?.jsonPrimitive?.content ?: "",
                 )
             }.sortedByDescending { it.createdAt }
-            Result.Success(results)
+            Result.success(results)
         } catch (e: Exception) {
-            Result.Error(e.message ?: "Failed to load research history")
+            Result.error(e.message ?: "Failed to load research history")
         }
     }
 }

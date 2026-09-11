@@ -28,12 +28,12 @@ class SettingsRepository(
             val rows = result.decodeList<JsonObject>()
             val row = rows.firstOrNull()
             if (row != null) {
-                Result.Success(mapToSettings(row))
+                Result.success(mapToSettings(row))
             } else {
-                Result.Success(UserSettings(userId = currentUserId()))
+                Result.success(UserSettings(userId = currentUserId()))
             }
         } catch (e: Exception) {
-            Result.Error("Failed to load settings: ${e.message}")
+            Result.error("Failed to load settings: ${e.message}")
         }
     }
 
@@ -45,9 +45,9 @@ class SettingsRepository(
                 ) {
                     filter { eq("user_id", currentUserId()) }
                 }
-            Result.Success(Unit)
+            Result.success(Unit)
         } catch (e: Exception) {
-            Result.Error("Failed to update settings: ${e.message}")
+            Result.error("Failed to update settings: ${e.message}")
         }
     }
 
@@ -59,9 +59,9 @@ class SettingsRepository(
                 ) {
                     filter { eq("user_id", currentUserId()) }
                 }
-            Result.Success(Unit)
+            Result.success(Unit)
         } catch (e: Exception) {
-            Result.Error("Failed to update settings: ${e.message}")
+            Result.error("Failed to update settings: ${e.message}")
         }
     }
 
@@ -73,9 +73,9 @@ class SettingsRepository(
                 ) {
                     filter { eq("user_id", currentUserId()) }
                 }
-            Result.Success(Unit)
+            Result.success(Unit)
         } catch (e: Exception) {
-            Result.Error("Failed to update theme: ${e.message}")
+            Result.error("Failed to update theme: ${e.message}")
         }
     }
 
