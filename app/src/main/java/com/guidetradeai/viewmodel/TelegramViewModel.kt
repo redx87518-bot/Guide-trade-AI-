@@ -3,6 +3,7 @@ package com.guidetradeai.viewmodel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.guidetradeai.data.repository.TelegramRepository
+import com.guidetradeai.data.remote.TelegramSettingsData
 import com.guidetradeai.di.AppModule
 import com.guidetradeai.domain.Result
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -43,7 +44,7 @@ class TelegramViewModel(
     ) {
         viewModelScope.launch {
             _uiState.value = TelegramUiState.Loading
-            val settings = com.guidetradeai.data.remote.TelegramSettingsData(
+            val settings = TelegramSettingsData(
                 user_id = telegramRepository.getSettings().getOrNull()?.user_id ?: "",
                 bot_token_encrypted = botTokenEncrypted,
                 chat_id = chatId,
@@ -62,6 +63,6 @@ class TelegramViewModel(
 
 sealed class TelegramUiState {
     object Loading : TelegramUiState()
-    data class Success(val settings: com.guidetradeai.data.remote.TelegramSettingsData?) : TelegramUiState()
+    data class Success(val settings: TelegramSettingsData?) : TelegramUiState()
     data class Error(val message: String) : TelegramUiState()
 }

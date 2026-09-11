@@ -9,6 +9,10 @@ sealed class NavRoutes(val route: String) {
         fun route(email: String) = "verification/$email"
     }
     object Home : NavRoutes("home")
+    object Chat : NavRoutes("chat/{sessionId}") {
+        fun route(sessionId: String? = null) = if (sessionId != null) "chat/$sessionId" else "chat"
+    }
+    object Markets : NavRoutes("markets")
     object Settings : NavRoutes("settings")
     object TelegramSettings : NavRoutes("telegram_settings")
     object VoiceSettings : NavRoutes("voice_settings")

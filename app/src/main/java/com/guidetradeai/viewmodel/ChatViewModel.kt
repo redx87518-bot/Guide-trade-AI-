@@ -5,6 +5,7 @@ import androidx.lifecycle.viewModelScope
 import com.guidetradeai.data.repository.AgentRepository
 import com.guidetradeai.data.repository.ChatRepository
 import com.guidetradeai.data.repository.SettingsRepository
+import com.guidetradeai.data.remote.ChatMessageData
 import com.guidetradeai.di.AppModule
 import com.guidetradeai.domain.Result
 import com.guidetradeai.domain.model.ChatMessage
@@ -57,7 +58,7 @@ class ChatViewModel(
             _messages.value = _messages.value + userMessage
 
             chatRepository.saveMessage(
-                com.guidetradeai.data.remote.ChatMessageData(
+                ChatMessageData(
                     session_id = sessionId,
                     user_id = "",
                     role = "user",

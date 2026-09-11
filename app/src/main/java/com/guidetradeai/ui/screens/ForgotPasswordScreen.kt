@@ -16,6 +16,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import com.guidetradeai.ui.navigation.NavRoutes
 
@@ -30,7 +31,7 @@ fun ForgotPasswordScreen(navController: NavHostController) {
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
-        Text("Reset Password", fontSize = androidx.compose.ui.unit.sp(24))
+        Text("Reset Password", fontSize = 24.sp)
         Spacer(modifier = Modifier.height(16.dp))
         TextField(
             value = email,

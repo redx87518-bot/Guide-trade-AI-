@@ -5,6 +5,8 @@ import com.guidetradeai.data.repository.ChatRepository
 import com.guidetradeai.data.repository.SettingsRepository
 import com.guidetradeai.data.repository.TelegramRepository
 import com.guidetradeai.data.repository.AgentRepository
+import com.guidetradeai.data.repository.PaperTradingRepository
+import com.guidetradeai.data.repository.McpRepository
 
 object AppModule {
     val authRepository by lazy { AuthRepository() }

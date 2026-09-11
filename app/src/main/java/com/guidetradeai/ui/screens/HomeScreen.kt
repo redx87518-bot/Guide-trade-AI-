@@ -13,29 +13,31 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
+import com.guidetradeai.ui.navigation.NavRoutes
 
 @Composable
 fun HomeScreen(navController: NavHostController) {
     Column(
-        modifier = androidx.compose.ui.Modifier
+        modifier = Modifier
             .fillMaxSize()
             .padding(24.dp),
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
-        Text("Welcome to GuideTrade AI", fontSize = androidx.compose.ui.unit.sp(28))
-        Spacer(modifier = androidx.compose.ui.Modifier.height(16.dp))
+        Text("Welcome to GuideTrade AI", fontSize = 28.sp)
+        Spacer(modifier = Modifier.height(16.dp))
         Button(
-            onClick = { navController.navigate("chat") },
-            modifier = androidx.compose.ui.Modifier.fillMaxWidth(),
+            onClick = { navController.navigate(NavRoutes.Chat.route()) },
+            modifier = Modifier.fillMaxWidth(),
         ) {
             Text("AI Chat")
         }
-        Spacer(modifier = androidx.compose.ui.Modifier.height(8.dp))
+        Spacer(modifier = Modifier.height(8.dp))
         Button(
-            onClick = { navController.navigate("markets") },
-            modifier = androidx.compose.ui.Modifier.fillMaxWidth(),
+            onClick = { navController.navigate(NavRoutes.Markets.route) },
+            modifier = Modifier.fillMaxWidth(),
         ) {
             Text("Markets")
         }

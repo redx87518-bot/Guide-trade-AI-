@@ -1,53 +1,76 @@
 package com.guidetradeai.ui.navigation
 
 import androidx.compose.runtime.Composable
+import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
-import androidx.navigation.compose.rememberNavController
-import com.guidetradeai.ui.screens.*
+import com.guidetradeai.ui.screens.SplashScreen
+import com.guidetradeai.ui.screens.LoginScreen
+import com.guidetradeai.ui.screens.SignUpScreen
+import com.guidetradeai.ui.screens.ForgotPasswordScreen
+import com.guidetradeai.ui.screens.EmailVerificationScreen
+import com.guidetradeai.ui.screens.HomeScreen
+import com.guidetradeai.ui.screens.SettingsScreen
+import com.guidetradeai.ui.screens.TelegramSettingsScreen
+import com.guidetradeai.ui.screens.VoiceSettingsScreen
+import com.guidetradeai.ui.screens.ProfileScreen
+import com.guidetradeai.ui.screens.PaperTradingScreen
+import com.guidetradeai.ui.screens.McpConnectionsScreen
+import com.guidetradeai.ui.screens.ChatScreen
+import com.guidetradeai.ui.screens.MarketsScreen
 
 @Composable
 fun GuideTradeNavGraph(
+    navController: NavHostController,
     startDestination: String = NavRoutes.Splash.route,
 ) {
-    val navController = rememberNavController()
-    NavHost(navController = navController, startDestination = startDestination) {
+    NavHost(
+        navController = navController,
+        startDestination = startDestination,
+    ) {
         composable(NavRoutes.Splash.route) {
-            SplashScreen(navController = navController)
+            SplashScreen(navController)
         }
         composable(NavRoutes.Login.route) {
-            LoginScreen(navController = navController)
+            LoginScreen(navController)
         }
         composable(NavRoutes.Signup.route) {
-            SignUpScreen(navController = navController)
+            SignUpScreen(navController)
         }
         composable(NavRoutes.ForgotPassword.route) {
-            ForgotPasswordScreen(navController = navController)
+            ForgotPasswordScreen(navController)
         }
         composable(NavRoutes.Verification.route) { backStackEntry ->
-            val email = backStackEntry.arguments?.getString("email") ?: ""
-            EmailVerificationScreen(navController = navController, email = email)
+            val email = backStackEntry.arguments?.get("email") ?: ""
+            EmailVerificationScreen(navController, email)
         }
         composable(NavRoutes.Home.route) {
-            HomeScreen(navController = navController)
+            HomeScreen(navController)
+        }
+        composable(NavRoutes.Chat.route) { backStackEntry ->
+            val sessionId = backStackEntry.arguments?.get("sessionId")
+            ChatScreen(navController, sessionId)
+        }
+        composable(NavRoutes.Markets.route) {
+            MarketsScreen(navController)
         }
         composable(NavRoutes.Settings.route) {
-            SettingsScreen(navController = navController)
+            SettingsScreen(navController)
         }
         composable(NavRoutes.TelegramSettings.route) {
-            TelegramSettingsScreen(navController = navController)
+            TelegramSettingsScreen(navController)
         }
         composable(NavRoutes.VoiceSettings.route) {
-            VoiceSettingsScreen(navController = navController)
+            VoiceSettingsScreen(navController)
         }
         composable(NavRoutes.Profile.route) {
-            ProfileScreen(navController = navController)
+            ProfileScreen(navController)
         }
         composable(NavRoutes.PaperTrading.route) {
-            PaperTradingScreen(navController = navController)
+            PaperTradingScreen(navController)
         }
         composable(NavRoutes.McpConnections.route) {
-            McpConnectionsScreen(navController = navController)
+            McpConnectionsScreen(navController)
         }
     }
 }

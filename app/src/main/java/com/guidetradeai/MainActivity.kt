@@ -5,6 +5,8 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
+import androidx.navigation.NavHostController
+import androidx.navigation.compose.rememberNavHostController
 import com.guidetradeai.ui.navigation.GuideTradeNavGraph
 import com.guidetradeai.ui.theme.GuideTradeTheme
 
@@ -14,7 +16,8 @@ class MainActivity : ComponentActivity() {
         setContent {
             GuideTradeTheme {
                 MaterialTheme {
-                    GuideTradeNavGraph()
+                    val navController = rememberNavHostController()
+                    GuideTradeNavGraph(navController = navController)
                 }
             }
         }

@@ -1,9 +1,11 @@
-package com.guidetradeai.viewmodel
+package com.guidetradeai.viewmodels
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.guidetradeai.data.repository.SettingsRepository
 import com.guidetradeai.di.AppModule
+import com.guidetradeai.domain.Result
+import com.guidetradeai.domain.model.UserSettings
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -16,8 +18,8 @@ class VoiceViewModel(
     private val _uiState = MutableStateFlow<VoiceUiState>(VoiceUiState.Idle)
     val uiState: StateFlow<VoiceUiState> = _uiState.asStateFlow()
 
-    private val _voiceSettings = MutableStateFlow(VoiceSettings())
-    val voiceSettings: StateFlow<VoiceSettings> = _voiceSettings.asStateFlow()
+    private val _voiceSettings = MutableStateFlow(UserSettings())
+    val voiceSettings: StateFlow<UserSettings> = _voiceSettings.asStateFlow()
 
     init {
         loadVoiceSettings()
@@ -27,11 +29,7 @@ class VoiceViewModel(
         viewModelScope.launch {
             when (val result = settingsRepository.getUserSettings()) {
                 is Result.Success -> {
-                    _voiceSettings.value = VoiceSettings(
-                        voiceEnabled = result.data.voiceEnabled,
-                        autoSpeak = result.data.autoSpeak,
-                        theme = result.data.theme,
-                    )
+                    _voiceSettings.value = result.data
                 }
                 else -> {}
             }
@@ -56,12 +54,6 @@ class VoiceViewModel(
         _uiState.value = VoiceUiState.Idle
     }
 }
-
-data class VoiceSettings(
-    val voiceEnabled: Boolean = true,
-    val autoSpeak: Boolean = false,
-    val theme: String = "dark",
-)
 
 sealed class VoiceUiState {
     object Idle : VoiceUiState()

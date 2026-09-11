@@ -5,6 +5,7 @@ import androidx.lifecycle.viewModelScope
 import com.guidetradeai.data.repository.SettingsRepository
 import com.guidetradeai.di.AppModule
 import com.guidetradeai.domain.Result
+import com.guidetradeai.domain.model.UserSettings
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -56,6 +57,6 @@ class SettingsViewModel(
 
 sealed class SettingsUiState {
     object Loading : SettingsUiState()
-    data class Success(val settings: com.guidetradeai.domain.model.UserSettings) : SettingsUiState()
+    data class Success(val settings: UserSettings) : SettingsUiState()
     data class Error(val message: String) : SettingsUiState()
 }

@@ -10,4 +10,10 @@ sealed class Result<out T> {
     fun isError(): Boolean = this is Error
     fun isSuccess(): Boolean = this is Success
     fun isLoading(): Boolean = this is Loading
+
+    inline fun <R> map(transform: (T) -> R): Result<R> = when (this) {
+        is Success -> Result.Success(transform(data))
+        is Error -> Result.Error(message)
+        Loading -> Result.Loading
+    }
 }

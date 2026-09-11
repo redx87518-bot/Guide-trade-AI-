@@ -16,6 +16,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import com.guidetradeai.ui.navigation.NavRoutes
 
@@ -32,7 +33,7 @@ fun SignUpScreen(navController: NavHostController) {
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
-        Text("Sign Up", fontSize = androidx.compose.ui.unit.sp(24))
+        Text("Sign Up", fontSize = 24.sp)
         Spacer(modifier = Modifier.height(16.dp))
         TextField(
             value = fullName,

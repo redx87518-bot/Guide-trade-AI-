@@ -1,6 +1,7 @@
 package com.guidetradeai.data.repository
 
 import com.guidetradeai.data.remote.SupabaseClientWrapper
+import com.guidetradeai.data.remote.UserSettingsData
 import com.guidetradeai.domain.Result
 import com.guidetradeai.domain.model.UserSettings
 import kotlinx.coroutines.flow.Flow
@@ -9,12 +10,19 @@ import kotlinx.coroutines.flow.flow
 class SettingsRepository(private val supabase: SupabaseClientWrapper = SupabaseClientWrapper) {
 
     suspend fun getUserSettings(): Result<UserSettings> {
-        return supabase.getUserSettings().map { data ->
-            UserSettings(
-                voiceEnabled = data.voice_enabled,
-                autoSpeak = data.auto_speak,
-                theme = data.theme,
-            )
+        return try {
+            val data = supabase.getUserSettings()
+            if (data is Result.Success) {
+                Result.Success(UserSettings(
+                    voiceEnabled = data.data.voice_enabled,
+                    autoSpeak = data.data.auto_speak,
+                    theme = data.data.theme,
+                ))
+            } else {
+                Result.Error("Settings not found")
+            }
+        } catch (e: Exception) {
+            Result.Error(e.message ?: "Failed to load settings")
         }
     }
 

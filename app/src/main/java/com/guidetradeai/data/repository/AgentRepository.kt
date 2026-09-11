@@ -4,7 +4,6 @@ import com.guidetradeai.data.remote.SupabaseClient
 import com.guidetradeai.data.remote.ChatMessageData
 import com.guidetradeai.data.remote.ChatSessionData
 import com.guidetradeai.domain.Result
-import io.github.jan.supabase.functions.invoke
 import kotlinx.coroutines.flow.Flow
 import kotlinx.serialization.json.buildJsonObject
 import kotlinx.serialization.json.put
@@ -13,7 +12,7 @@ class AgentRepository(private val supabase: SupabaseClient = SupabaseClient) {
 
     suspend fun sendMessage(sessionId: String, message: String): Result<ChatMessageData> {
         return try {
-            val userId = supabase.client.auth.currentUserOrNull()?.id ?: return Result.Error("Not authenticated")
+            val userId = supabase.client.auth.currentSessionOrNull()?.user?.id ?: return Result.Error("Not authenticated")
             val body = buildJsonObject {
                 put("session_id", sessionId)
                 put("user_id", userId)
