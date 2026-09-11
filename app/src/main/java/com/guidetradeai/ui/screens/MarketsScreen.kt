@@ -20,8 +20,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.guidetradeai.viewModel.MarketsViewModel
-import com.guidetradeai.viewModel.MarketsUiState
+import com.guidetradeai.viewmodel.MarketsViewModel
+import com.guidetradeai.viewmodel.MarketsUiState
 
 @Composable
 fun MarketsScreen(

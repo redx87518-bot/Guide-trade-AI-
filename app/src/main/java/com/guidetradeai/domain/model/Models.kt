@@ -74,3 +74,30 @@ data class MarketData(
     val signal: String? = null,
     val score: Double? = null,
 )
+
+@Serializable
+data class AgentRequest(
+    val goal: String,
+    val sessionId: String? = null,
+    val market: String? = null,
+    val symbol: String? = null,
+    val timeframe: String? = null,
+    val feature: String? = null,
+    val query: String? = null,
+)
+
+@Serializable
+data class AgentResponse(
+    val sessionId: String? = null,
+    val content: String? = null,
+    val summary: String? = null,
+    val provider: String? = null,
+    val market: String? = null,
+    val symbol: String? = null,
+    val timeframe: String? = null,
+    val toolsUsed: List<String> = emptyList(),
+    val toolCalls: List<String> = emptyList(),
+    val tasks: List<String> = emptyList(),
+    val marketData: MarketData? = null,
+    val timestamp: String? = null,
+)

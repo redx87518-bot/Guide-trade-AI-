@@ -1,13 +1,17 @@
 package com.guidetradeai.data.repository
 
-import com.guidetradeai.data.remote.SupabaseClientWrapper
+import com.guidetradeai.data.remote.SupabaseClient
 import com.guidetradeai.domain.Result
 
-class AuthRepository(private val supabase: SupabaseClientWrapper = SupabaseClientWrapper) {
+class AuthRepository(private val supabase: SupabaseClient = SupabaseClient) {
 
     suspend fun signUp(email: String, password: String, fullName: String? = null): Result<Unit> {
         return try {
-            supabase.signUp(email, password, fullName)
+            supabase.auth.signUpWith(com.guidetradeai.data.remote.Email) {
+                this.email = email
+                this.password = password
+                fullName?.let { data = kotlinx.serialization.json.buildJsonObject { put("full_name", kotlinx.serialization.json.JsonPrimitive(it)) } }
+            }
             Result.Success(Unit)
         } catch (e: Exception) {
             Result.Error(e.message ?: "Sign up failed")
@@ -16,7 +20,10 @@ class AuthRepository(private val supabase: SupabaseClientWrapper = SupabaseClien
 
     suspend fun signIn(email: String, password: String): Result<Unit> {
         return try {
-            supabase.signIn(email, password)
+            supabase.auth.signInWith(com.guidetradeai.data.remote.Email) {
+                this.email = email
+                this.password = password
+            }
             Result.Success(Unit)
         } catch (e: Exception) {
             Result.Error(e.message ?: "Sign in failed")
@@ -24,20 +31,15 @@ class AuthRepository(private val supabase: SupabaseClientWrapper = SupabaseClien
     }
 
     suspend fun signOut() {
-        supabase.signOut()
+        try { supabase.auth.signOut() } catch (_: Exception) {}
     }
 
-    fun isLoggedIn(): Boolean {
-        return supabase.currentUser() != null
-    }
-
-    fun currentUserId(): String {
-        return supabase.currentUserId()
-    }
+    fun isLoggedIn(): Boolean = supabase.auth.currentSessionOrNull() != null
+    fun currentUserId(): String = supabase.auth.currentUserOrNull()?.id ?: ""
 
     suspend fun resetPassword(email: String): Result<Unit> {
         return try {
-            supabase.resetPassword(email)
+            supabase.auth.resetPasswordForEmail(email)
             Result.Success(Unit)
         } catch (e: Exception) {
             Result.Error(e.message ?: "Password reset failed")
