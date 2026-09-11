@@ -18,10 +18,12 @@ import com.guidetradeai.ui.screens.PaperTradingScreen
 import com.guidetradeai.ui.screens.McpConnectionsScreen
 import com.guidetradeai.ui.screens.ChatScreen
 import com.guidetradeai.ui.screens.MarketsScreen
+import com.guidetradeai.viewmodel.AuthViewModel
 
 @Composable
 fun GuideTradeNavGraph(
     navController: NavHostController,
+    authViewModel: AuthViewModel,
     startDestination: String = NavRoutes.Splash.route,
 ) {
     NavHost(
@@ -29,7 +31,7 @@ fun GuideTradeNavGraph(
         startDestination = startDestination,
     ) {
         composable(NavRoutes.Splash.route) {
-            SplashScreen(navController)
+            SplashScreen(navController = navController, authViewModel = authViewModel)
         }
         composable(NavRoutes.Login.route) {
             LoginScreen(navController)
