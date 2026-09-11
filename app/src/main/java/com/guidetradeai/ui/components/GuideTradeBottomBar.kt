@@ -33,21 +33,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.guidetradeai.ui.theme.GuideTradeColors
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.material3.Icon
-import androidx.compose.material.icons.filled.Home
-import androidx.compose.material.icons.filled.Person
-import androidx.compose.material.icons.filled.Analytics
-import androidx.compose.material.icons.filled.Chat
-import androidx.compose.material.icons.filled.Mic
-import androidx.compose.material.icons.filled.Settings
-import androidx.compose.runtime.collectAsState
-import androidx.navigation.compose.currentBackStackEntryAsState
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.clickable
-import androidx.compose.ui.draw.clip
-import com.guidetradeai.ui.navigation.NavRoutes
 
 data class BottomNavItem(
     val title: String,
@@ -101,9 +86,10 @@ fun GuideTradeBottomBar(
                     if (currentRoute != item.route) {
                         navController.navigate(item.route) {
                             popUpTo(navController.graph.startDestinationId) {
-                                launchSingleTop()
-                                restoreState()
+                                saveState = true
                             }
+                            launchSingleTop = true
+                            restoreState = true
                         }
                     }
                 },
@@ -165,3 +151,20 @@ fun GuideTradeBottomBar(
         }
     }
 }
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.material3.Icon
+import androidx.compose.material.icons.filled.Home
+import androidx.compose.material.icons.filled.Person
+import androidx.compose.material.icons.filled.Analytics
+import androidx.compose.material.icons.filled.Chat
+import androidx.compose.material.icons.filled.Mic
+import androidx.compose.material.icons.filled.Settings
+import androidx.compose.runtime.collectAsState
+import androidx.navigation.compose.currentBackStackEntryAsState
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.clickable
+import androidx.compose.ui.draw.clip
+import com.guidetradeai.ui.navigation.NavRoutes
+                                launchSingleTop()
+                                restoreState()

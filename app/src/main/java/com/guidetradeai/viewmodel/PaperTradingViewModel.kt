@@ -1,4 +1,4 @@
-package com.guidetradeai.viewModel
+package com.guidetradeai.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope

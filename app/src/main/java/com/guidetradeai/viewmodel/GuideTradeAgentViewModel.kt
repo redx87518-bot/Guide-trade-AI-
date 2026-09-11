@@ -1,4 +1,4 @@
-package com.guidetradeai.viewModel
+package com.guidetradeai.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -18,6 +18,7 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import java.util.UUID
 import android.util.Log
+import androidx.compose.ui.unit.sp
 
 class GuideTradeAgentViewModel(
     private val agentRepository: GuideTradeAgentRepository = AppModule.guideTradeAgentRepository,

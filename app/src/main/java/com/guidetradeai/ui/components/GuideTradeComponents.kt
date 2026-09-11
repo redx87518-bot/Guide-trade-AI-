@@ -11,12 +11,6 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Text
-<<<<<<< ours
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.CheckCircle
-import androidx.compose.material.icons.filled.Star
-=======
->>>>>>> theirs
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -120,8 +114,6 @@ fun PriceText(
         )
     }
 }
-<<<<<<< ours
-=======
 
 @Composable
 fun ChangeText(
@@ -170,4 +162,12 @@ fun TrendIndicator(
         modifier = modifier,
     )
 }
+<<<<<<< ours
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.CheckCircle
+import androidx.compose.material.icons.filled.Star
+=======
+>>>>>>> theirs
+<<<<<<< ours
+=======
 >>>>>>> theirs

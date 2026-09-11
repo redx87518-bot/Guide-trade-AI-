@@ -22,13 +22,9 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
-<<<<<<< ours
-import androidx.compose.material3.TextButton
-=======
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.material3.IconButton
->>>>>>> theirs
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
@@ -190,3 +186,7 @@ fun GhostButton(
         }
     }
 }
+<<<<<<< ours
+import androidx.compose.material3.TextButton
+=======
+>>>>>>> theirs

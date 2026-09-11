@@ -90,9 +90,8 @@ fun BottomBar(
                         navController.navigate(item.route) {
                             popUpTo(navController.graph.startDestinationId) {
                                 launchSingleTop()
+                                restoreState()
                             }
-                            launchSingleTop = true
-                            restoreState()
                         }
                     },
                     icon = {
@@ -154,3 +153,6 @@ fun BottomBar(
         }
     }
 }
+
+                            launchSingleTop = true
+                            restoreState()
