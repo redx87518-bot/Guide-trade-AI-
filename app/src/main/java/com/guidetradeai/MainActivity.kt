@@ -16,6 +16,7 @@ import com.guidetradeai.viewModel.AuthViewModel
 import androidx.compose.runtime.LaunchedEffect
 import androidx.navigation.compose.rememberNavController
 import com.guidetradeai.ui.navigation.NavRoutes
+import com.guidetradeai.viewmodel.AuthViewModel
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {

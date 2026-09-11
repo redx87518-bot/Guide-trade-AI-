@@ -1,6 +1,4 @@
 package com.guidetradeai.domain
-import androidx.lifecycle.viewmodel.compose.viewModel
-import com.guidetradeai.ui.navigation.NavRoutes
 
 sealed class Result<out T> {
     data class Success<out T>(val data: T) : Result<T>()
