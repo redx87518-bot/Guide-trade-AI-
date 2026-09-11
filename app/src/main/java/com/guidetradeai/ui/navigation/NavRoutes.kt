@@ -9,7 +9,15 @@ sealed class NavRoutes(val route: String) {
         fun route(email: String) = "verification/$email"
     }
     object Home : NavRoutes("home")
+    object Signals : NavRoutes("signals")
+    object Analyze : NavRoutes("analyze")
+    object Agent : NavRoutes("agent")
     object Settings : NavRoutes("settings")
+    object SignalDetails : NavRoutes("signal_details/{signalId}") {
+        fun route(signalId: String) = "signal_details/$signalId"
+    }
+    object Watchlist : NavRoutes("watchlist")
+    object SignalHistory : NavRoutes("signal_history")
     object TelegramSettings : NavRoutes("telegram_settings")
     object VoiceSettings : NavRoutes("voice_settings")
     object Profile : NavRoutes("profile")

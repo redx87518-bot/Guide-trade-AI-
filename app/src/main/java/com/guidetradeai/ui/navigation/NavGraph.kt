@@ -10,7 +10,13 @@ import com.guidetradeai.ui.screens.SignUpScreen
 import com.guidetradeai.ui.screens.ForgotPasswordScreen
 import com.guidetradeai.ui.screens.EmailVerificationScreen
 import com.guidetradeai.ui.screens.HomeScreen
+import com.guidetradeai.ui.screens.SignalsScreen
+import com.guidetradeai.ui.screens.AnalyzeScreen
+import com.guidetradeai.ui.screens.AgentScreen
 import com.guidetradeai.ui.screens.SettingsScreen
+import com.guidetradeai.ui.screens.SignalDetailsScreen
+import com.guidetradeai.ui.screens.WatchlistScreen
+import com.guidetradeai.ui.screens.SignalHistoryScreen
 import com.guidetradeai.ui.screens.TelegramSettingsScreen
 import com.guidetradeai.ui.screens.VoiceSettingsScreen
 import com.guidetradeai.ui.screens.ProfileScreen
@@ -19,6 +25,10 @@ import com.guidetradeai.ui.screens.McpConnectionsScreen
 import com.guidetradeai.ui.screens.ChatScreen
 import com.guidetradeai.ui.screens.MarketsScreen
 import com.guidetradeai.viewmodel.AuthViewModel
+import com.guidetradeai.viewmodel.SignalsViewModel
+import com.guidetradeai.viewmodel.AnalyzeViewModel
+import com.guidetradeai.viewmodel.AgentViewModel
+import com.guidetradeai.viewmodel.WatchlistViewModel
 
 @Composable
 fun GuideTradeNavGraph(
@@ -47,7 +57,34 @@ fun GuideTradeNavGraph(
             EmailVerificationScreen(navController, email)
         }
         composable(NavRoutes.Home.route) {
-            HomeScreen(navController, authViewModel)
+            val viewModel: SignalsViewModel = androidx.lifecycle.viewmodel.compose.viewModel()
+            HomeScreen(navController, viewModel)
+        }
+        composable(NavRoutes.Signals.route) {
+            val viewModel: SignalsViewModel = androidx.lifecycle.viewmodel.compose.viewModel()
+            SignalsScreen(navController, viewModel)
+        }
+        composable(NavRoutes.Analyze.route) {
+            val viewModel: AnalyzeViewModel = androidx.lifecycle.viewmodel.compose.viewModel()
+            AnalyzeScreen(navController, viewModel)
+        }
+        composable(NavRoutes.Agent.route) {
+            val viewModel: AgentViewModel = androidx.lifecycle.viewmodel.compose.viewModel()
+            AgentScreen(navController, viewModel)
+        }
+        composable(NavRoutes.Settings.route) {
+            SettingsScreen(navController, authViewModel)
+        }
+        composable(NavRoutes.SignalDetails.route) { backStackEntry ->
+            val signalId = backStackEntry.arguments?.getString("signalId") ?: ""
+            SignalDetailsScreen(navController, signalId)
+        }
+        composable(NavRoutes.Watchlist.route) {
+            val viewModel: WatchlistViewModel = androidx.lifecycle.viewmodel.compose.viewModel()
+            WatchlistScreen(navController, viewModel)
+        }
+        composable(NavRoutes.SignalHistory.route) {
+            SignalHistoryScreen(navController)
         }
         composable(NavRoutes.Chat.route) { backStackEntry ->
             val sessionId = backStackEntry.arguments?.getString("sessionId")
@@ -55,9 +92,6 @@ fun GuideTradeNavGraph(
         }
         composable(NavRoutes.Markets.route) {
             MarketsScreen(navController)
-        }
-        composable(NavRoutes.Settings.route) {
-            SettingsScreen(navController, authViewModel)
         }
         composable(NavRoutes.TelegramSettings.route) {
             TelegramSettingsScreen(navController)
