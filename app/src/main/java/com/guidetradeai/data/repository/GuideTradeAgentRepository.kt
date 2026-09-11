@@ -25,8 +25,7 @@ class GuideTradeAgentRepository(
             val body = buildJsonObject {
                 put("goal", JsonPrimitive(request.goal))
                 request.sessionId?.let { put("session_id", JsonPrimitive(it)) }
-                request.provider?.let { put("provider", JsonPrimitive(it)) }
-                request.market?.let { put("market", JsonPrimitive(it)) }
+                                request.market?.let { put("market", JsonPrimitive(it)) }
                 request.symbol?.let { put("symbol", JsonPrimitive(it)) }
                 request.timeframe?.let { put("timeframe", JsonPrimitive(it)) }
                 request.feature?.let { put("feature", JsonPrimitive(it)) }
@@ -37,20 +36,19 @@ class GuideTradeAgentRepository(
             val jsonObject = Json.parseToJsonElement(data).jsonObject
             val error = jsonObject["error"]?.jsonPrimitive?.content
             if (error != null) {
-                return Result.error(error)
+                return Result.Error(error)
             }
             val agentResponse = parseAgentResponse(jsonObject)
-            Result.success(agentResponse)
+            Result.Success(agentResponse)
         } catch (e: Exception) {
-            Result.error("Agent request failed: ${e.message}")
+            Result.Error("Agent request failed: ${e.message}")
         }
     }
 
-    suspend fun listSymbols(provider: String, market: String): Result<List<SymbolItem>> {
+    suspend fun listSymbols(market: String): Result<List<SymbolItem>> {
         return try {
             val body = buildJsonObject {
-                put("provider", JsonPrimitive(provider))
-                put("feature", JsonPrimitive("list_symbols"))
+                                put("feature", JsonPrimitive("list_symbols"))
                 put("market", JsonPrimitive(market))
             }
             val response = supabase.functions.invoke("agent-orchestrator", body = body)
@@ -58,7 +56,7 @@ class GuideTradeAgentRepository(
             val jsonObject = Json.parseToJsonElement(data).jsonObject
             val error = jsonObject["error"]?.jsonPrimitive?.content
             if (error != null) {
-                return Result.error(error)
+                return Result.Error(error)
             }
             val symbols = mutableListOf<SymbolItem>()
             jsonObject["symbols"]?.jsonObject?.forEach { (key, value) ->
@@ -77,9 +75,9 @@ class GuideTradeAgentRepository(
                     }
                 }
             }
-            Result.success(symbols)
+            Result.Success(symbols)
         } catch (e: Exception) {
-            Result.error("Failed to load symbols: ${e.message}")
+            Result.Error("Failed to load symbols: ${e.message}")
         }
     }
 
@@ -93,7 +91,7 @@ class GuideTradeAgentRepository(
             val jsonObject = Json.parseToJsonElement(data).jsonObject
             val error = jsonObject["error"]?.jsonPrimitive?.content
             if (error != null) {
-                return Result.error(error)
+                return Result.Error(error)
             }
             val sessions = mutableListOf<AgentSession>()
             jsonObject["sessions"]?.let { sessionsElement ->
@@ -104,17 +102,16 @@ class GuideTradeAgentRepository(
                             AgentSession(
                                 id = obj["id"]?.jsonPrimitive?.content ?: "",
                                 title = obj["title"]?.jsonPrimitive?.content ?: "",
-                                provider = obj["provider"]?.jsonPrimitive?.content,
-                                createdAt = obj["created_at"]?.jsonPrimitive?.content,
+                                                                createdAt = obj["created_at"]?.jsonPrimitive?.content,
                                 updatedAt = obj["updated_at"]?.jsonPrimitive?.content,
                             )
                         )
                     }
                 }
             }
-            Result.success(sessions)
+            Result.Success(sessions)
         } catch (e: Exception) {
-            Result.error("Failed to load agent sessions: ${e.message}")
+            Result.Error("Failed to load agent sessions: ${e.message}")
         }
     }
 
@@ -153,8 +150,7 @@ class GuideTradeAgentRepository(
             sessionId = json["session_id"]?.jsonPrimitive?.content,
             content = json["content"]?.jsonPrimitive?.content,
             summary = json["summary"]?.jsonPrimitive?.content,
-            provider = json["provider"]?.jsonPrimitive?.content,
-            market = json["market"]?.jsonPrimitive?.content,
+                        market = json["market"]?.jsonPrimitive?.content,
             symbol = json["symbol"]?.jsonPrimitive?.content,
             timeframe = json["timeframe"]?.jsonPrimitive?.content,
             toolsUsed = json["tools_used"]?.let { toolsElement ->
@@ -173,8 +169,7 @@ class GuideTradeAgentRepository(
 
     private fun parseMarketData(json: JsonObject): com.guidetradeai.domain.model.MarketDataResponse {
         return com.guidetradeai.domain.model.MarketDataResponse(
-            provider = json["provider"]?.jsonPrimitive?.content ?: "",
-            market = json["market"]?.jsonPrimitive?.content ?: "",
+                        market = json["market"]?.jsonPrimitive?.content ?: "",
             symbol = json["symbol"]?.jsonPrimitive?.content ?: "",
             name = json["name"]?.jsonPrimitive?.content ?: "",
             timestamp = json["timestamp"]?.jsonPrimitive?.content ?: "",

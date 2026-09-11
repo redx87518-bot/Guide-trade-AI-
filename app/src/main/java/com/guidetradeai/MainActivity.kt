@@ -12,7 +12,6 @@ import androidx.compose.ui.Modifier
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.guidetradeai.ui.navigation.GuideTradeNavGraph
 import com.guidetradeai.ui.theme.GuideTradeTheme
-import com.guidetradeai.viewModel.AuthViewModel
 import androidx.compose.runtime.LaunchedEffect
 import androidx.navigation.compose.rememberNavController
 import com.guidetradeai.ui.navigation.NavRoutes

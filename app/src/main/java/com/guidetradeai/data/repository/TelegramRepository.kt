@@ -36,12 +36,12 @@ class TelegramRepository(
             val rows = result.decodeList<JsonObject>()
             val row = rows.firstOrNull()
             if (row != null) {
-                Result.success(mapToTelegramSettings(row))
+                Result.Success(mapToTelegramSettings(row))
             } else {
-                Result.success(TelegramSettings(userId = currentUserId()))
+                Result.Success(TelegramSettings(userId = currentUserId()))
             }
         } catch (e: Exception) {
-            Result.error("Failed to load Telegram settings: ${e.message}")
+            Result.Error("Failed to load Telegram settings: ${e.message}")
         }
     }
 
@@ -62,7 +62,7 @@ class TelegramRepository(
             val resp = supabase.functions.invoke("telegram-test", body = body)
             parseSuccessResponse(resp.bodyAsText())
         } catch (e: Exception) {
-            Result.error("Failed to test Telegram connection: ${e.message}")
+            Result.Error("Failed to test Telegram connection: ${e.message}")
         }
     }
 
@@ -84,12 +84,12 @@ class TelegramRepository(
             }
             val resp = supabase.functions.invoke("telegram-test", body = body)
             when (val result = parseSuccessResponse(resp.bodyAsText())) {
-                is Result.Success -> Result.success(Unit)
-                is Result.Error -> Result.error(result.message)
-                else -> Result.error("Unknown error")
+                is Result.Success -> Result.Success(Unit)
+                is Result.Error -> Result.Error(result.message)
+                else -> Result.Error("Unknown error")
             }
         } catch (e: Exception) {
-            Result.error("Failed to save Telegram settings: ${e.message}")
+            Result.Error("Failed to save Telegram settings: ${e.message}")
         }
     }
 
@@ -101,9 +101,9 @@ class TelegramRepository(
                 ) {
                     filter { eq("user_id", currentUserId()) }
                 }
-            Result.success(Unit)
+            Result.Success(Unit)
         } catch (e: Exception) {
-            Result.error("Failed to disable Telegram: ${e.message}")
+            Result.Error("Failed to disable Telegram: ${e.message}")
         }
     }
 
@@ -127,7 +127,7 @@ class TelegramRepository(
             val resp = supabase.functions.invoke("telegram-send", body = body)
             parseSuccessResponse(resp.bodyAsText())
         } catch (e: Exception) {
-            Result.error("Failed to send chat result to Telegram: ${e.message}")
+            Result.Error("Failed to send chat result to Telegram: ${e.message}")
         }
     }
 
@@ -143,7 +143,7 @@ class TelegramRepository(
             val resp = supabase.functions.invoke("telegram-send", body = body)
             parseSuccessResponse(resp.bodyAsText())
         } catch (e: Exception) {
-            Result.error("Failed to send to Telegram: ${e.message}")
+            Result.Error("Failed to send to Telegram: ${e.message}")
         }
     }
 
@@ -154,12 +154,12 @@ class TelegramRepository(
             val message = jsonObj.jsonObject["message"]?.jsonPrimitive?.content ?: ""
             val error = jsonObj.jsonObject["error"]?.jsonPrimitive?.content
             if (error != null && success != true) {
-                Result.error(error)
+                Result.Error(error)
             } else {
-                Result.success(message)
+                Result.Success(message)
             }
         } catch (e: Exception) {
-            Result.success(data)
+            Result.Success(data)
         }
     }
 
