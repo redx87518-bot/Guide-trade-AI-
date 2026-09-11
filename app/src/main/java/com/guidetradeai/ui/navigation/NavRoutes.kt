@@ -1,6 +1,4 @@
 package com.guidetradeai.ui.navigation
-import androidx.lifecycle.viewmodel.compose.viewModel
-import com.guidetradeai.ui.navigation.NavRoutes
 
 object NavRoutes {
     const val SPLASH = "splash"
@@ -11,18 +9,11 @@ object NavRoutes {
     const val VERIFICATION = "verification/{email}"
     const val HOME = "home"
     const val MARKETS = "markets"
-    const val AGENT = "agent"
     const val ASSET_DETAIL = "asset_detail/{symbol}"
-    const val CHAT = "chat/{sessionId}"
-    const val CHAT_NEW = "chat_new"
     const val CHAT_HISTORY = "chat_history"
-    const val RESEARCH_HISTORY = "research_history"
-    const val RESEARCH_DETAIL = "research_detail/{researchId}"
-    const val PAPER = "paper"
     const val SETTINGS = "settings"
     const val TELEGRAM_SETTINGS = "telegram_settings"
     const val VOICE_SETTINGS = "voice_settings"
-    const val MCP_CONNECTIONS = "mcp_connections"
     const val ABOUT = "about"
     const val ORB = "orb"
     const val PROFILE = "profile"

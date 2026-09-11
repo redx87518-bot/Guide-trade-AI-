@@ -17,14 +17,6 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.guidetradeai.ui.screens.*
-import com.guidetradeai.viewmodel.AuthViewModel
-import com.guidetradeai.viewmodel.ChatViewModel
-import com.guidetradeai.viewmodel.GuideTradeAgentViewModel
-import com.guidetradeai.viewmodel.HomeViewModel
-import com.guidetradeai.viewmodel.MarketsViewModel
-import com.guidetradeai.viewmodel.PaperTradingViewModel
-import com.guidetradeai.viewmodel.ResearchViewModel
-import com.guidetradeai.viewmodel.SettingsViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.guidetradeai.ui.navigation.NavRoutes
 
@@ -51,40 +43,17 @@ fun GuideTradeNavGraph(
         composable(NavRoutes.MARKETS) {
             MarketsScreen(navController = navController)
         }
-        composable(NavRoutes.AGENT) {
-            AgentScreen(navController = navController)
-        }
-        composable(NavRoutes.CHAT_NEW) {
-            AgentScreen(navController = navController)
-        }
         composable(NavRoutes.CHAT_HISTORY) {
             ChatHistoryScreen(navController = navController)
         }
-        composable(NavRoutes.CHAT) { backStackEntry ->
-            val sessionId = backStackEntry.arguments?.getString("sessionId") ?: ""
-            AgentScreen(navController = navController)
-        }
-        composable(NavRoutes.PAPER) {
-            PaperTradingScreen(navController = navController)
-        }
         composable(NavRoutes.SETTINGS) {
             SettingsScreen(navController = navController)
-        }
-        composable(NavRoutes.RESEARCH_HISTORY) {
-            ResearchHistoryScreen(navController = navController)
-        }
-        composable(NavRoutes.RESEARCH_DETAIL) { backStackEntry ->
-            val researchId = backStackEntry.arguments?.getString("researchId") ?: ""
-            ResearchDetailScreen(navController = navController, researchId = researchId)
         }
         composable(NavRoutes.TELEGRAM_SETTINGS) {
             TelegramSettingsScreen(navController = navController)
         }
         composable(NavRoutes.VOICE_SETTINGS) {
             VoiceSettingsScreen(navController = navController)
-        }
-        composable(NavRoutes.MCP_CONNECTIONS) {
-            McpConnectionsScreen(navController = navController)
         }
         composable(NavRoutes.ABOUT) {
             AboutScreen(navController = navController)
