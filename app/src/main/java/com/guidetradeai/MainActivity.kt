@@ -6,13 +6,13 @@ import androidx.activity.compose.setContent
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.setValue
-import androidx.compose.runtime.mutableStateOf
+import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.guidetradeai.ui.navigation.BottomNavItem
+import com.guidetradeai.ui.components.BottomNavItem
+import com.guidetradeai.ui.components.GuideTradeBottomNav
 import com.guidetradeai.ui.navigation.GuideTradeNavGraph
 import com.guidetradeai.ui.navigation.NavRoutes
 import com.guidetradeai.ui.theme.GuideTradeTheme
@@ -36,8 +36,8 @@ class MainActivity : ComponentActivity() {
                         BottomNavItem("Agent", androidx.compose.material.icons.Icons.Default.Chat, NavRoutes.Agent.route),
                         BottomNavItem("Settings", androidx.compose.material.icons.Icons.Default.Settings, NavRoutes.Settings.route),
                     )
-
-                    val showBottomNav = currentRoute in bottomNavItems.map { it.route }
+                    val bottomNavRoutes: List<String> = bottomNavItems.map { it.route }
+                    val showBottomNav = currentRoute in bottomNavRoutes
 
                     androidx.compose.foundation.layout.Box(modifier = Modifier.fillMaxSize()) {
                         GuideTradeNavGraph(
@@ -45,7 +45,7 @@ class MainActivity : ComponentActivity() {
                             authViewModel = authViewModel,
                         )
                         if (showBottomNav) {
-                            com.guidetradeai.ui.components.GuideTradeBottomNav(
+                            GuideTradeBottomNav(
                                 items = bottomNavItems,
                                 currentRoute = currentRoute,
                                 onItemClick = { route ->
@@ -56,7 +56,6 @@ class MainActivity : ComponentActivity() {
                                         restoreState = true
                                     }
                                 },
-                                modifier = androidx.compose.foundation.layout.Modifier.align(androidx.compose.ui.Alignment.BottomCenter),
                             )
                         }
                     }

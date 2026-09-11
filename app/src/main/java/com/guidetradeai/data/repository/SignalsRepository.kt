@@ -7,23 +7,28 @@ import com.guidetradeai.domain.model.AnalysisResult
 import com.guidetradeai.domain.model.Signal
 import com.guidetradeai.domain.model.SignalFilter
 import com.guidetradeai.domain.model.WatchlistItem
+import io.github.jan.supabase.postgrest.query.eq
+import io.ktor.client.statement.bodyAsText
+import kotlinx.serialization.json.Json
+import kotlinx.serialization.json.JsonObject
+import kotlinx.serialization.json.JsonPrimitive
+import kotlinx.serialization.json.contentOrNull
+import kotlinx.serialization.json.jsonObject
+import kotlinx.serialization.json.jsonPrimitive
 
 class SignalsRepository(private val supabase: SupabaseClient = SupabaseClient) {
 
     suspend fun getSignals(filter: SignalFilter): Result<List<Signal>> {
         return try {
-            val body = buildMap {
-                filter.market?.let { put("market", it) }
-                filter.timeframe?.let { put("timeframe", it) }
-                filter.direction?.let { put("direction", it) }
-                if (filter.search.isNotBlank()) put("search", filter.search)
-            }
-            val response = supabase.supabase.functions.invoke(
-                function = "guide-trade-agent",
-                body = body,
-            )
-            val json = response.bodyOrNull()
-            val signals = parseSignals(json)
+            val body = JsonObject(buildMap {
+                filter.market?.let { put("market", JsonPrimitive(it)) }
+                filter.timeframe?.let { put("timeframe", JsonPrimitive(it)) }
+                filter.direction?.let { put("direction", JsonPrimitive(it)) }
+                if (filter.search.isNotBlank()) put("search", JsonPrimitive(filter.search))
+            })
+            val response = supabase.functions.invoke("guide-trade-agent", body = body)
+            val data = response.bodyAsText()
+            val signals = parseSignals(data)
             Result.Success(signals)
         } catch (e: Exception) {
             Result.Error(e.message ?: "Failed to load signals")
@@ -32,19 +37,16 @@ class SignalsRepository(private val supabase: SupabaseClient = SupabaseClient) {
 
     suspend fun analyze(request: AnalysisRequest): Result<AnalysisResult> {
         return try {
-            val body = buildMap {
-                put("market", request.market)
-                put("symbol", request.symbol)
-                put("timeframe", request.timeframe)
-                put("analysisType", request.analysisType)
-            }
-            val response = supabase.supabase.functions.invoke(
-                function = "guide-trade-agent",
-                body = body,
-            )
-            val json = response.bodyOrNull()
-            val signal = parseSignalFromJson(json)
-            Result.Success(AnalysisResult(signal = signal, content = json))
+            val body = JsonObject(buildMap {
+                put("market", JsonPrimitive(request.market))
+                put("symbol", JsonPrimitive(request.symbol))
+                put("timeframe", JsonPrimitive(request.timeframe))
+                put("analysisType", JsonPrimitive(request.analysisType))
+            })
+            val response = supabase.functions.invoke("guide-trade-agent", body = body)
+            val data = response.bodyAsText()
+            val signal = parseSignalFromJson(data)
+            Result.Success(AnalysisResult(signal = signal, content = data))
         } catch (e: Exception) {
             Result.Error(e.message ?: "Analysis failed")
         }
@@ -52,15 +54,16 @@ class SignalsRepository(private val supabase: SupabaseClient = SupabaseClient) {
 
     suspend fun getWatchlist(): Result<List<WatchlistItem>> {
         return try {
-            val userId = supabase.supabase.auth.currentUserOrNull()?.id ?: return Result.Error("Not authenticated")
-            val response = supabase.supabase.postgrest
+            val userId = supabase.auth.currentUserOrNull()?.id ?: return Result.Error("Not authenticated")
+            val response = supabase.postgrest
                 .from("watchlist")
                 .select {
                     filter {
                         eq("user_id", userId)
                     }
                 }
-            val items = response.decodeList<WatchlistItem>()
+            val data = response.bodyAsText()
+            val items = parseWatchlist(data)
             Result.Success(items)
         } catch (e: Exception) {
             Result.Error(e.message ?: "Failed to load watchlist")
@@ -69,7 +72,7 @@ class SignalsRepository(private val supabase: SupabaseClient = SupabaseClient) {
 
     suspend fun addToWatchlist(symbol: String, market: String, timeframe: String): Result<Unit> {
         return try {
-            val userId = supabase.supabase.auth.currentUserOrNull()?.id ?: return Result.Error("Not authenticated")
+            val userId = supabase.auth.currentUserOrNull()?.id ?: return Result.Error("Not authenticated")
             val item = WatchlistItem(
                 id = userId + "_" + symbol + "_" + market + "_" + timeframe,
                 userId = userId,
@@ -77,7 +80,7 @@ class SignalsRepository(private val supabase: SupabaseClient = SupabaseClient) {
                 market = market,
                 timeframe = timeframe,
             )
-            supabase.supabase.postgrest
+            supabase.postgrest
                 .from("watchlist")
                 .insert(item)
             Result.Success(Unit)
@@ -88,7 +91,7 @@ class SignalsRepository(private val supabase: SupabaseClient = SupabaseClient) {
 
     suspend fun removeFromWatchlist(itemId: String): Result<Unit> {
         return try {
-            supabase.supabase.postgrest
+            supabase.postgrest
                 .from("watchlist")
                 .delete {
                     filter {
@@ -104,33 +107,71 @@ class SignalsRepository(private val supabase: SupabaseClient = SupabaseClient) {
     private fun parseSignals(json: String?): List<Signal> {
         if (json == null) return emptyList()
         return try {
-            val elements = kotlinx.serialization.json.Json.parseToJsonElement(json)
-            if (elements is kotlinx.serialization.json.JsonArray) {
+            val elements = Json.parseToJsonElement(json)
+            if (elements is JsonObject) {
+                val dataArray = elements["data"]
+                if (dataArray is JsonObject) {
+                    val signalsArray = dataArray["signals"]
+                    if (signalsArray is kotlinx.serialization.json.JsonArray) {
+                        signalsArray.map { elem ->
+                            val obj = elem as JsonObject
+                            Signal(
+                                id = obj["id"]?.jsonPrimitive?.contentOrNull ?: "",
+                                symbol = obj["symbol"]?.jsonPrimitive?.contentOrNull ?: "",
+                                name = obj["name"]?.jsonPrimitive?.contentOrNull ?: "",
+                                market = obj["market"]?.jsonPrimitive?.contentOrNull ?: "crypto",
+                                timeframe = obj["timeframe"]?.jsonPrimitive?.contentOrNull ?: "1H",
+                                direction = obj["direction"]?.jsonPrimitive?.contentOrNull ?: obj["signal"]?.jsonPrimitive?.contentOrNull ?: "neutral",
+                                strength = obj["strength"]?.jsonPrimitive?.contentOrNull?.toDoubleOrNull() ?: obj["score"]?.jsonPrimitive?.contentOrNull?.toDoubleOrNull() ?: 0.0,
+                                entry = obj["entry"]?.jsonPrimitive?.contentOrNull?.toDoubleOrNull(),
+                                invalidation = obj["invalidation"]?.jsonPrimitive?.contentOrNull?.toDoubleOrNull(),
+                                target1 = obj["target1"]?.jsonPrimitive?.contentOrNull?.toDoubleOrNull(),
+                                target2 = obj["target2"]?.jsonPrimitive?.contentOrNull?.toDoubleOrNull(),
+                                target3 = obj["target3"]?.jsonPrimitive?.contentOrNull?.toDoubleOrNull(),
+                                currentPrice = (obj["currentPrice"]?.jsonPrimitive?.contentOrNull ?: obj["price"]?.jsonPrimitive?.contentOrNull)?.toDoubleOrNull(),
+                                summary = obj["summary"]?.jsonPrimitive?.contentOrNull,
+                                analysis = obj["analysis"]?.jsonPrimitive?.contentOrNull,
+                                risk = obj["risk"]?.jsonPrimitive?.contentOrNull,
+                                marketContext = (obj["marketContext"]?.jsonPrimitive?.contentOrNull ?: obj["market_context"]?.jsonPrimitive?.contentOrNull),
+                                technicalInfo = (obj["technicalInfo"]?.jsonPrimitive?.contentOrNull ?: obj["technical_info"]?.jsonPrimitive?.contentOrNull),
+                                why = obj["why"]?.jsonPrimitive?.contentOrNull,
+                                source = obj["source"]?.jsonPrimitive?.contentOrNull ?: "NORTH7",
+                                timestamp = obj["timestamp"]?.jsonPrimitive?.contentOrNull ?: "",
+                                updatedAt = obj["updatedAt"]?.jsonPrimitive?.contentOrNull ?: "",
+                            )
+                        }
+                    } else {
+                        emptyList()
+                    }
+                } else {
+                    emptyList()
+                }
+            } else if (elements is kotlinx.serialization.json.JsonArray) {
                 elements.map { elem ->
-                    val obj = elem as kotlinx.serialization.json.JsonObject
+                    val obj = elem as JsonObject
                     Signal(
-                        id = obj["id"]?.toString()?.trim('"') ?: "",
-                        symbol = obj["symbol"]?.toString()?.trim('"') ?: "",
-                        name = obj["name"]?.toString()?.trim('"') ?: "",
-                        market = obj["market"]?.toString()?.trim('"') ?: "crypto",
-                        timeframe = obj["timeframe"]?.toString()?.trim('"') ?: "1H",
-                        direction = obj["direction"]?.toString()?.trim('"') ?: obj["signal"]?.toString()?.trim('"') ?: "neutral",
-                        strength = obj["strength"]?.toString()?.toDoubleOrNull() ?: obj["score"]?.toString()?.toDoubleOrNull() ?: 0.0,
-                        entry = obj["entry"]?.toString()?.toDoubleOrNull(),
-                        invalidation = obj["invalidation"]?.toString()?.toDoubleOrNull(),
-                        target1 = obj["target1"]?.toString()?.toDoubleOrNull(),
-                        target2 = obj["target2"]?.toString()?.toDoubleOrNull(),
-                        target3 = obj["target3"]?.toString()?.toDoubleOrNull(),
-                        currentPrice = obj["currentPrice"]?.toString()?.toDoubleOrNull() ?: obj["price"]?.toString()?.toDoubleOrNull(),
-                        summary = obj["summary"]?.toString()?.trim('"'),
-                        analysis = obj["analysis"]?.toString()?.trim('"'),
-                        risk = obj["risk"]?.toString()?.trim('"'),
-                        marketContext = obj["marketContext"]?.toString()?.trim('"') ?: obj["market_context"]?.toString()?.trim('"'),
-                        technicalInfo = obj["technicalInfo"]?.toString()?.trim('"') ?: obj["technical_info"]?.toString()?.trim('"'),
-                        why = obj["why"]?.toString()?.trim('"'),
-                        source = obj["source"]?.toString()?.trim('"') ?: "NORTH7",
-                        timestamp = obj["timestamp"]?.toString()?.trim('"') ?: "",
-                        updatedAt = obj["updatedAt"]?.toString()?.trim('"') ?: "",
+                        id = obj["id"]?.jsonPrimitive?.contentOrNull ?: "",
+                        symbol = obj["symbol"]?.jsonPrimitive?.contentOrNull ?: "",
+                        name = obj["name"]?.jsonPrimitive?.contentOrNull ?: "",
+                        market = obj["market"]?.jsonPrimitive?.contentOrNull ?: "crypto",
+                        timeframe = obj["timeframe"]?.jsonPrimitive?.contentOrNull ?: "1H",
+                        direction = obj["direction"]?.jsonPrimitive?.contentOrNull ?: obj["signal"]?.jsonPrimitive?.contentOrNull ?: "neutral",
+                        strength = obj["strength"]?.jsonPrimitive?.contentOrNull?.toDoubleOrNull() ?: obj["score"]?.jsonPrimitive?.contentOrNull?.toDoubleOrNull() ?: 0.0,
+                        entry = obj["entry"]?.jsonPrimitive?.contentOrNull?.toDoubleOrNull(),
+                        invalidation = obj["invalidation"]?.jsonPrimitive?.contentOrNull?.toDoubleOrNull(),
+                        target1 = obj["target1"]?.jsonPrimitive?.contentOrNull?.toDoubleOrNull(),
+                        target2 = obj["target2"]?.jsonPrimitive?.contentOrNull?.toDoubleOrNull(),
+                        target3 = obj["target3"]?.jsonPrimitive?.contentOrNull?.toDoubleOrNull(),
+                        currentPrice = (obj["currentPrice"]?.jsonPrimitive?.contentOrNull ?: obj["price"]?.jsonPrimitive?.contentOrNull)?.toDoubleOrNull(),
+                        summary = obj["summary"]?.jsonPrimitive?.contentOrNull,
+                        analysis = obj["analysis"]?.jsonPrimitive?.contentOrNull,
+                        risk = obj["risk"]?.jsonPrimitive?.contentOrNull,
+                        marketContext = (obj["marketContext"]?.jsonPrimitive?.contentOrNull ?: obj["market_context"]?.jsonPrimitive?.contentOrNull),
+                        technicalInfo = (obj["technicalInfo"]?.jsonPrimitive?.contentOrNull ?: obj["technical_info"]?.jsonPrimitive?.contentOrNull),
+                        why = obj["why"]?.jsonPrimitive?.contentOrNull,
+                        source = obj["source"]?.jsonPrimitive?.contentOrNull ?: "NORTH7",
+                        timestamp = obj["timestamp"]?.jsonPrimitive?.contentOrNull ?: "",
+                        updatedAt = obj["updatedAt"]?.jsonPrimitive?.contentOrNull ?: "",
                     )
                 }
             } else {
@@ -144,33 +185,57 @@ class SignalsRepository(private val supabase: SupabaseClient = SupabaseClient) {
     private fun parseSignalFromJson(json: String?): Signal? {
         if (json == null) return null
         return try {
-            val obj = kotlinx.serialization.json.Json.parseToJsonElement(json) as kotlinx.serialization.json.JsonObject
+            val obj = Json.parseToJsonElement(json) as JsonObject
             Signal(
-                id = obj["id"]?.toString()?.trim('"') ?: "",
-                symbol = obj["symbol"]?.toString()?.trim('"') ?: "",
-                name = obj["name"]?.toString()?.trim('"') ?: "",
-                market = obj["market"]?.toString()?.trim('"') ?: "crypto",
-                timeframe = obj["timeframe"]?.toString()?.trim('"') ?: "1H",
-                direction = obj["direction"]?.toString()?.trim('"') ?: obj["signal"]?.toString()?.trim('"') ?: "neutral",
-                strength = obj["strength"]?.toString()?.toDoubleOrNull() ?: obj["score"]?.toString()?.toDoubleOrNull() ?: 0.0,
-                entry = obj["entry"]?.toString()?.toDoubleOrNull(),
-                invalidation = obj["invalidation"]?.toString()?.toDoubleOrNull(),
-                target1 = obj["target1"]?.toString()?.toDoubleOrNull(),
-                target2 = obj["target2"]?.toString()?.toDoubleOrNull(),
-                target3 = obj["target3"]?.toString()?.toDoubleOrNull(),
-                currentPrice = obj["currentPrice"]?.toString()?.toDoubleOrNull() ?: obj["price"]?.toString()?.toDoubleOrNull(),
-                summary = obj["summary"]?.toString()?.trim('"'),
-                analysis = obj["analysis"]?.toString()?.trim('"'),
-                risk = obj["risk"]?.toString()?.trim('"'),
-                marketContext = obj["marketContext"]?.toString()?.trim('"') ?: obj["market_context"]?.toString()?.trim('"'),
-                technicalInfo = obj["technicalInfo"]?.toString()?.trim('"') ?: obj["technical_info"]?.toString()?.trim('"'),
-                why = obj["why"]?.toString()?.trim('"'),
-                source = obj["source"]?.toString()?.trim('"') ?: "NORTH7",
-                timestamp = obj["timestamp"]?.toString()?.trim('"') ?: "",
-                updatedAt = obj["updatedAt"]?.toString()?.trim('"') ?: "",
+                id = obj["id"]?.jsonPrimitive?.contentOrNull ?: "",
+                symbol = obj["symbol"]?.jsonPrimitive?.contentOrNull ?: "",
+                name = obj["name"]?.jsonPrimitive?.contentOrNull ?: "",
+                market = obj["market"]?.jsonPrimitive?.contentOrNull ?: "crypto",
+                timeframe = obj["timeframe"]?.jsonPrimitive?.contentOrNull ?: "1H",
+                direction = obj["direction"]?.jsonPrimitive?.contentOrNull ?: obj["signal"]?.jsonPrimitive?.contentOrNull ?: "neutral",
+                strength = obj["strength"]?.jsonPrimitive?.contentOrNull?.toDoubleOrNull() ?: obj["score"]?.jsonPrimitive?.contentOrNull?.toDoubleOrNull() ?: 0.0,
+                entry = obj["entry"]?.jsonPrimitive?.contentOrNull?.toDoubleOrNull(),
+                invalidation = obj["invalidation"]?.jsonPrimitive?.contentOrNull?.toDoubleOrNull(),
+                target1 = obj["target1"]?.jsonPrimitive?.contentOrNull?.toDoubleOrNull(),
+                target2 = obj["target2"]?.jsonPrimitive?.contentOrNull?.toDoubleOrNull(),
+                target3 = obj["target3"]?.jsonPrimitive?.contentOrNull?.toDoubleOrNull(),
+                currentPrice = (obj["currentPrice"]?.jsonPrimitive?.contentOrNull ?: obj["price"]?.jsonPrimitive?.contentOrNull)?.toDoubleOrNull(),
+                summary = obj["summary"]?.jsonPrimitive?.contentOrNull,
+                analysis = obj["analysis"]?.jsonPrimitive?.contentOrNull,
+                risk = obj["risk"]?.jsonPrimitive?.contentOrNull,
+                marketContext = (obj["marketContext"]?.jsonPrimitive?.contentOrNull ?: obj["market_context"]?.jsonPrimitive?.contentOrNull),
+                technicalInfo = (obj["technicalInfo"]?.jsonPrimitive?.contentOrNull ?: obj["technical_info"]?.jsonPrimitive?.contentOrNull),
+                why = obj["why"]?.jsonPrimitive?.contentOrNull,
+                source = obj["source"]?.jsonPrimitive?.contentOrNull ?: "NORTH7",
+                timestamp = obj["timestamp"]?.jsonPrimitive?.contentOrNull ?: "",
+                updatedAt = obj["updatedAt"]?.jsonPrimitive?.contentOrNull ?: "",
             )
         } catch (e: Exception) {
             null
+        }
+    }
+
+    private fun parseWatchlist(json: String?): List<WatchlistItem> {
+        if (json == null) return emptyList()
+        return try {
+            val elements = Json.parseToJsonElement(json)
+            if (elements is kotlinx.serialization.json.JsonArray) {
+                elements.map { elem ->
+                    val obj = elem as JsonObject
+                    WatchlistItem(
+                        id = obj["id"]?.jsonPrimitive?.contentOrNull ?: "",
+                        userId = obj["user_id"]?.jsonPrimitive?.contentOrNull ?: "",
+                        symbol = obj["symbol"]?.jsonPrimitive?.contentOrNull ?: "",
+                        market = obj["market"]?.jsonPrimitive?.contentOrNull ?: "crypto",
+                        timeframe = obj["timeframe"]?.jsonPrimitive?.contentOrNull ?: "1H",
+                        addedAt = obj["created_at"]?.jsonPrimitive?.contentOrNull ?: "",
+                    )
+                }
+            } else {
+                emptyList()
+            }
+        } catch (e: Exception) {
+            emptyList()
         }
     }
 }
