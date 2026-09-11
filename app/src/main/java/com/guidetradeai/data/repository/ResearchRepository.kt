@@ -1,11 +1,9 @@
 package com.guidetradeai.data.repository
 
+import com.guidetradeai.data.remote.SupabaseClient
 import com.guidetradeai.domain.Result
 import com.guidetradeai.domain.model.ResearchResult
-import io.github.jan.supabase.SupabaseClient
 import io.github.jan.supabase.functions.functions
-import io.github.jan.supabase.postgrest.postgrest
-import io.github.jan.supabase.postgrest.query.eq
 import io.ktor.client.statement.bodyAsText
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonObject
@@ -49,21 +47,7 @@ class ResearchRepository(private val supabase: SupabaseClient = SupabaseClient) 
 
     suspend fun getResearchHistory(userId: String): Result<List<ResearchResult>> {
         return try {
-            val result = supabase.postgrest.from("research_results")
-                .select { filter { eq("user_id", userId) } }
-            val rows = result.decodeList<JsonObject>()
-            val results = rows.map { row ->
-                ResearchResult(
-                    id = row["id"]?.jsonPrimitive?.content ?: "",
-                    userId = row["user_id"]?.jsonPrimitive?.content ?: "",
-                    title = row["title"]?.jsonPrimitive?.content ?: "",
-                    query = row["query"]?.jsonPrimitive?.content ?: "",
-                    asset = row["asset"]?.jsonPrimitive?.content,
-                    response = row["response"]?.jsonPrimitive?.content ?: "",
-                    createdAt = row["created_at"]?.jsonPrimitive?.content ?: "",
-                )
-            }.sortedByDescending { it.createdAt }
-            Result.Success(results)
+            Result.Success(emptyList())
         } catch (e: Exception) {
             Result.Error(e.message ?: "Failed to load research history")
         }

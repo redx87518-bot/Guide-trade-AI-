@@ -5,9 +5,10 @@ import androidx.lifecycle.viewModelScope
 import com.guidetradeai.data.repository.PaperTradingRepository
 import com.guidetradeai.di.AppModule
 import com.guidetradeai.domain.Result
-import com.guidetradeai.domain.model.PaperPosition
-import com.guidetradeai.domain.model.PaperOrder
-import com.guidetradeai.domain.model.PaperOrderRequest
+import com.guidetradeai.data.remote.PaperPositionData
+import com.guidetradeai.data.remote.PaperOrderData
+import com.guidetradeai.data.remote.PaperTradeData
+import com.guidetradeai.data.remote.PaperOrderRequest
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -15,8 +16,12 @@ import kotlinx.coroutines.launch
 
 sealed class PaperTradingUiState {
     object Loading : PaperTradingUiState()
-    data class Success(val positions: List<PaperPosition>, val orders: List<PaperOrder>) : PaperTradingUiState()
-    data class OrderPlaced(val order: PaperOrder) : PaperTradingUiState()
+    data class Success(
+        val positions: List<PaperPositionData>,
+        val orders: List<PaperOrderData>,
+        val trades: List<PaperTradeData>,
+    ) : PaperTradingUiState()
+    data class OrderPlaced(val order: PaperOrderData) : PaperTradingUiState()
     data class Error(val message: String) : PaperTradingUiState()
 }
 
@@ -32,8 +37,9 @@ class PaperTradingViewModel(
             _uiState.value = PaperTradingUiState.Loading
             val positionsResult = paperTradingRepository.getPositions()
             val ordersResult = paperTradingRepository.getOrders()
-            if (positionsResult is Result.Success && ordersResult is Result.Success) {
-                _uiState.value = PaperTradingUiState.Success(positionsResult.data, ordersResult.data)
+            val tradesResult = paperTradingRepository.getTrades()
+            if (positionsResult is Result.Success && ordersResult is Result.Success && tradesResult is Result.Success) {
+                _uiState.value = PaperTradingUiState.Success(positionsResult.data, ordersResult.data, tradesResult.data)
             } else {
                 _uiState.value = PaperTradingUiState.Error("Failed to load dashboard")
             }
