@@ -39,6 +39,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
+<<<<<<< ours
 import com.guidetradeai.viewmodel.AuthUiState
 import com.guidetradeai.viewmodel.AuthViewModel
 
@@ -59,6 +60,13 @@ fun EmailVerificationScreen(
     }
 
     Box(
+=======
+import com.guidetradeai.ui.navigation.NavRoutes
+
+@Composable
+fun EmailVerificationScreen(navController: NavHostController, email: String) {
+    Column(
+>>>>>>> theirs
         modifier = Modifier
             .fillMaxSize()
             .background(
@@ -71,10 +79,20 @@ fun EmailVerificationScreen(
             ),
         contentAlignment = Alignment.Center,
     ) {
+<<<<<<< ours
         Column(
             modifier = Modifier.padding(horizontal = 32.dp),
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center,
+=======
+        Text("Verify Email", fontSize = 24.sp)
+        Spacer(modifier = Modifier.height(16.dp))
+        Text("A verification link has been sent to $email")
+        Spacer(modifier = Modifier.height(16.dp))
+        Button(
+            onClick = { navController.navigate(NavRoutes.Login.route) },
+            modifier = Modifier.fillMaxWidth(),
+>>>>>>> theirs
         ) {
             val infiniteTransition = rememberInfiniteTransition(label = "mail_pulse")
             val scale by infiniteTransition.animateFloat(

@@ -58,6 +58,7 @@ fun ForgotPasswordScreen(
             .padding(horizontal = 24.dp),
         verticalArrangement = Arrangement.Center,
     ) {
+<<<<<<< ours
         Text(
             text = "Reset Password",
             style = MaterialTheme.typography.headlineLarge,
@@ -71,6 +72,11 @@ fun ForgotPasswordScreen(
         )
         Spacer(modifier = Modifier.height(32.dp))
         OutlinedTextField(
+=======
+        Text("Reset Password", fontSize = 24.sp)
+        Spacer(modifier = Modifier.height(16.dp))
+        TextField(
+>>>>>>> theirs
             value = email,
             onValueChange = {
                 email = it
@@ -118,6 +124,7 @@ fun ForgotPasswordScreen(
             )
         }
     }
+<<<<<<< ours
 
     if (showSuccessDialog) {
         AlertDialog(
@@ -138,3 +145,6 @@ fun ForgotPasswordScreen(
         )
     }
 }
+=======
+}
+>>>>>>> theirs

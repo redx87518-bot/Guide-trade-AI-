@@ -91,8 +91,11 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+<<<<<<< ours
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
+=======
+>>>>>>> theirs
 import androidx.navigation.NavHostController
 import coil.compose.AsyncImage
 import com.guidetradeai.ui.components.*
@@ -147,6 +150,7 @@ import kotlinx.serialization.json.jsonPrimitive
 
 @Composable
 fun TelegramSettingsScreen(navController: NavHostController) {
+<<<<<<< ours
     val telegramViewModel: TelegramViewModel = viewModel()
     val uiState by telegramViewModel.uiState.collectAsState()
     val testState by telegramViewModel.testState.collectAsState()
@@ -198,6 +202,38 @@ fun TelegramSettingsScreen(navController: NavHostController) {
             modifier = Modifier.fillMaxSize().padding(padding),
             contentPadding = PaddingValues(20.dp),
             verticalArrangement = Arrangement.spacedBy(16.dp),
+=======
+    var botToken by remember { mutableStateOf("") }
+    var chatId by remember { mutableStateOf("") }
+    var enabled by remember { mutableStateOf(false) }
+
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(24.dp),
+        verticalArrangement = Arrangement.Center,
+        horizontalAlignment = Alignment.CenterHorizontally,
+    ) {
+        Text("Telegram Settings", fontSize = 24.sp)
+        Spacer(modifier = Modifier.height(16.dp))
+        TextField(
+            value = botToken,
+            onValueChange = { botToken = it },
+            label = { Text("Bot Token") },
+            modifier = Modifier.fillMaxWidth(),
+        )
+        Spacer(modifier = Modifier.height(8.dp))
+        TextField(
+            value = chatId,
+            onValueChange = { chatId = it },
+            label = { Text("Chat ID") },
+            modifier = Modifier.fillMaxWidth(),
+        )
+        Spacer(modifier = Modifier.height(16.dp))
+        Button(
+            onClick = { navController.popBackStack() },
+            modifier = Modifier.fillMaxWidth(),
+>>>>>>> theirs
         ) {
             item {
                 Text(text = "Connect your Telegram bot to receive market intelligence updates.", color = GuideTradeColors.TextSecondary, fontSize = 14.sp)
@@ -266,6 +302,7 @@ fun TelegramSettingsScreen(navController: NavHostController) {
             }
         }
     }
+<<<<<<< ours
 
     if (showMessageDialog) {
         AlertDialog(
@@ -286,3 +323,6 @@ fun TelegramSettingsScreen(navController: NavHostController) {
         )
     }
 }
+=======
+}
+>>>>>>> theirs

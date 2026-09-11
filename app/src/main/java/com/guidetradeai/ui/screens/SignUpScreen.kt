@@ -84,6 +84,7 @@ fun SignUpScreen(
             .padding(horizontal = 24.dp),
         verticalArrangement = Arrangement.Center,
     ) {
+<<<<<<< ours
         Text(
             text = "Create Account",
             style = MaterialTheme.typography.headlineLarge,
@@ -97,6 +98,11 @@ fun SignUpScreen(
         )
         Spacer(modifier = Modifier.height(32.dp))
         OutlinedTextField(
+=======
+        Text("Sign Up", fontSize = 24.sp)
+        Spacer(modifier = Modifier.height(16.dp))
+        TextField(
+>>>>>>> theirs
             value = fullName,
             onValueChange = {
                 fullName = it

@@ -43,6 +43,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
+<<<<<<< ours
 import com.guidetradeai.ui.theme.GuideTradeColors
 import com.guidetradeai.viewmodel.AuthUiState
 import com.guidetradeai.viewmodel.AuthViewModel
@@ -80,6 +81,13 @@ fun SplashScreen(
         modifier = Modifier
             .fillMaxSize()
             .background(GuideTradeColors.Background),
+=======
+
+@Composable
+fun SplashScreen(navController: NavHostController) {
+    Box(
+        modifier = Modifier.fillMaxSize(),
+>>>>>>> theirs
         contentAlignment = Alignment.Center,
     ) {
         androidx.compose.animation.AnimatedVisibility(

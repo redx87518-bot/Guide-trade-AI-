@@ -91,6 +91,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+<<<<<<< ours
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.NavHostController
@@ -178,6 +179,25 @@ fun HomeScreen(
             state = listState,
             contentPadding = PaddingValues(bottom = 80.dp),
             verticalArrangement = Arrangement.spacedBy(16.dp),
+=======
+import androidx.navigation.NavHostController
+import com.guidetradeai.ui.navigation.NavRoutes
+
+@Composable
+fun HomeScreen(navController: NavHostController) {
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(24.dp),
+        verticalArrangement = Arrangement.Center,
+        horizontalAlignment = Alignment.CenterHorizontally,
+    ) {
+        Text("Welcome to GuideTrade AI", fontSize = 28.sp)
+        Spacer(modifier = Modifier.height(16.dp))
+        Button(
+            onClick = { navController.navigate(NavRoutes.Chat.route()) },
+            modifier = Modifier.fillMaxWidth(),
+>>>>>>> theirs
         ) {
             item {
                 HeroCard(
@@ -307,6 +327,7 @@ fun HomeScreen(
                 )
             }
         }
+<<<<<<< ours
     }
 }
 
@@ -338,6 +359,12 @@ fun HeroCard(
                     shape = RoundedCornerShape(20.dp),
                 )
                 .border(1.dp, GuideTradeColors.SubtleBorder, RoundedCornerShape(20.dp)),
+=======
+        Spacer(modifier = Modifier.height(8.dp))
+        Button(
+            onClick = { navController.navigate(NavRoutes.Markets.route) },
+            modifier = Modifier.fillMaxWidth(),
+>>>>>>> theirs
         ) {
             Column(
                 modifier = Modifier

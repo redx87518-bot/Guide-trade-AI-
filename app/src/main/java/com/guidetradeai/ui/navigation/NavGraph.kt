@@ -6,6 +6,7 @@ import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.runtime.Composable
+<<<<<<< ours
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
@@ -99,6 +100,78 @@ fun GuideTradeNavGraph(
         }
         composable(NavRoutes.LOGIN) {
             LoginScreen(navController = navController, authViewModel = authViewModel)
+=======
+import androidx.navigation.NavHostController
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import com.guidetradeai.ui.screens.SplashScreen
+import com.guidetradeai.ui.screens.LoginScreen
+import com.guidetradeai.ui.screens.SignUpScreen
+import com.guidetradeai.ui.screens.ForgotPasswordScreen
+import com.guidetradeai.ui.screens.EmailVerificationScreen
+import com.guidetradeai.ui.screens.HomeScreen
+import com.guidetradeai.ui.screens.SettingsScreen
+import com.guidetradeai.ui.screens.TelegramSettingsScreen
+import com.guidetradeai.ui.screens.VoiceSettingsScreen
+import com.guidetradeai.ui.screens.ProfileScreen
+import com.guidetradeai.ui.screens.PaperTradingScreen
+import com.guidetradeai.ui.screens.McpConnectionsScreen
+import com.guidetradeai.ui.screens.ChatScreen
+import com.guidetradeai.ui.screens.MarketsScreen
+
+@Composable
+fun GuideTradeNavGraph(
+    navController: NavHostController,
+    startDestination: String = NavRoutes.Splash.route,
+) {
+    NavHost(
+        navController = navController,
+        startDestination = startDestination,
+    ) {
+        composable(NavRoutes.Splash.route) {
+            SplashScreen(navController)
+        }
+        composable(NavRoutes.Login.route) {
+            LoginScreen(navController)
+        }
+        composable(NavRoutes.Signup.route) {
+            SignUpScreen(navController)
+        }
+        composable(NavRoutes.ForgotPassword.route) {
+            ForgotPasswordScreen(navController)
+        }
+        composable(NavRoutes.Verification.route) { backStackEntry ->
+            val email = backStackEntry.arguments?.get("email") ?: ""
+            EmailVerificationScreen(navController, email)
+        }
+        composable(NavRoutes.Home.route) {
+            HomeScreen(navController)
+        }
+        composable(NavRoutes.Chat.route) { backStackEntry ->
+            val sessionId = backStackEntry.arguments?.get("sessionId")
+            ChatScreen(navController, sessionId)
+        }
+        composable(NavRoutes.Markets.route) {
+            MarketsScreen(navController)
+        }
+        composable(NavRoutes.Settings.route) {
+            SettingsScreen(navController)
+        }
+        composable(NavRoutes.TelegramSettings.route) {
+            TelegramSettingsScreen(navController)
+        }
+        composable(NavRoutes.VoiceSettings.route) {
+            VoiceSettingsScreen(navController)
+        }
+        composable(NavRoutes.Profile.route) {
+            ProfileScreen(navController)
+        }
+        composable(NavRoutes.PaperTrading.route) {
+            PaperTradingScreen(navController)
+        }
+        composable(NavRoutes.McpConnections.route) {
+            McpConnectionsScreen(navController)
+>>>>>>> theirs
         }
     }
 }

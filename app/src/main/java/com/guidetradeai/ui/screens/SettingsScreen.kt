@@ -91,6 +91,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+<<<<<<< ours
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.NavHostController
@@ -164,6 +165,53 @@ fun SettingsScreen(navController: NavHostController) {
             modifier = Modifier.fillMaxSize().padding(padding),
             contentPadding = PaddingValues(20.dp),
             verticalArrangement = Arrangement.spacedBy(24.dp),
+=======
+import androidx.navigation.NavHostController
+import com.guidetradeai.ui.navigation.NavRoutes
+
+@Composable
+fun SettingsScreen(navController: NavHostController) {
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(24.dp),
+        verticalArrangement = Arrangement.Center,
+        horizontalAlignment = Alignment.CenterHorizontally,
+    ) {
+        Text("Settings", fontSize = 28.sp)
+        Spacer(modifier = Modifier.height(16.dp))
+        Button(
+            onClick = { navController.navigate(NavRoutes.TelegramSettings.route) },
+            modifier = Modifier.fillMaxWidth(),
+        ) {
+            Text("Telegram Settings")
+        }
+        Spacer(modifier = Modifier.height(8.dp))
+        Button(
+            onClick = { navController.navigate(NavRoutes.VoiceSettings.route) },
+            modifier = Modifier.fillMaxWidth(),
+        ) {
+            Text("Voice Settings")
+        }
+        Spacer(modifier = Modifier.height(8.dp))
+        Button(
+            onClick = { navController.navigate(NavRoutes.Profile.route) },
+            modifier = Modifier.fillMaxWidth(),
+        ) {
+            Text("Profile")
+        }
+        Spacer(modifier = Modifier.height(8.dp))
+        Button(
+            onClick = { navController.navigate(NavRoutes.PaperTrading.route) },
+            modifier = Modifier.fillMaxWidth(),
+        ) {
+            Text("Paper Trading")
+        }
+        Spacer(modifier = Modifier.height(8.dp))
+        Button(
+            onClick = { navController.navigate(NavRoutes.McpConnections.route) },
+            modifier = Modifier.fillMaxWidth(),
+>>>>>>> theirs
         ) {
             item {
                 SectionHeader(title = "Account")

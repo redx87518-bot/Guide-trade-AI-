@@ -91,8 +91,11 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+<<<<<<< ours
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
+=======
+>>>>>>> theirs
 import androidx.navigation.NavHostController
 import coil.compose.AsyncImage
 import com.guidetradeai.ui.components.*
@@ -153,11 +156,42 @@ fun LoginScreen(navController: NavHostController, authViewModel: AuthViewModel) 
     var isSignUp by rememberSaveable { mutableStateOf(false) }
     var fullName by rememberSaveable { mutableStateOf("") }
 
+<<<<<<< ours
     LaunchedEffect(uiState) {
         if (uiState is AuthUiState.Authenticated) {
             navController.navigate(NavRoutes.HOME) {
                 popUpTo(NavRoutes.LOGIN) { inclusive = true }
             }
+=======
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(24.dp),
+        verticalArrangement = Arrangement.Center,
+        horizontalAlignment = Alignment.CenterHorizontally,
+    ) {
+        Text("Login", fontSize = 24.sp)
+        Spacer(modifier = Modifier.height(16.dp))
+        TextField(
+            value = email,
+            onValueChange = { email = it },
+            label = { Text("Email") },
+            modifier = Modifier.fillMaxWidth(),
+        )
+        Spacer(modifier = Modifier.height(8.dp))
+        TextField(
+            value = password,
+            onValueChange = { password = it },
+            label = { Text("Password") },
+            modifier = Modifier.fillMaxWidth(),
+        )
+        Spacer(modifier = Modifier.height(16.dp))
+        Button(
+            onClick = { navController.navigate(NavRoutes.Home.route) },
+            modifier = Modifier.fillMaxWidth(),
+        ) {
+            Text("Login")
+>>>>>>> theirs
         }
     }
 

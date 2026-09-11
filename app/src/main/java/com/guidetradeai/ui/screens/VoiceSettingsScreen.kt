@@ -91,8 +91,11 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+<<<<<<< ours
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
+=======
+>>>>>>> theirs
 import androidx.navigation.NavHostController
 import coil.compose.AsyncImage
 import com.guidetradeai.ui.components.*
@@ -147,6 +150,7 @@ import kotlinx.serialization.json.jsonPrimitive
 
 @Composable
 fun VoiceSettingsScreen(navController: NavHostController) {
+<<<<<<< ours
     val settingsViewModel: SettingsViewModel = viewModel()
     val uiState by settingsViewModel.uiState.collectAsState()
 
@@ -165,6 +169,20 @@ fun VoiceSettingsScreen(navController: NavHostController) {
             modifier = Modifier.fillMaxSize().padding(padding),
             contentPadding = PaddingValues(20.dp),
             verticalArrangement = Arrangement.spacedBy(16.dp),
+=======
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(24.dp),
+        verticalArrangement = Arrangement.Center,
+        horizontalAlignment = Alignment.CenterHorizontally,
+    ) {
+        Text("Voice Settings", fontSize = 28.sp)
+        Spacer(modifier = Modifier.height(16.dp))
+        Button(
+            onClick = { navController.popBackStack() },
+            modifier = Modifier.fillMaxWidth(),
+>>>>>>> theirs
         ) {
             item {
                 GuideTradeCard {

@@ -91,8 +91,11 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+<<<<<<< ours
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
+=======
+>>>>>>> theirs
 import androidx.navigation.NavHostController
 import coil.compose.AsyncImage
 import com.guidetradeai.ui.components.*
@@ -147,6 +150,7 @@ import kotlinx.serialization.json.jsonPrimitive
 
 @Composable
 fun PaperTradingScreen(navController: NavHostController) {
+<<<<<<< ours
     val viewModel: PaperTradingViewModel = viewModel()
     val uiState by viewModel.uiState.collectAsState()
 
@@ -308,6 +312,22 @@ fun PaperTradingScreen(navController: NavHostController) {
                     }
                 }
             }
+=======
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(24.dp),
+        verticalArrangement = Arrangement.Center,
+        horizontalAlignment = Alignment.CenterHorizontally,
+    ) {
+        Text("Paper Trading", fontSize = 28.sp)
+        Spacer(modifier = Modifier.height(16.dp))
+        Button(
+            onClick = { navController.popBackStack() },
+            modifier = Modifier.fillMaxWidth(),
+        ) {
+            Text("Place Order")
+>>>>>>> theirs
         }
     }
 }
