@@ -52,6 +52,7 @@
     <color name="gt_light_text_secondary">#646471</color>
     <color name="gt_light_muted_text">#9A9AA5</color>
     <color name="gt_light_disabled">#B0B0B8</color>
+    <color name="primary">#8B5CF6</color>
     <color name="background">#07070B</color>
     <color name="primary_surface">#0D0D14</color>
     <color name="secondary_surface">#12121B</color>
