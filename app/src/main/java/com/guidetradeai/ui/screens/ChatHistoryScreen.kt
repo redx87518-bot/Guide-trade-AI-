@@ -99,7 +99,6 @@ import com.guidetradeai.voice.VoiceState
 import com.guidetradeai.viewmodel.*
 import com.guidetradeai.data.repository.AuthRepository
 import com.guidetradeai.data.repository.ChatRepository
-import com.guidetradeai.data.repository.GuideTradeAgentRepository
 import com.guidetradeai.data.local.AppPreferences
 import com.guidetradeai.di.AppModule
 import com.guidetradeai.domain.Result
@@ -149,7 +148,7 @@ import com.guidetradeai.ui.navigation.NavRoutes
 
 @Composable
 fun ChatHistoryScreen(navController: NavHostController) {
-    val chatHistoryViewModel: ChatHistoryViewModel = viewModel()
+    val chatHistoryViewModel: // ChatHistoryViewModel = viewModel()
     val uiState by chatHistoryViewModel.uiState.collectAsState()
     val sessions = (uiState as? ChatHistoryUiState.Success)?.sessions ?: emptyList()
 
@@ -157,7 +156,7 @@ fun ChatHistoryScreen(navController: NavHostController) {
 
     Scaffold(
         floatingActionButton = {
-            FloatingActionButton(
+            // FloatingActionButton(
                 onClick = {
                     chatHistoryViewModel.createNewSession { sessionId ->
                         navController.navigate(NavRoutes.chatRoute(sessionId))
@@ -169,7 +168,7 @@ fun ChatHistoryScreen(navController: NavHostController) {
                 Icon(imageVector = Icons.Default.Add, contentDescription = "New Chat")
             }
         },
-        bottomBar = { GuideTradeBottomBar(navController = navController) },
+        bottomBar = { // // GuideTradeBottomBar(navController = navController) },
         containerColor = GuideTradeColors.Background,
     ) { padding ->
         Column(modifier = Modifier.fillMaxSize().padding(padding)) {

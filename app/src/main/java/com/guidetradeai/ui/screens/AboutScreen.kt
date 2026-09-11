@@ -99,7 +99,6 @@ import com.guidetradeai.voice.VoiceState
 import com.guidetradeai.viewmodel.*
 import com.guidetradeai.data.repository.AuthRepository
 import com.guidetradeai.data.repository.ChatRepository
-import com.guidetradeai.data.repository.GuideTradeAgentRepository
 import com.guidetradeai.data.local.AppPreferences
 import com.guidetradeai.di.AppModule
 import com.guidetradeai.domain.Result
@@ -151,13 +150,13 @@ import com.guidetradeai.ui.navigation.NavRoutes
 fun AboutScreen(navController: NavHostController) {
     Scaffold(
         topBar = {
-            GuideTradeTopBar(
+            // // GuideTradeTopBar(
                 title = "About",
                 navigationIcon = Icons.AutoMirrored.Filled.ArrowBack,
                 onNavigationClick = { navController.popBackStack() },
             )
         },
-        bottomBar = { GuideTradeBottomBar(navController = navController) },
+        bottomBar = { // // GuideTradeBottomBar(navController = navController) },
         containerColor = GuideTradeColors.Background,
     ) { padding ->
         LazyColumn(
@@ -185,7 +184,7 @@ fun AboutScreen(navController: NavHostController) {
                 Text(text = "Version 1.0.0", color = GuideTradeColors.MutedText, fontSize = 12.sp, modifier = Modifier.fillMaxWidth(), textAlign = TextAlign.Center)
             }
             item {
-                Text(text = com.guidetradeai.BuildConfig.APPLICATION_ID, color = GuideTradeColors.MutedText, fontSize = 11.sp, modifier = Modifier.fillMaxWidth(), textAlign = TextAlign.Center)
+                Text(text = "com.guidetradeai", color = GuideTradeColors.MutedText, fontSize = 11.sp, modifier = Modifier.fillMaxWidth(), textAlign = TextAlign.Center)
             }
             item {
                 GuideTradeCard(onClick = { /* TODO */ }) {

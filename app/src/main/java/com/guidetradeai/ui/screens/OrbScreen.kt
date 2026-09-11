@@ -98,7 +98,6 @@ import com.guidetradeai.voice.VoiceState
 import com.guidetradeai.viewmodel.*
 import com.guidetradeai.data.repository.AuthRepository
 import com.guidetradeai.data.repository.ChatRepository
-import com.guidetradeai.data.repository.GuideTradeAgentRepository
 import com.guidetradeai.data.local.AppPreferences
 import com.guidetradeai.di.AppModule
 import com.guidetradeai.domain.Result
@@ -150,7 +149,7 @@ import com.guidetradeai.ui.navigation.NavRoutes
 fun OrbScreen(navController: NavHostController) {
     Scaffold(
         topBar = {
-            GuideTradeTopBar(
+            // GuideTradeTopBar(
                 title = "AI Orb",
                 navigationIcon = Icons.AutoMirrored.Filled.ArrowBack,
                 onNavigationClick = { navController.popBackStack() },

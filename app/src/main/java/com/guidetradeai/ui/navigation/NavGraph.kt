@@ -24,17 +24,8 @@ import com.guidetradeai.ui.navigation.NavRoutes
 fun GuideTradeNavGraph(
     navController: NavHostController = rememberNavController(),
     startDestination: String = NavRoutes.HOME,
-    authViewModel: AuthViewModel = hiltViewModel(),
 ) {
-    val authState by authViewModel.uiState.collectAsState()
-    val isAuthenticated = authState is com.guidetradeai.viewModel.AuthUiState.Authenticated
 
-    if (!isAuthenticated && startDestination != NavRoutes.LOGIN) {
-        navController.navigate(NavRoutes.LOGIN) {
-            popUpTo(NavRoutes.HOME) { inclusive = true }
-        }
-        return
-    }
 
     NavHost(navController = navController, startDestination = startDestination) {
         composable(NavRoutes.HOME) {

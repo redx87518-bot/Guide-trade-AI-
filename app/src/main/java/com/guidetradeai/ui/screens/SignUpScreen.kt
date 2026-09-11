@@ -40,7 +40,6 @@ import androidx.navigation.NavHostController
 import com.guidetradeai.utils.isEmailValid
 import com.guidetradeai.utils.isPasswordValid
 import com.guidetradeai.viewmodel.AuthUiState
-import com.guidetradeai.viewmodel.AuthViewModel
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.guidetradeai.ui.navigation.NavRoutes
@@ -48,7 +47,6 @@ import com.guidetradeai.ui.navigation.NavRoutes
 @Composable
 fun SignUpScreen(
     navController: NavHostController,
-    authViewModel: AuthViewModel,
 ) {
     val authUiState by authViewModel.uiState.collectAsState()
 

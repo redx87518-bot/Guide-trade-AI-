@@ -99,7 +99,6 @@ import com.guidetradeai.voice.VoiceState
 import com.guidetradeai.viewmodel.*
 import com.guidetradeai.data.repository.AuthRepository
 import com.guidetradeai.data.repository.ChatRepository
-import com.guidetradeai.data.repository.GuideTradeAgentRepository
 import com.guidetradeai.data.local.AppPreferences
 import com.guidetradeai.di.AppModule
 import com.guidetradeai.domain.Result
@@ -148,7 +147,7 @@ import com.guidetradeai.ui.navigation.NavRoutes
 
 
 @Composable
-fun LoginScreen(navController: NavHostController, authViewModel: AuthViewModel) {
+fun LoginScreen(navController: NavHostController) {
     val uiState by authViewModel.uiState.collectAsState()
     var email by rememberSaveable { mutableStateOf("") }
     var password by rememberSaveable { mutableStateOf("") }

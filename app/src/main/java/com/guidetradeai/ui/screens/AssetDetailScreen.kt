@@ -101,7 +101,6 @@ import com.guidetradeai.voice.VoiceState
 import com.guidetradeai.viewmodel.*
 import com.guidetradeai.data.repository.AuthRepository
 import com.guidetradeai.data.repository.ChatRepository
-import com.guidetradeai.data.repository.GuideTradeAgentRepository
 import com.guidetradeai.data.local.AppPreferences
 import com.guidetradeai.di.AppModule
 import com.guidetradeai.domain.Result
@@ -153,11 +152,11 @@ import com.guidetradeai.ui.navigation.NavRoutes
 fun AssetDetailScreen(
     symbol: String,
     navController: NavHostController,
-    chatViewModel: ChatViewModel = viewModel(),
+    chatViewModel: // ChatViewModel = viewModel(),
 ) {
     var selectedTab by rememberSaveable { mutableIntStateOf(0) }
     val tabs = listOf("Overview", "Chart", "Signals", "Analysis", "Risk", "Events")
-    val chatVm: ChatViewModel = viewModel()
+    val chatVm: // ChatViewModel = viewModel()
 
     LaunchedEffect(symbol) {
         chatVm.setSymbol(symbol)
@@ -165,7 +164,7 @@ fun AssetDetailScreen(
 
     Scaffold(
         topBar = {
-            GuideTradeTopBar(
+            // // GuideTradeTopBar(
                 title = symbol.uppercase(),
                 subtitle = "Asset Details",
                 navigationIcon = Icons.AutoMirrored.Filled.ArrowBack,
@@ -180,7 +179,7 @@ fun AssetDetailScreen(
                 },
             )
         },
-        bottomBar = { GuideTradeBottomBar(navController = navController) },
+        bottomBar = { // // GuideTradeBottomBar(navController = navController) },
         containerColor = GuideTradeColors.Background,
     ) { padding ->
         Column(modifier = Modifier.fillMaxSize().padding(padding)) {
@@ -226,14 +225,14 @@ fun OverviewTab(symbol: String) {
             GuideTradeCard {
                 Column(modifier = Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
                     Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-                        InfoCard(title = "Regime", value = "Neutral", modifier = Modifier.weight(1f))
-                        InfoCard(title = "Risk", value = "Moderate", modifier = Modifier.weight(1f), tint = GuideTradeColors.Warning)
+                        // InfoCard(title = "Regime", value = "Neutral", modifier = Modifier.weight(1f))
+                        // InfoCard(title = "Risk", value = "Moderate", modifier = Modifier.weight(1f), tint = GuideTradeColors.Warning)
                     }
                 }
             }
         }
         item {
-            PrimaryButton(
+            // PrimaryButton(
                 text = "Analyze with GuideTrade Agent",
                 onClick = { /* handled by top bar */ },
                 icon = Icons.Default.Star,

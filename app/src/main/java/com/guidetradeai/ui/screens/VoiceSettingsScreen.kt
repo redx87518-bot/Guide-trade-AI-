@@ -99,7 +99,6 @@ import com.guidetradeai.voice.VoiceState
 import com.guidetradeai.viewmodel.*
 import com.guidetradeai.data.repository.AuthRepository
 import com.guidetradeai.data.repository.ChatRepository
-import com.guidetradeai.data.repository.GuideTradeAgentRepository
 import com.guidetradeai.data.local.AppPreferences
 import com.guidetradeai.di.AppModule
 import com.guidetradeai.domain.Result
@@ -154,13 +153,13 @@ fun VoiceSettingsScreen(navController: NavHostController) {
 
     Scaffold(
         topBar = {
-            GuideTradeTopBar(
+            // GuideTradeTopBar(
                 title = "Voice Settings",
                 navigationIcon = Icons.AutoMirrored.Filled.ArrowBack,
                 onNavigationClick = { navController.popBackStack() },
             )
         },
-        bottomBar = { GuideTradeBottomBar(navController = navController) },
+        bottomBar = { // GuideTradeBottomBar(navController = navController) },
         containerColor = GuideTradeColors.Background,
     ) { padding ->
         LazyColumn(

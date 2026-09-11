@@ -32,7 +32,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import com.guidetradeai.utils.isEmailValid
-import com.guidetradeai.viewmodel.AuthViewModel
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.guidetradeai.ui.navigation.NavRoutes
@@ -40,7 +39,6 @@ import com.guidetradeai.ui.navigation.NavRoutes
 @Composable
 fun ForgotPasswordScreen(
     navController: NavHostController,
-    authViewModel: AuthViewModel,
 ) {
     var email by rememberSaveable { mutableStateOf("") }
     var emailError by remember { mutableStateOf<String?>(null) }

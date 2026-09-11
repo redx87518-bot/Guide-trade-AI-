@@ -3,7 +3,6 @@ package com.guidetradeai.viewModel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.guidetradeai.data.repository.AuthRepository
-import com.guidetradeai.data.repository.ResearchRepository
 import com.guidetradeai.di.AppModule
 import com.guidetradeai.domain.Result
 import com.guidetradeai.domain.model.ResearchResult
@@ -28,7 +27,7 @@ sealed class HomeUiState {
 
 class HomeViewModel(
     private val authRepository: AuthRepository = AppModule.authRepository,
-    private val researchRepository: ResearchRepository = AppModule.researchRepository,
+    private val researchRepository: // ResearchRepository = AppModule.researchRepository,
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow<HomeUiState>(HomeUiState.Loading)

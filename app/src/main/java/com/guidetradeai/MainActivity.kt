@@ -12,7 +12,6 @@ import androidx.compose.ui.Modifier
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.guidetradeai.ui.navigation.GuideTradeNavGraph
 import com.guidetradeai.ui.theme.GuideTradeTheme
-import com.guidetradeai.viewmodel.AuthViewModel
 import androidx.compose.runtime.LaunchedEffect
 import androidx.navigation.compose.rememberNavController
 
@@ -25,8 +24,7 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background,
                 ) {
-                    val authViewModel: AuthViewModel = viewModel()
-                    val navController = rememberNavController()
+                                        val navController = rememberNavController()
                     GuideTradeNavGraph(
                         navController = navController,
                         authViewModel = authViewModel,

@@ -2,7 +2,6 @@ package com.guidetradeai.viewModel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.guidetradeai.data.repository.GuideTradeAgentRepository
 import com.guidetradeai.di.AppModule
 import com.guidetradeai.domain.Result
 import com.guidetradeai.domain.model.SymbolItem
@@ -20,7 +19,7 @@ sealed class MarketsUiState {
 }
 
 class MarketsViewModel(
-    private val agentRepository: GuideTradeAgentRepository = AppModule.guideTradeAgentRepository,
+    private val agentRepository: // GuideTradeAgentRepository = AppModule.guideTradeAgentRepository,
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow<MarketsUiState>(MarketsUiState.Loading)

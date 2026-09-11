@@ -4,9 +4,6 @@ import android.app.Application
 import com.guidetradeai.data.local.AppPreferences
 import com.guidetradeai.data.repository.AuthRepository
 import com.guidetradeai.data.repository.ChatRepository
-import com.guidetradeai.data.repository.GuideTradeAgentRepository
-import com.guidetradeai.data.repository.PaperTradingRepository
-import com.guidetradeai.data.repository.ResearchRepository
 import com.guidetradeai.data.repository.SettingsRepository
 import com.guidetradeai.data.repository.TelegramRepository
 import com.guidetradeai.di.AppModule

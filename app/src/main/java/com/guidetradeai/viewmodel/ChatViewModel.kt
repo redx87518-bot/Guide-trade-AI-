@@ -4,7 +4,6 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.guidetradeai.data.repository.AuthRepository
 import com.guidetradeai.data.repository.ChatRepository
-import com.guidetradeai.data.repository.GuideTradeAgentRepository
 import com.guidetradeai.data.local.AppPreferences
 import com.guidetradeai.di.AppModule
 import com.guidetradeai.domain.Result
@@ -28,7 +27,7 @@ class ChatViewModel(
     private val chatRepository: ChatRepository = AppModule.chatRepository,
     private val authRepository: AuthRepository = AppModule.authRepository,
     private val voiceManager: VoiceManager = AppModule.voiceManager,
-    private val agentRepository: GuideTradeAgentRepository = AppModule.guideTradeAgentRepository,
+    private val agentRepository: // GuideTradeAgentRepository = AppModule.guideTradeAgentRepository,
 ) : ViewModel() {
 
     private val _messages = MutableStateFlow<List<ChatMessage>>(emptyList())

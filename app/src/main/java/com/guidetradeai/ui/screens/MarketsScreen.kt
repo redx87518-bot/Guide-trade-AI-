@@ -99,7 +99,6 @@ import com.guidetradeai.voice.VoiceState
 import com.guidetradeai.viewmodel.*
 import com.guidetradeai.data.repository.AuthRepository
 import com.guidetradeai.data.repository.ChatRepository
-import com.guidetradeai.data.repository.GuideTradeAgentRepository
 import com.guidetradeai.data.local.AppPreferences
 import com.guidetradeai.di.AppModule
 import com.guidetradeai.domain.Result
@@ -161,7 +160,7 @@ fun MarketsScreen(navController: NavHostController) {
 
     Scaffold(
         topBar = {
-            GuideTradeTopBar(
+            // GuideTradeTopBar(
                 title = "Markets",
                 navigationIcon = null,
                 actions = {
@@ -171,7 +170,7 @@ fun MarketsScreen(navController: NavHostController) {
                 },
             )
         },
-        bottomBar = { GuideTradeBottomBar(navController = navController) },
+        bottomBar = { // GuideTradeBottomBar(navController = navController) },
         containerColor = GuideTradeColors.Background,
     ) { padding ->
         Column(modifier = Modifier.fillMaxSize().padding(padding)) {
