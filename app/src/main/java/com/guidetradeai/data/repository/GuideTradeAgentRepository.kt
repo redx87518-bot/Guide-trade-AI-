@@ -14,8 +14,6 @@ import kotlinx.serialization.json.JsonPrimitive
 import kotlinx.serialization.json.buildJsonObject
 import kotlinx.serialization.json.jsonObject
 import kotlinx.serialization.json.jsonPrimitive
-import androidx.lifecycle.viewmodel.compose.viewModel
-import com.guidetradeai.ui.navigation.NavRoutes
 
 class GuideTradeAgentRepository(
     private val supabase: SupabaseClient,
@@ -45,10 +43,11 @@ class GuideTradeAgentRepository(
         }
     }
 
-    suspend fun listSymbols(market: String): Result<List<SymbolItem>> {
+    suspend fun listSymbols(provider: String, market: String): Result<List<SymbolItem>> {
         return try {
             val body = buildJsonObject {
-                                put("feature", JsonPrimitive("list_symbols"))
+                put("provider", JsonPrimitive(provider))
+                put("feature", JsonPrimitive("list_symbols"))
                 put("market", JsonPrimitive(market))
             }
             val response = supabase.functions.invoke("agent-orchestrator", body = body)

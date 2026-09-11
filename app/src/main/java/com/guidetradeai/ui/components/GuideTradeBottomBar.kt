@@ -1,5 +1,4 @@
 package com.guidetradeai.ui.components
-
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
@@ -19,7 +18,6 @@ import androidx.compose.material.icons.filled.Work
 import androidx.compose.material.icons.filled.ShowChart
 import androidx.compose.material.icons.filled.Star
 import androidx.compose.material.icons.filled.SmartToy
-import androidx.compose.material.icons.filled.Star
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
@@ -33,8 +31,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.guidetradeai.ui.theme.GuideTradeColors
-import androidx.lifecycle.viewmodel.compose.viewModel
-import com.guidetradeai.ui.navigation.NavRoutes
+
+
 
 data class BottomNavItem(
     val title: String,

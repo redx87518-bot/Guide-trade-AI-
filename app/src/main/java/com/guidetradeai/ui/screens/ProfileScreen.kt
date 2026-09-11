@@ -1,5 +1,4 @@
 package com.guidetradeai.ui.screens
-
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -42,7 +41,6 @@ import androidx.compose.material.icons.filled.Send
 import androidx.compose.material.icons.filled.Share
 import androidx.compose.material.icons.filled.SmartToy
 import androidx.compose.material.icons.filled.Speaker
-import androidx.compose.material.icons.filled.Star
 import androidx.compose.material.icons.filled.Star
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -97,7 +95,7 @@ import coil.compose.AsyncImage
 import com.guidetradeai.ui.components.*
 import com.guidetradeai.ui.theme.GuideTradeColors
 import com.guidetradeai.voice.VoiceState
-import com.guidetradeai.viewModel.*
+import com.guidetradeai.viewmodel.*
 import com.guidetradeai.data.repository.AuthRepository
 import com.guidetradeai.data.repository.ChatRepository
 import com.guidetradeai.data.repository.GuideTradeAgentRepository
@@ -145,6 +143,8 @@ import kotlinx.serialization.json.jsonObject
 import kotlinx.serialization.json.jsonPrimitive
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.guidetradeai.ui.navigation.NavRoutes
+
+
 
 @Composable
 fun ProfileScreen(navController: NavHostController) {

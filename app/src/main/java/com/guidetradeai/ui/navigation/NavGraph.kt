@@ -17,14 +17,14 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.guidetradeai.ui.screens.*
-import com.guidetradeai.viewModel.AuthViewModel
-import com.guidetradeai.viewModel.ChatViewModel
-import com.guidetradeai.viewModel.GuideTradeAgentViewModel
-import com.guidetradeai.viewModel.HomeViewModel
-import com.guidetradeai.viewModel.MarketsViewModel
-import com.guidetradeai.viewModel.PaperTradingViewModel
-import com.guidetradeai.viewModel.ResearchViewModel
-import com.guidetradeai.viewModel.SettingsViewModel
+import com.guidetradeai.viewmodel.AuthViewModel
+import com.guidetradeai.viewmodel.ChatViewModel
+import com.guidetradeai.viewmodel.GuideTradeAgentViewModel
+import com.guidetradeai.viewmodel.HomeViewModel
+import com.guidetradeai.viewmodel.MarketsViewModel
+import com.guidetradeai.viewmodel.PaperTradingViewModel
+import com.guidetradeai.viewmodel.ResearchViewModel
+import com.guidetradeai.viewmodel.SettingsViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.guidetradeai.ui.navigation.NavRoutes
 

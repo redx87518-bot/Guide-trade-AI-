@@ -24,8 +24,6 @@ import kotlinx.serialization.json.buildJsonObject
 import kotlinx.serialization.json.jsonObject
 import kotlinx.serialization.json.jsonPrimitive
 import java.util.UUID
-import androidx.lifecycle.viewmodel.compose.viewModel
-import com.guidetradeai.ui.navigation.NavRoutes
 
 class PaperTradingRepository(
     private val supabase: SupabaseClient,

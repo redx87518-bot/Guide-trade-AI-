@@ -40,7 +40,6 @@ import com.guidetradeai.ui.theme.AccentGlow
 import com.guidetradeai.ui.theme.DividerColor
 import com.guidetradeai.ui.theme.SurfaceDark
 import com.guidetradeai.ui.theme.TextSecondary
-import androidx.lifecycle.viewmodel.compose.viewModel
 
 data class BottomNavItem(
     val title: String,

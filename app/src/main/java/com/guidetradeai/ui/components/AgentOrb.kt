@@ -31,8 +31,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.guidetradeai.voice.VoiceState
 import com.guidetradeai.ui.theme.GuideTradeColors
-import androidx.lifecycle.viewmodel.compose.viewModel
-import com.guidetradeai.ui.navigation.NavRoutes
 
 @Composable
 fun AgentOrb(
