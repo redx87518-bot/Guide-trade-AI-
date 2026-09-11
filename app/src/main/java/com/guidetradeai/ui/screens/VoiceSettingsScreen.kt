@@ -38,7 +38,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
-import com.guidetradeai.ui.components.BottomBar
 import com.guidetradeai.viewmodel.SettingsUiState
 import com.guidetradeai.viewmodel.SettingsViewModel
 import androidx.compose.runtime.setValue
@@ -75,7 +74,6 @@ fun VoiceSettingsScreen(
                 colors = TopAppBarDefaults.topAppBarColors(containerColor = Color.Transparent),
             )
         },
-        bottomBar = { BottomBar(navController = navController) },
     ) { padding ->
         Column(
             modifier = Modifier

@@ -40,7 +40,6 @@ import androidx.navigation.NavHostController
 import com.guidetradeai.utils.isEmailValid
 import com.guidetradeai.utils.isPasswordValid
 import com.guidetradeai.viewmodel.AuthUiState
-import com.guidetradeai.viewmodel.AuthViewModel
 import androidx.compose.runtime.setValue
 
 @Composable

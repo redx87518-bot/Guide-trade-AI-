@@ -51,7 +51,6 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import coil.compose.AsyncImage
-import com.guidetradeai.ui.components.BottomBar
 import com.guidetradeai.utils.formatDate
 import com.guidetradeai.viewmodel.AuthUiState
 import com.guidetradeai.viewmodel.AuthViewModel
@@ -89,7 +88,6 @@ fun ProfileScreen(
                 colors = TopAppBarDefaults.topAppBarColors(containerColor = Color.Transparent),
             )
         },
-        bottomBar = { BottomBar(navController = navController) },
     ) { padding ->
         Column(
             modifier = Modifier

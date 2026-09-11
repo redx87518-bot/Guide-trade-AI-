@@ -47,7 +47,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
-import com.guidetradeai.ui.components.BottomBar
 import com.guidetradeai.viewmodel.TelegramTestState
 import com.guidetradeai.viewmodel.TelegramUiState
 import com.guidetradeai.viewmodel.TelegramViewModel
@@ -104,7 +103,6 @@ fun TelegramSettingsScreen(
                 colors = TopAppBarDefaults.topAppBarColors(containerColor = Color.Transparent),
             )
         },
-        bottomBar = { BottomBar(navController = navController) },
     ) { padding ->
         Column(
             modifier = Modifier
