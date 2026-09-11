@@ -46,5 +46,19 @@ fun SettingsScreen(navController: NavHostController) {
         ) {
             Text("Profile")
         }
+        Spacer(modifier = androidx.compose.ui.Modifier.height(8.dp))
+        Button(
+            onClick = { navController.navigate(NavRoutes.PaperTrading.route) },
+            modifier = androidx.compose.ui.Modifier.fillMaxWidth(),
+        ) {
+            Text("Paper Trading")
+        }
+        Spacer(modifier = androidx.compose.ui.Modifier.height(8.dp))
+        Button(
+            onClick = { navController.navigate(NavRoutes.McpConnections.route) },
+            modifier = androidx.compose.ui.Modifier.fillMaxWidth(),
+        ) {
+            Text("MCP Connections")
+        }
     }
 }

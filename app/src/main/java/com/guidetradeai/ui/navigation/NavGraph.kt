@@ -43,5 +43,11 @@ fun GuideTradeNavGraph(
         composable(NavRoutes.Profile.route) {
             ProfileScreen(navController = navController)
         }
+        composable(NavRoutes.PaperTrading.route) {
+            PaperTradingScreen(navController = navController)
+        }
+        composable(NavRoutes.McpConnections.route) {
+            McpConnectionsScreen(navController = navController)
+        }
     }
 }

@@ -12,4 +12,6 @@ object AppModule {
     val settingsRepository by lazy { SettingsRepository() }
     val telegramRepository by lazy { TelegramRepository() }
     val agentRepository by lazy { AgentRepository() }
+    val paperTradingRepository by lazy { PaperTradingRepository() }
+    val mcpRepository by lazy { McpRepository() }
 }

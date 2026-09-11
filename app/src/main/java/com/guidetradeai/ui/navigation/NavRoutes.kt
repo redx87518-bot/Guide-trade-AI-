@@ -13,4 +13,6 @@ sealed class NavRoutes(val route: String) {
     object TelegramSettings : NavRoutes("telegram_settings")
     object VoiceSettings : NavRoutes("voice_settings")
     object Profile : NavRoutes("profile")
+    object PaperTrading : NavRoutes("paper_trading")
+    object McpConnections : NavRoutes("mcp_connections")
 }
