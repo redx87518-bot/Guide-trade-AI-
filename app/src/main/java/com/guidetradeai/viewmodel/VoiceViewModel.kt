@@ -3,52 +3,20 @@ package com.guidetradeai.viewmodel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.guidetradeai.data.repository.SettingsRepository
-import com.guidetradeai.data.repository.TelegramRepository
 import com.guidetradeai.di.AppModule
-import com.guidetradeai.domain.Result
-import com.guidetradeai.voice.AudioPlayer
-import com.guidetradeai.voice.VoiceState
-import io.github.jan.supabase.functions.functions
-import io.ktor.client.statement.bodyAsText
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
-import kotlinx.serialization.json.Json
-import kotlinx.serialization.json.JsonElement
-import kotlinx.serialization.json.JsonObject
-import kotlinx.serialization.json.JsonPrimitive
-import kotlinx.serialization.json.jsonObject
-import kotlinx.serialization.json.jsonPrimitive
-
-sealed class VoiceUiState {
-    object Idle : VoiceUiState()
-    data class Listening(val message: String = "Listening...") : VoiceUiState()
-    data class Processing(val message: String = "Guide Trade is thinking...") : VoiceUiState()
-    data class Speaking(val message: String = "Speaking...") : VoiceUiState()
-    data class Error(val message: String) : VoiceUiState()
-}
-
-data class VoiceSettings(
-    val voiceEnabled: Boolean = true,
-    val autoSpeak: Boolean = false,
-    val theme: String = "dark",
-) {
-    companion object {
-        val Default = VoiceSettings()
-    }
-}
 
 class VoiceViewModel(
     private val settingsRepository: SettingsRepository = AppModule.settingsRepository,
-    private val telegramRepository: TelegramRepository = AppModule.telegramRepository,
-    private val audioPlayer: AudioPlayer = AudioPlayer(),
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow<VoiceUiState>(VoiceUiState.Idle)
     val uiState: StateFlow<VoiceUiState> = _uiState.asStateFlow()
 
-    private val _voiceSettings = MutableStateFlow<VoiceSettings>(VoiceSettings.Default)
+    private val _voiceSettings = MutableStateFlow(VoiceSettings())
     val voiceSettings: StateFlow<VoiceSettings> = _voiceSettings.asStateFlow()
 
     init {
@@ -65,67 +33,9 @@ class VoiceViewModel(
                         theme = result.data.theme,
                     )
                 }
-                is Result.Error -> {}
-                is Result.Loading -> {}
+                else -> {}
             }
         }
-    }
-
-    fun startListening(onSpeechResult: (String) -> Unit, onError: (String) -> Unit) {
-        if (_voiceSettings.value.voiceEnabled) {
-            _uiState.value = VoiceUiState.Listening()
-        }
-    }
-
-    fun startProcessing() {
-        _uiState.value = VoiceUiState.Processing()
-    }
-
-    fun playTextToSpeech(text: String, onComplete: () -> Unit) {
-        if (!_voiceSettings.value.voiceEnabled) {
-            return
-        }
-
-        val json = Json { ignoreUnknownKeys = true }
-        viewModelScope.launch {
-            _uiState.value = VoiceUiState.Processing("Generating voice...")
-            try {
-                val response = AppModule.supabaseClient.functions.invoke(
-                    "text-to-speech",
-                    body = """
-                    {
-                        "text": ${json.encodeToString(JsonElement.serializer(), JsonPrimitive(text))}
-                    """.trimIndent(),
-                )
-                val data = response.bodyAsText()
-                val result = json.decodeFromString<JsonObject>(data)
-                val audioBase64 = result.jsonObject["audio"]?.jsonPrimitive?.content
-                if (audioBase64 != null) {
-                    _uiState.value = VoiceUiState.Speaking()
-                    audioPlayer.playBase64Audio(audioBase64) {
-                        _uiState.value = VoiceUiState.Idle
-                        onComplete()
-                    }
-                } else {
-                    _uiState.value = VoiceUiState.Error("Failed to generate voice")
-                }
-            } catch (e: Exception) {
-                _uiState.value = VoiceUiState.Error(e.message ?: "Voice generation failed")
-            }
-        }
-    }
-
-    fun pausePlayback() {
-        audioPlayer.pause()
-    }
-
-    fun resumePlayback() {
-        audioPlayer.resume()
-    }
-
-    fun stopPlayback() {
-        audioPlayer.stop()
-        _uiState.value = VoiceUiState.Idle
     }
 
     fun setVoiceEnabled(enabled: Boolean) {
@@ -145,4 +55,18 @@ class VoiceViewModel(
     fun clearError() {
         _uiState.value = VoiceUiState.Idle
     }
+}
+
+data class VoiceSettings(
+    val voiceEnabled: Boolean = true,
+    val autoSpeak: Boolean = false,
+    val theme: String = "dark",
+)
+
+sealed class VoiceUiState {
+    object Idle : VoiceUiState()
+    data class Listening(val message: String = "Listening...") : VoiceUiState()
+    data class Processing(val message: String = "Processing...") : VoiceUiState()
+    data class Speaking(val message: String = "Speaking...") : VoiceUiState()
+    data class Error(val message: String) : VoiceUiState()
 }

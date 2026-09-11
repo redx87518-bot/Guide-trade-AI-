@@ -16,7 +16,7 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 
 @Composable
-fun VoiceSettingsScreen(navController: NavHostController) {
+fun HomeScreen(navController: NavHostController) {
     Column(
         modifier = androidx.compose.ui.Modifier
             .fillMaxSize()
@@ -24,13 +24,20 @@ fun VoiceSettingsScreen(navController: NavHostController) {
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
-        Text("Voice Settings", fontSize = androidx.compose.ui.unit.sp(28))
+        Text("Welcome to GuideTrade AI", fontSize = androidx.compose.ui.unit.sp(28))
         Spacer(modifier = androidx.compose.ui.Modifier.height(16.dp))
         Button(
-            onClick = { navController.popBackStack() },
+            onClick = { navController.navigate("chat") },
             modifier = androidx.compose.ui.Modifier.fillMaxWidth(),
         ) {
-            Text("Save")
+            Text("AI Chat")
+        }
+        Spacer(modifier = androidx.compose.ui.Modifier.height(8.dp))
+        Button(
+            onClick = { navController.navigate("markets") },
+            modifier = androidx.compose.ui.Modifier.fillMaxWidth(),
+        ) {
+            Text("Markets")
         }
     }
 }

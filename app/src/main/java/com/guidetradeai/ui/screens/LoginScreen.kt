@@ -1,6 +1,5 @@
 package com.guidetradeai.ui.screens
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -8,214 +7,59 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Button
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.OutlinedTextFieldDefaults
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Visibility
-import androidx.compose.material.icons.filled.VisibilityOff
+import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.text.input.KeyboardType
-import androidx.compose.ui.text.input.PasswordVisualTransformation
-import androidx.compose.ui.text.input.VisualTransformation
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
-import com.guidetradeai.utils.isEmailValid
-import com.guidetradeai.utils.isPasswordValid
-import com.guidetradeai.viewmodel.AuthUiState
-import androidx.compose.runtime.setValue
+import com.guidetradeai.ui.navigation.NavRoutes
 
 @Composable
-fun LoginScreen(
-    navController: NavHostController,
-    authViewModel: AuthViewModel,
-) {
-    val authUiState by authViewModel.uiState.collectAsState()
-
-    LaunchedEffect(authUiState) {
-        if (authUiState is AuthUiState.Authenticated) {
-            navController.navigate(com.guidetradeai.ui.navigation.NavRoutes.HOME) {
-                popUpTo(0) { inclusive = true }
-            }
-        }
-    }
-
-    var email by rememberSaveable { mutableStateOf("") }
-    var password by rememberSaveable { mutableStateOf("") }
-    var passwordVisible by remember { mutableStateOf(false) }
-    var emailError by remember { mutableStateOf<String?>(null) }
-    var passwordError by remember { mutableStateOf<String?>(null) }
+fun LoginScreen(navController: NavHostController) {
+    var email by remember { mutableStateOf("") }
+    var password by remember { mutableStateOf("") }
 
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .background(MaterialTheme.colorScheme.background)
-            .padding(horizontal = 24.dp),
+            .padding(24.dp),
         verticalArrangement = Arrangement.Center,
+        horizontalAlignment = Alignment.CenterHorizontally,
     ) {
-        Text(
-            text = "Welcome Back",
-            style = MaterialTheme.typography.headlineLarge,
-            color = MaterialTheme.colorScheme.onBackground,
-        )
-        Text(
-            text = "Enter your credentials to continue",
-            style = MaterialTheme.typography.bodyMedium,
-            color = MaterialTheme.colorScheme.onSurfaceVariant,
-            modifier = Modifier.padding(top = 8.dp),
-        )
-        Spacer(modifier = Modifier.height(32.dp))
-        OutlinedTextField(
-            value = email,
-            onValueChange = {
-                email = it
-                emailError = if (it.isNotBlank() && !it.isEmailValid()) "Invalid email" else null
-            },
-            label = { Text("Email") },
-            isError = emailError != null,
-            supportingText = { emailError?.let { Text(it, color = MaterialTheme.colorScheme.error) } },
-            singleLine = true,
-            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email),
-            colors = OutlinedTextFieldDefaults.colors(
-                focusedBorderColor = MaterialTheme.colorScheme.primary,
-                cursorColor = MaterialTheme.colorScheme.primary,
-            ),
-            modifier = Modifier.fillMaxWidth(),
-        )
+        Text("Login", fontSize = androidx.compose.ui.unit.sp(24))
         Spacer(modifier = Modifier.height(16.dp))
-        OutlinedTextField(
-            value = password,
-            onValueChange = {
-                password = it
-                passwordError = if (it.isNotBlank() && it.length < 8) "At least 8 characters" else null
-            },
-            label = { Text("Password") },
-            isError = passwordError != null,
-            supportingText = { passwordError?.let { Text(it, color = MaterialTheme.colorScheme.error) } },
-            visualTransformation = if (passwordVisible) VisualTransformation.None else PasswordVisualTransformation(),
-            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
-            trailingIcon = {
-                IconButton(onClick = { passwordVisible = !passwordVisible }) {
-                    Icon(
-                        imageVector = if (passwordVisible) Icons.Filled.VisibilityOff else Icons.Filled.Visibility,
-                        contentDescription = if (passwordVisible) "Hide password" else "Show password",
-                        tint = MaterialTheme.colorScheme.onSurfaceVariant,
-                    )
-                }
-            },
-            singleLine = true,
-            colors = OutlinedTextFieldDefaults.colors(
-                focusedBorderColor = MaterialTheme.colorScheme.primary,
-                cursorColor = MaterialTheme.colorScheme.primary,
-            ),
+        TextField(
+            value = email,
+            onValueChange = { email = it },
+            label = { Text("Email") },
             modifier = Modifier.fillMaxWidth(),
         )
         Spacer(modifier = Modifier.height(8.dp))
-        TextButton(
-            onClick = { navController.navigate(com.guidetradeai.ui.navigation.NavRoutes.FORGOT_PASSWORD) },
-            modifier = Modifier.align(Alignment.End),
-        ) {
-            Text(
-                text = "Forgot Password?",
-                color = MaterialTheme.colorScheme.primary,
-                fontSize = 14.sp,
-            )
-        }
-        if (authUiState is AuthUiState.Unverified) {
-            Text(
-                text = (authUiState as AuthUiState.Unverified).message,
-                color = MaterialTheme.colorScheme.error,
-                style = MaterialTheme.typography.bodySmall,
-                modifier = Modifier.padding(bottom = 8.dp),
-            )
-            TextButton(
-                onClick = { navController.navigate("${com.guidetradeai.ui.navigation.NavRoutes.VERIFICATION}/$email") },
-                modifier = Modifier.align(Alignment.CenterHorizontally),
-            ) {
-                Text(
-                    text = "Verify your email",
-                    color = MaterialTheme.colorScheme.primary,
-                    fontWeight = androidx.compose.ui.text.font.FontWeight.SemiBold,
-                )
-            }
-        }
-        if (authUiState is AuthUiState.Error) {
-            Text(
-                text = (authUiState as AuthUiState.Error).message,
-                color = MaterialTheme.colorScheme.error,
-                style = MaterialTheme.typography.bodySmall,
-                modifier = Modifier.padding(bottom = 8.dp),
-            )
-        }
-        Button(
-            onClick = {
-                var valid = true
-                if (!email.isEmailValid()) {
-                    emailError = "Invalid email"
-                    valid = false
-                }
-                if (password.length < 8) {
-                    passwordError = "At least 8 characters"
-                    valid = false
-                }
-                if (valid) {
-                    authViewModel.signIn(email, password)
-                }
-            },
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(56.dp),
-            shape = RoundedCornerShape(16.dp),
-            enabled = email.isNotBlank() && password.isNotBlank() && authUiState !is AuthUiState.Loading,
-        ) {
-            Text(
-                text = if (authUiState is AuthUiState.Loading) "LOGGING IN..." else "LOGIN",
-                fontSize = 16.sp,
-                fontWeight = androidx.compose.ui.text.font.FontWeight.SemiBold,
-            )
-        }
-        Spacer(modifier = Modifier.height(12.dp))
-        androidx.compose.material3.OutlinedButton(
-            onClick = { authViewModel.signInWithGoogle() },
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(56.dp),
-            shape = RoundedCornerShape(16.dp),
-            enabled = authUiState !is AuthUiState.Loading,
-        ) {
-            Text(
-                text = "Continue with Google",
-                fontSize = 16.sp,
-                fontWeight = androidx.compose.ui.text.font.FontWeight.SemiBold,
-            )
-        }
+        TextField(
+            value = password,
+            onValueChange = { password = it },
+            label = { Text("Password") },
+            modifier = Modifier.fillMaxWidth(),
+        )
         Spacer(modifier = Modifier.height(16.dp))
-        TextButton(
-            onClick = { navController.navigate(com.guidetradeai.ui.navigation.NavRoutes.SIGNUP) },
-            enabled = authUiState !is AuthUiState.Loading,
+        Button(
+            onClick = { navController.navigate(NavRoutes.Home.route) },
+            modifier = Modifier.fillMaxWidth(),
         ) {
-            Text(
-                text = "Don't have an account? Sign Up",
-                color = MaterialTheme.colorScheme.primary,
-                textAlign = TextAlign.Center,
-            )
+            Text("Login")
+        }
+        Spacer(modifier = Modifier.height(8.dp))
+        OutlinedButton(
+            onClick = { navController.navigate(NavRoutes.Signup.route) },
+            modifier = Modifier.fillMaxWidth(),
+        ) {
+            Text("Sign Up")
         }
     }
 }

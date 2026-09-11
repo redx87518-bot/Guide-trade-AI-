@@ -5,26 +5,10 @@ import androidx.lifecycle.viewModelScope
 import com.guidetradeai.data.repository.TelegramRepository
 import com.guidetradeai.di.AppModule
 import com.guidetradeai.domain.Result
-import com.guidetradeai.domain.model.TelegramSettings
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
-import androidx.lifecycle.viewmodel.compose.viewModel
-import com.guidetradeai.ui.navigation.NavRoutes
-
-sealed class TelegramUiState {
-    object Loading : TelegramUiState()
-    data class Success(val settings: TelegramSettings) : TelegramUiState()
-    data class Error(val message: String) : TelegramUiState()
-}
-
-sealed class TelegramTestState {
-    object Idle : TelegramTestState()
-    object Loading : TelegramTestState()
-    data class Success(val message: String) : TelegramTestState()
-    data class Error(val message: String) : TelegramTestState()
-}
 
 class TelegramViewModel(
     private val telegramRepository: TelegramRepository = AppModule.telegramRepository,
@@ -33,95 +17,51 @@ class TelegramViewModel(
     private val _uiState = MutableStateFlow<TelegramUiState>(TelegramUiState.Loading)
     val uiState: StateFlow<TelegramUiState> = _uiState.asStateFlow()
 
-    private val _testState = MutableStateFlow<TelegramTestState>(TelegramTestState.Idle)
-    val testState: StateFlow<TelegramTestState> = _testState.asStateFlow()
+    init {
+        loadSettings()
+    }
 
     fun loadSettings() {
         viewModelScope.launch {
             _uiState.value = TelegramUiState.Loading
-            when (val result = telegramRepository.getTelegramSettings()) {
-                is Result.Success -> _uiState.value = TelegramUiState.Success(result.data)
-                is Result.Error -> _uiState.value = TelegramUiState.Error(result.message)
-                is Result.Loading -> {}
-            }
-        }
-    }
-
-    fun testConnection(botToken: String, chatId: String) {
-        _testState.value = TelegramTestState.Loading
-        viewModelScope.launch {
-            when (val result = telegramRepository.testAndSaveConnection(
-                botToken = botToken,
-                chatId = chatId,
-                sendResearch = true,
-                sendChatResults = false,
-            )) {
+            when (val result = telegramRepository.getSettings()) {
                 is Result.Success -> {
-                    _testState.value = TelegramTestState.Success(result.data)
-                    loadSettings()
+                    _uiState.value = TelegramUiState.Success(result.data)
                 }
-                is Result.Error -> _testState.value = TelegramTestState.Error(result.message)
-                is Result.Loading -> {}
+                is Result.Error -> _uiState.value = TelegramUiState.Error(result.message)
+                else -> {}
             }
         }
     }
 
     fun saveSettings(
-        botToken: String,
-        chatId: String,
+        botTokenEncrypted: String?,
+        chatId: String?,
         enabled: Boolean,
         sendResearch: Boolean,
         sendChatResults: Boolean,
     ) {
         viewModelScope.launch {
-            when (val result = telegramRepository.saveSettings(
-                botToken = botToken,
-                chatId = chatId,
+            _uiState.value = TelegramUiState.Loading
+            val settings = com.guidetradeai.data.remote.TelegramSettingsData(
+                user_id = telegramRepository.getSettings().getOrNull()?.user_id ?: "",
+                bot_token_encrypted = botTokenEncrypted,
+                chat_id = chatId,
                 enabled = enabled,
-                sendResearch = sendResearch,
-                sendChatResults = sendChatResults,
-            )) {
-                is Result.Success -> loadSettings()
-                is Result.Error -> {}
-                is Result.Loading -> {}
+                send_research = sendResearch,
+                send_chat_results = sendChatResults,
+            )
+            when (val result = telegramRepository.saveSettings(settings)) {
+                is Result.Success -> _uiState.value = TelegramUiState.Success(settings)
+                is Result.Error -> _uiState.value = TelegramUiState.Error(result.message)
+                else -> {}
             }
         }
     }
+}
 
-    fun enableNotifications() {
-        viewModelScope.launch {
-            val settings = (uiState.value as? TelegramUiState.Success)?.settings
-            if (settings != null && settings.chatId != null) {
-                when (val result = telegramRepository.saveSettings(
-                    botToken = "",
-                    chatId = settings.chatId,
-                    enabled = true,
-                    sendResearch = settings.sendResearch,
-                    sendChatResults = settings.sendChatResults,
-                )) {
-                    is Result.Success -> loadSettings()
-                    is Result.Error -> {}
-                    is Result.Loading -> {}
-                }
-            }
-        }
-    }
-
-    fun disableNotifications() {
-        viewModelScope.launch {
-            when (val result = telegramRepository.disableTelegram()) {
-                is Result.Success -> loadSettings()
-                is Result.Error -> {}
-                is Result.Loading -> {}
-            }
-        }
-    }
-
-    fun maskToken(encryptedToken: String?): String {
-        return telegramRepository.maskToken(encryptedToken)
-    }
-
-    fun clearTestState() {
-        _testState.value = TelegramTestState.Idle
-    }
+sealed class TelegramUiState {
+    object Loading : TelegramUiState()
+    data class Success(val settings: com.guidetradeai.data.remote.TelegramSettingsData?) : TelegramUiState()
+    data class Error(val message: String) : TelegramUiState()
 }

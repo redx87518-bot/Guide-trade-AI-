@@ -1,20 +1,16 @@
 package com.guidetradeai.ui.navigation
 
-object NavRoutes {
-    const val SPLASH = "splash"
-    const val ONBOARDING = "onboarding"
-    const val LOGIN = "login"
-    const val SIGNUP = "signup"
-    const val FORGOT_PASSWORD = "forgot_password"
-    const val VERIFICATION = "verification/{email}"
-    const val HOME = "home"
-    const val MARKETS = "markets"
-    const val SETTINGS = "settings"
-    const val TELEGRAM_SETTINGS = "telegram_settings"
-    const val VOICE_SETTINGS = "voice_settings"
-    const val PROFILE = "profile"
-    fun chatRoute(sessionId: String) = "chat/$sessionId"
-    fun researchDetailRoute(researchId: String) = "research_detail/$researchId"
-    fun verificationRoute(email: String) = "verification/$email"
-    fun assetDetailRoute(symbol: String) = "asset_detail/$symbol"
+sealed class NavRoutes(val route: String) {
+    object Splash : NavRoutes("splash")
+    object Login : NavRoutes("login")
+    object Signup : NavRoutes("signup")
+    object ForgotPassword : NavRoutes("forgot_password")
+    object Verification : NavRoutes("verification/{email}") {
+        fun route(email: String) = "verification/$email"
+    }
+    object Home : NavRoutes("home")
+    object Settings : NavRoutes("settings")
+    object TelegramSettings : NavRoutes("telegram_settings")
+    object VoiceSettings : NavRoutes("voice_settings")
+    object Profile : NavRoutes("profile")
 }

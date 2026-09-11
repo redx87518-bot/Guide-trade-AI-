@@ -1,28 +1,15 @@
 package com.guidetradeai.di
 
-import android.content.Context
-import androidx.datastore.preferences.preferencesDataStore
-import com.guidetradeai.data.remote.SupabaseClient
 import com.guidetradeai.data.repository.AuthRepository
 import com.guidetradeai.data.repository.ChatRepository
 import com.guidetradeai.data.repository.SettingsRepository
 import com.guidetradeai.data.repository.TelegramRepository
-import com.guidetradeai.audio.VoiceManager
-import com.guidetradeai.data.local.AppPreferences
-import androidx.lifecycle.viewmodel.compose.viewModel
-import com.guidetradeai.ui.navigation.NavRoutes
-
-val Context.dataStore by preferencesDataStore("app_prefs")
+import com.guidetradeai.data.repository.AgentRepository
 
 object AppModule {
-    val supabaseClient by lazy { SupabaseClient.client }
-    val authRepository: AuthRepository by lazy { AuthRepository(supabaseClient) }
-    val chatRepository: ChatRepository by lazy { ChatRepository(supabaseClient) }
-    val settingsRepository: SettingsRepository by lazy { SettingsRepository(supabaseClient) }
-    val telegramRepository: TelegramRepository by lazy { TelegramRepository(supabaseClient) }
-    lateinit var applicationContext: Context
-    val voiceManager: VoiceManager by lazy {
-        VoiceManager(context = applicationContext, supabase = supabaseClient)
-    }
-    lateinit var appPreferences: AppPreferences
+    val authRepository by lazy { AuthRepository() }
+    val chatRepository by lazy { ChatRepository() }
+    val settingsRepository by lazy { SettingsRepository() }
+    val telegramRepository by lazy { TelegramRepository() }
+    val agentRepository by lazy { AgentRepository() }
 }
