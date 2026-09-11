@@ -27,14 +27,8 @@ fun GuideTradeNavGraph(
 
 
     NavHost(navController = navController, startDestination = startDestination) {
-        composable(NavRoutes.HOME) {
-            HomeScreen(navController = navController)
-        }
         composable(NavRoutes.MARKETS) {
             MarketsScreen(navController = navController)
-        }
-        composable(NavRoutes.CHAT_HISTORY) {
-            ChatHistoryScreen(navController = navController)
         }
         composable(NavRoutes.SETTINGS) {
             SettingsScreen(navController = navController)
@@ -44,12 +38,6 @@ fun GuideTradeNavGraph(
         }
         composable(NavRoutes.VOICE_SETTINGS) {
             VoiceSettingsScreen(navController = navController)
-        }
-        composable(NavRoutes.ABOUT) {
-            AboutScreen(navController = navController)
-        }
-        composable(NavRoutes.PROFILE) {
-            ProfileScreen(navController = navController)
         }
         composable(NavRoutes.SPLASH) {
             SplashScreen(navController = navController)
