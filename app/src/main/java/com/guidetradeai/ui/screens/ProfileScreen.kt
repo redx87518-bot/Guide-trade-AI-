@@ -152,29 +152,7 @@ fun ProfileScreen(navController: NavHostController) {
 
     Scaffold(
         topBar = {
-            // // GuideTradeTopBar(
-                title = "Profile",
-                navigationIcon = Icons.AutoMirrored.Filled.ArrowBack,
-                onNavigationClick = { navController.popBackStack() },
-            )
         },
-        bottomBar = { // // GuideTradeBottomBar(navController = navController) },
-        containerColor = GuideTradeColors.Background,
-    ) { padding ->
-        LazyColumn(
-            modifier = Modifier.fillMaxSize().padding(padding),
-            contentPadding = PaddingValues(20.dp),
-            verticalArrangement = Arrangement.spacedBy(16.dp),
-        ) {
-            item {
-                Column(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalAlignment = Alignment.CenterHorizontally,
-                ) {
-                    AvatarInitials(
-                        name = user?.fullName ?: user?.email ?: "U",
-                        size = 80,
-                    )
                     Spacer(modifier = Modifier.height(16.dp))
                     Text(text = user?.fullName ?: "User", color = GuideTradeColors.TextPrimary, fontSize = 20.sp, fontWeight = FontWeight.SemiBold)
                     Text(text = user?.email ?: "", color = GuideTradeColors.TextSecondary, fontSize = 14.sp)
@@ -195,16 +173,6 @@ fun ProfileScreen(navController: NavHostController) {
                 }
             }
             item {
-                PrimaryButton(
-                    text = "Sign Out",
-                    onClick = {
-                        authViewModel.signOut()
-                        navController.navigate(NavRoutes.LOGIN) {
-                            popUpTo(NavRoutes.HOME) { inclusive = true }
-                        }
-                    },
-                    modifier = Modifier.fillMaxWidth(),
-                )
             }
         }
     }

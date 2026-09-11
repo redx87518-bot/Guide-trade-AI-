@@ -10,7 +10,6 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
@@ -57,10 +56,10 @@ fun GuideTradeNavGraph(
             AssetDetailScreen(symbol = symbol, navController = navController)
         }
         composable(NavRoutes.SPLASH) {
-            SplashScreen(navController = navController, authViewModel = authViewModel)
+            SplashScreen(navController = navController)
         }
         composable(NavRoutes.LOGIN) {
-            LoginScreen(navController = navController, authViewModel = authViewModel)
+            LoginScreen(navController = navController)
         }
     }
 }

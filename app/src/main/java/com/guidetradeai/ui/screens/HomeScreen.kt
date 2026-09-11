@@ -157,38 +157,7 @@ fun HomeScreen(
 
     Scaffold(
         topBar = {
-            // GuideTradeTopBar(
-                title = "GUIDETRADE AI",
-                subtitle = "Market intelligence, simplified.",
-                navigationIcon = null,
-                actions = {
-                    IconButton(onClick = { /* TODO */ }) {
-                        Icon(imageVector = Icons.Default.Notifications, contentDescription = "Notifications", tint = GuideTradeColors.TextPrimary)
-                    }
-                },
-            )
         },
-        bottomBar = { // GuideTradeBottomBar(navController = navController) },
-        containerColor = GuideTradeColors.Background,
-    ) { padding ->
-        val listState = rememberLazyListState()
-        LazyColumn(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(padding),
-            state = listState,
-            contentPadding = PaddingValues(bottom = 80.dp),
-            verticalArrangement = Arrangement.spacedBy(16.dp),
-        ) {
-            item {
-                HeroCard(
-                    onAskGuideTrade = {
-                        navController.navigate(NavRoutes.AGENT)
-                    },
-                    onAnalyzeAsset = {
-                        navController.navigate(NavRoutes.MARKETS)
-                    },
-                )
             }
 
             item {
@@ -205,23 +174,6 @@ fun HomeScreen(
                         .padding(horizontal = 20.dp),
                     horizontalArrangement = Arrangement.spacedBy(12.dp),
                 ) {
-                    InfoCard(
-                        title = "Regime",
-                        value = "Neutral",
-                        modifier = Modifier.weight(1f),
-                    )
-                    InfoCard(
-                        title = "Risk",
-                        value = "Moderate",
-                        modifier = Modifier.weight(1f),
-                        tint = GuideTradeColors.Warning,
-                    )
-                    InfoCard(
-                        title = "Status",
-                        value = "Active",
-                        modifier = Modifier.weight(1f),
-                        tint = GuideTradeColors.Positive,
-                    )
                 }
             }
 
@@ -363,12 +315,6 @@ fun HeroCard(
                 Row(
                     horizontalArrangement = Arrangement.spacedBy(12.dp),
                 ) {
-                    PrimaryButton(
-                        text = "Ask GuideTrade",
-                        onClick = onAskGuideTrade,
-                        modifier = Modifier.weight(1f),
-                        icon = Icons.Default.Star,
-                    )
                     SecondaryButton(
                         text = "Analyze an asset",
                         onClick = onAnalyzeAsset,

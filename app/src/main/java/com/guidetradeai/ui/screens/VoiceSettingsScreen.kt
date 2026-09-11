@@ -153,35 +153,7 @@ fun VoiceSettingsScreen(navController: NavHostController) {
 
     Scaffold(
         topBar = {
-            // GuideTradeTopBar(
-                title = "Voice Settings",
-                navigationIcon = Icons.AutoMirrored.Filled.ArrowBack,
-                onNavigationClick = { navController.popBackStack() },
-            )
         },
-        bottomBar = { // GuideTradeBottomBar(navController = navController) },
-        containerColor = GuideTradeColors.Background,
-    ) { padding ->
-        LazyColumn(
-            modifier = Modifier.fillMaxSize().padding(padding),
-            contentPadding = PaddingValues(20.dp),
-            verticalArrangement = Arrangement.spacedBy(16.dp),
-        ) {
-            item {
-                GuideTradeCard {
-                    Row(
-                        modifier = Modifier.fillMaxWidth().padding(16.dp),
-                        horizontalArrangement = Arrangement.SpaceBetween,
-                        verticalAlignment = Alignment.CenterVertically,
-                    ) {
-                        Column(modifier = Modifier.weight(1f)) {
-                            Text(text = "Voice Responses", color = GuideTradeColors.TextPrimary, fontSize = 15.sp, fontWeight = FontWeight.Medium)
-                            Text(text = "Enable voice output", color = GuideTradeColors.TextSecondary, fontSize = 12.sp)
-                        }
-                        androidx.compose.material3.Switch(
-                            checked = (uiState as? SettingsUiState.Success)?.settings?.voiceEnabled ?: true,
-                            onCheckedChange = { settingsViewModel.updateVoiceEnabled(it) },
-                        )
                     }
                 }
             }

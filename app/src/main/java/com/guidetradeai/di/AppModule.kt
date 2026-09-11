@@ -18,11 +18,8 @@ object AppModule {
     val supabaseClient by lazy { SupabaseClient.client }
     val authRepository: AuthRepository by lazy { AuthRepository(supabaseClient) }
     val chatRepository: ChatRepository by lazy { ChatRepository(supabaseClient) }
-    val researchRepository: // ResearchRepository by lazy { // ResearchRepository(supabaseClient) }
     val settingsRepository: SettingsRepository by lazy { SettingsRepository(supabaseClient) }
     val telegramRepository: TelegramRepository by lazy { TelegramRepository(supabaseClient) }
-    val guideTradeAgentRepository: // GuideTradeAgentRepository by lazy { // GuideTradeAgentRepository(supabaseClient) }
-    val paperTradingRepository: // PaperTradingRepository by lazy { // PaperTradingRepository(supabaseClient) }
     lateinit var applicationContext: Context
     val voiceManager: VoiceManager by lazy {
         VoiceManager(context = applicationContext, supabase = supabaseClient)

@@ -186,48 +186,7 @@ fun TelegramSettingsScreen(navController: NavHostController) {
 
     Scaffold(
         topBar = {
-            // GuideTradeTopBar(
-                title = "Telegram",
-                navigationIcon = Icons.AutoMirrored.Filled.ArrowBack,
-                onNavigationClick = { navController.popBackStack() },
-            )
         },
-        bottomBar = { // GuideTradeBottomBar(navController = navController) },
-        containerColor = GuideTradeColors.Background,
-    ) { padding ->
-        LazyColumn(
-            modifier = Modifier.fillMaxSize().padding(padding),
-            contentPadding = PaddingValues(20.dp),
-            verticalArrangement = Arrangement.spacedBy(16.dp),
-        ) {
-            item {
-                Text(text = "Connect your Telegram bot to receive market intelligence updates.", color = GuideTradeColors.TextSecondary, fontSize = 14.sp)
-            }
-            if (isConfigured) {
-                item {
-                    GuideTradeCard {
-                        Column(modifier = Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                            Text(text = "Connected", color = GuideTradeColors.Positive, fontSize = 14.sp, fontWeight = FontWeight.SemiBold)
-                            Text(text = "Chat ID: ${settings?.chatId}", color = GuideTradeColors.TextSecondary, fontSize = 13.sp)
-                            Text(text = telegramViewModel.maskToken(settings?.botTokenEncrypted), color = GuideTradeColors.TextSecondary, fontSize = 13.sp)
-                        }
-                    }
-                }
-            } else {
-                item {
-                    OutlinedTextField(
-                        value = botToken,
-                        onValueChange = { botToken = it },
-                        label = { Text("Bot Token") },
-                        singleLine = true,
-                        visualTransformation = if (showToken) VisualTransformation.None else PasswordVisualTransformation(),
-                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
-                        colors = OutlinedTextFieldDefaults.colors(
-                            focusedBorderColor = GuideTradeColors.PrimaryPurple,
-                            cursorColor = GuideTradeColors.PrimaryPurple,
-                        ),
-                        modifier = Modifier.fillMaxWidth(),
-                    )
                 }
                 item {
                     OutlinedTextField(
@@ -243,16 +202,6 @@ fun TelegramSettingsScreen(navController: NavHostController) {
                     )
                 }
                 item {
-                    PrimaryButton(
-                        text = "Save Settings",
-                        onClick = {
-                            if (botToken.isNotBlank() && chatId.isNotBlank()) {
-                                telegramViewModel.saveSettings(botToken, chatId, true, true, false)
-                                promptMessage = "Settings saved successfully!"
-                                showMessageDialog = true
-                            }
-                        },
-                    )
                 }
                 item {
                     SecondaryButton(

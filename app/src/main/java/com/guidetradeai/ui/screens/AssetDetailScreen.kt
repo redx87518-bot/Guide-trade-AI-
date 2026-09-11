@@ -152,11 +152,11 @@ import com.guidetradeai.ui.navigation.NavRoutes
 fun AssetDetailScreen(
     symbol: String,
     navController: NavHostController,
-    chatViewModel: // ChatViewModel = viewModel(),
+    chatViewModel: ChatViewModel = viewModel(),
 ) {
     var selectedTab by rememberSaveable { mutableIntStateOf(0) }
     val tabs = listOf("Overview", "Chart", "Signals", "Analysis", "Risk", "Events")
-    val chatVm: // ChatViewModel = viewModel()
+    val chatVm: ChatViewModel = viewModel()
 
     LaunchedEffect(symbol) {
         chatVm.setSymbol(symbol)
@@ -164,37 +164,7 @@ fun AssetDetailScreen(
 
     Scaffold(
         topBar = {
-            // // GuideTradeTopBar(
-                title = symbol.uppercase(),
-                subtitle = "Asset Details",
-                navigationIcon = Icons.AutoMirrored.Filled.ArrowBack,
-                onNavigationClick = { navController.popBackStack() },
-                actions = {
-                    IconButton(onClick = {
-                        chatViewModel.sendMessage("Analyze $symbol")
-                        navController.navigate(NavRoutes.AGENT)
-                    }) {
-                        Icon(imageVector = Icons.Default.Star, contentDescription = "Analyze", tint = GuideTradeColors.TextPrimary)
-                    }
-                },
-            )
         },
-        bottomBar = { // // GuideTradeBottomBar(navController = navController) },
-        containerColor = GuideTradeColors.Background,
-    ) { padding ->
-        Column(modifier = Modifier.fillMaxSize().padding(padding)) {
-            TabRow(
-                selectedTabIndex = selectedTab,
-                containerColor = GuideTradeColors.PrimarySurface,
-                contentColor = GuideTradeColors.BrightPurple,
-                indicatorColor = GuideTradeColors.PrimaryPurple,
-            ) {
-                tabs.forEachIndexed { index, title ->
-                    Tab(
-                        selected = selectedTab == index,
-                        onClick = { selectedTab = index },
-                        text = { Text(title, fontSize = 12.sp, fontWeight = if (selectedTab == index) FontWeight.SemiBold else FontWeight.Normal) },
-                    )
                 }
             }
 
@@ -225,18 +195,6 @@ fun OverviewTab(symbol: String) {
             GuideTradeCard {
                 Column(modifier = Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
                     Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-                        // InfoCard(title = "Regime", value = "Neutral", modifier = Modifier.weight(1f))
-                        // InfoCard(title = "Risk", value = "Moderate", modifier = Modifier.weight(1f), tint = GuideTradeColors.Warning)
-                    }
-                }
-            }
-        }
-        item {
-            // PrimaryButton(
-                text = "Analyze with GuideTrade Agent",
-                onClick = { /* handled by top bar */ },
-                icon = Icons.Default.Star,
-            )
         }
     }
 }

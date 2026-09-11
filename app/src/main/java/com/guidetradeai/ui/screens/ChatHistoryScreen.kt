@@ -148,7 +148,7 @@ import com.guidetradeai.ui.navigation.NavRoutes
 
 @Composable
 fun ChatHistoryScreen(navController: NavHostController) {
-    val chatHistoryViewModel: // ChatHistoryViewModel = viewModel()
+    val chatHistoryViewModel: ChatHistoryViewModel = viewModel()
     val uiState by chatHistoryViewModel.uiState.collectAsState()
     val sessions = (uiState as? ChatHistoryUiState.Success)?.sessions ?: emptyList()
 
@@ -156,43 +156,12 @@ fun ChatHistoryScreen(navController: NavHostController) {
 
     Scaffold(
         floatingActionButton = {
-            // FloatingActionButton(
-                onClick = {
-                    chatHistoryViewModel.createNewSession { sessionId ->
-                        navController.navigate(NavRoutes.chatRoute(sessionId))
-                    }
-                },
-                containerColor = GuideTradeColors.PrimaryPurple,
-                contentColor = GuideTradeColors.White,
-            ) {
-                Icon(imageVector = Icons.Default.Add, contentDescription = "New Chat")
-            }
-        },
-        bottomBar = { // // GuideTradeBottomBar(navController = navController) },
-        containerColor = GuideTradeColors.Background,
-    ) { padding ->
-        Column(modifier = Modifier.fillMaxSize().padding(padding)) {
-            Text(
-                text = "Chat History",
-                style = MaterialTheme.typography.headlineMedium,
-                color = GuideTradeColors.TextPrimary,
-                modifier = Modifier.padding(24.dp, 24.dp, 24.dp, 8.dp),
-                fontWeight = FontWeight.W600,
-            )
             if (sessions.isEmpty()) {
                 EmptyState(
                     title = "No chat sessions yet.",
                     description = "Start a new conversation with GuideTrade Agent.",
                     modifier = Modifier.fillMaxSize(),
                     action = {
-                        PrimaryButton(
-                            text = "New Chat",
-                            onClick = {
-                                chatHistoryViewModel.createNewSession { sessionId ->
-                                    navController.navigate(NavRoutes.chatRoute(sessionId))
-                                }
-                            },
-                        )
                     },
                 )
             } else {

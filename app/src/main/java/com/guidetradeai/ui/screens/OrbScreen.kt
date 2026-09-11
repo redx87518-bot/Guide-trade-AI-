@@ -149,11 +149,6 @@ import com.guidetradeai.ui.navigation.NavRoutes
 fun OrbScreen(navController: NavHostController) {
     Scaffold(
         topBar = {
-            // GuideTradeTopBar(
-                title = "AI Orb",
-                navigationIcon = Icons.AutoMirrored.Filled.ArrowBack,
-                onNavigationClick = { navController.popBackStack() },
-            )
         },
         containerColor = GuideTradeColors.Background,
     ) { padding ->

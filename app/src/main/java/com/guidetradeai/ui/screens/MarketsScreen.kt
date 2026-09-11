@@ -160,32 +160,7 @@ fun MarketsScreen(navController: NavHostController) {
 
     Scaffold(
         topBar = {
-            // GuideTradeTopBar(
-                title = "Markets",
-                navigationIcon = null,
-                actions = {
-                    IconButton(onClick = { /* TODO search */ }) {
-                        Icon(imageVector = Icons.Default.Search, contentDescription = "Search", tint = GuideTradeColors.TextPrimary)
-                    }
-                },
-            )
         },
-        bottomBar = { // GuideTradeBottomBar(navController = navController) },
-        containerColor = GuideTradeColors.Background,
-    ) { padding ->
-        Column(modifier = Modifier.fillMaxSize().padding(padding)) {
-            Row(
-                modifier = Modifier.fillMaxWidth().padding(horizontal = 20.dp),
-                horizontalArrangement = Arrangement.spacedBy(8.dp),
-            ) {
-                markets.forEach { market ->
-                    val isSelected = selectedMarket == market
-                    Box(
-                        modifier = Modifier
-                            .background(
-                                if (isSelected) GuideTradeColors.PrimaryPurple else GuideTradeColors.SecondarySurface,
-                                RoundedCornerShape(10.dp),
-                            )
                             .clickable { selectedMarket = market }
                             .padding(horizontal = 14.dp, vertical = 8.dp),
                     ) {

@@ -150,32 +150,7 @@ import com.guidetradeai.ui.navigation.NavRoutes
 fun AboutScreen(navController: NavHostController) {
     Scaffold(
         topBar = {
-            // // GuideTradeTopBar(
-                title = "About",
-                navigationIcon = Icons.AutoMirrored.Filled.ArrowBack,
-                onNavigationClick = { navController.popBackStack() },
-            )
         },
-        bottomBar = { // // GuideTradeBottomBar(navController = navController) },
-        containerColor = GuideTradeColors.Background,
-    ) { padding ->
-        LazyColumn(
-            modifier = Modifier.fillMaxSize().padding(padding),
-            contentPadding = PaddingValues(20.dp),
-            verticalArrangement = Arrangement.spacedBy(16.dp),
-        ) {
-            item {
-                Box(modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.Center) {
-                    Box(
-                        modifier = Modifier
-                            .size(80.dp)
-                            .background(
-                                brush = Brush.radialGradient(
-                                    colors = listOf(GuideTradeColors.BrightPurple, GuideTradeColors.PrimaryPurple),
-                                ),
-                                shape = CircleShape,
-                            ),
-                    )
                 }
             }
             item {

@@ -213,13 +213,6 @@ fun LoginScreen(navController: NavHostController) {
                 modifier = Modifier.fillMaxWidth(),
             )
             Spacer(modifier = Modifier.height(24.dp))
-            PrimaryButton(
-                text = if (isSignUp) "Sign Up" else "Sign In",
-                onClick = {
-                    if (isSignUp) authViewModel.signUp(email, password, fullName)
-                    else authViewModel.signIn(email, password)
-                },
-            )
             Spacer(modifier = Modifier.height(12.dp))
             TextButton(onClick = { isSignUp = !isSignUp }) {
                 Text(text = if (isSignUp) "Already have an account? Sign In" else "Don't have an account? Sign Up", color = GuideTradeColors.BrightPurple)
