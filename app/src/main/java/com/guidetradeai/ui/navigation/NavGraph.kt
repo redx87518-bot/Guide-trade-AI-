@@ -34,20 +34,20 @@ fun GuideTradeNavGraph(
             SplashScreen(navController = navController, authViewModel = authViewModel)
         }
         composable(NavRoutes.Login.route) {
-            LoginScreen(navController)
+            LoginScreen(navController, authViewModel)
         }
         composable(NavRoutes.Signup.route) {
-            SignUpScreen(navController)
+            SignUpScreen(navController, authViewModel)
         }
         composable(NavRoutes.ForgotPassword.route) {
-            ForgotPasswordScreen(navController)
+            ForgotPasswordScreen(navController, authViewModel)
         }
         composable(NavRoutes.Verification.route) { backStackEntry ->
             val email = backStackEntry.arguments?.getString("email") ?: ""
             EmailVerificationScreen(navController, email)
         }
         composable(NavRoutes.Home.route) {
-            HomeScreen(navController)
+            HomeScreen(navController, authViewModel)
         }
         composable(NavRoutes.Chat.route) { backStackEntry ->
             val sessionId = backStackEntry.arguments?.getString("sessionId")
@@ -57,7 +57,7 @@ fun GuideTradeNavGraph(
             MarketsScreen(navController)
         }
         composable(NavRoutes.Settings.route) {
-            SettingsScreen(navController)
+            SettingsScreen(navController, authViewModel)
         }
         composable(NavRoutes.TelegramSettings.route) {
             TelegramSettingsScreen(navController)
@@ -66,7 +66,7 @@ fun GuideTradeNavGraph(
             VoiceSettingsScreen(navController)
         }
         composable(NavRoutes.Profile.route) {
-            ProfileScreen(navController)
+            ProfileScreen(navController, authViewModel)
         }
         composable(NavRoutes.PaperTrading.route) {
             PaperTradingScreen(navController)
