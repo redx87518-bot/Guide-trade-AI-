@@ -27,6 +27,13 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.guidetradeai.ui.theme.GuideTradeColors
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowForward
+import androidx.compose.material.icons.filled.ContentCopy
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.border
+import androidx.compose.ui.draw.graphicsLayer
+import androidx.compose.foundation.layout.Box
 
 @Composable
 fun ExpandableSection(

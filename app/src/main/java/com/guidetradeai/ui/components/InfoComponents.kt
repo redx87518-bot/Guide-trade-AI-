@@ -20,6 +20,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.guidetradeai.ui.theme.GuideTradeColors
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.width
 
 @Composable
 fun InfoRow(

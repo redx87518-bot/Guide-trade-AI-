@@ -21,7 +21,12 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+<<<<<<< ours
 import androidx.compose.ui.draw.graphicsLayer
+=======
+import androidx.compose.ui.draw.scale
+import androidx.compose.ui.draw.alpha
+>>>>>>> theirs
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
@@ -111,11 +116,16 @@ fun AgentOrb(
     Box(
         modifier = modifier
             .size(sizeDp.dp)
+<<<<<<< ours
             .graphicsLayer(
                 scaleX = finalScale,
                 scaleY = finalScale,
                 alpha = pulseAlpha,
             )
+=======
+            .scale(finalScale)
+            .alpha(pulseAlpha)
+>>>>>>> theirs
             .clickable(onClick = onClick)
             .background(
                 brush = Brush.radialGradient(
