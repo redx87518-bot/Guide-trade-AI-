@@ -32,6 +32,7 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import com.guidetradeai.ui.navigation.NavRoutes
 import com.guidetradeai.viewmodel.AuthViewModel
+import com.guidetradeai.viewmodel.AuthUiState
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import kotlinx.coroutines.delay
 
@@ -42,7 +43,7 @@ fun SplashScreen(navController: NavHostController, authViewModel: AuthViewModel)
     LaunchedEffect(authState) {
         delay(2000)
         when (authState) {
-            is AuthViewModel.AuthUiState.Authenticated -> navController.navigate(NavRoutes.Home.route) {
+            is AuthUiState.Authenticated -> navController.navigate(NavRoutes.Home.route) {
                 popUpTo(NavRoutes.Splash.route) { inclusive = true }
             }
             else -> navController.navigate(NavRoutes.Login.route) {
