@@ -38,7 +38,7 @@ import com.guidetradeai.viewmodel.AuthViewModel
 
 @Composable
 fun HomeScreen(navController: NavHostController, authViewModel: AuthViewModel) {
-    val authState = authViewModel.uiState.collectAsStateWithLifecycle().value
+    val authState = authViewModel.uiState.collectAsState().value
     val userName = (authState as? AuthUiState.Authenticated)?.userId ?: "Trader"
 
     Column(

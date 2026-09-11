@@ -23,7 +23,7 @@ import com.guidetradeai.viewmodel.PaperTradingViewModel
 @Composable
 fun PaperTradingScreen(navController: NavHostController) {
     val viewModel: PaperTradingViewModel = PaperTradingViewModel()
-    val state = viewModel.uiState.collectAsStateWithLifecycle().value
+    val state = viewModel.uiState.collectAsState().value
 
     Column(
         modifier = Modifier

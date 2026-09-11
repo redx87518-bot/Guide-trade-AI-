@@ -33,12 +33,11 @@ import androidx.navigation.NavHostController
 import com.guidetradeai.ui.navigation.NavRoutes
 import com.guidetradeai.viewmodel.AuthViewModel
 import com.guidetradeai.viewmodel.AuthUiState
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import kotlinx.coroutines.delay
 
 @Composable
 fun SplashScreen(navController: NavHostController, authViewModel: AuthViewModel) {
-    val authState by authViewModel.uiState.collectAsStateWithLifecycle()
+    val authState = authViewModel.uiState.collectAsState().value
 
     LaunchedEffect(authState) {
         delay(2000)

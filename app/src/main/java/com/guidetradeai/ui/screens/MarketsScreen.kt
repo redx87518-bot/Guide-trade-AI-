@@ -26,7 +26,7 @@ fun MarketsScreen(
     navController: NavHostController,
     viewModel: MarketsViewModel = MarketsViewModel(),
 ) {
-    val uiState = viewModel.uiState.collectAsStateWithLifecycle().value
+    val uiState = viewModel.uiState.collectAsState().value
     val symbolState = androidx.compose.runtime.remember { androidx.compose.runtime.mutableStateOf("BTC") }
     val marketState = androidx.compose.runtime.remember { androidx.compose.runtime.mutableStateOf("crypto") }
 

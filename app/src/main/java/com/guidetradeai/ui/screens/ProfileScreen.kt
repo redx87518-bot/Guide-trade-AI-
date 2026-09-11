@@ -9,7 +9,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsStateWithLifecycle
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
@@ -22,7 +21,7 @@ import com.guidetradeai.viewmodel.AuthViewModel
 
 @Composable
 fun ProfileScreen(navController: NavHostController, authViewModel: AuthViewModel) {
-    val authState = authViewModel.uiState.collectAsStateWithLifecycle().value
+    val authState = authViewModel.uiState.collectAsState().value
     val userId = (authState as? AuthUiState.Authenticated)?.userId ?: "Unknown"
 
     Column(
@@ -41,7 +40,7 @@ fun ProfileScreen(navController: NavHostController, authViewModel: AuthViewModel
             onClick = {
                 authViewModel.signOut()
                 navController.navigate("login") {
-                    popUpTo("home") { inclusive = true }
+                    popUpTo("splash") { inclusive = true }
                 }
             },
         )

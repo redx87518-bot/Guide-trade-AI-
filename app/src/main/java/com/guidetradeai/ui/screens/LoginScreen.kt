@@ -31,7 +31,7 @@ import com.guidetradeai.viewmodel.AuthViewModel
 fun LoginScreen(navController: NavHostController, authViewModel: AuthViewModel) {
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
-    val authState = authViewModel.uiState.collectAsStateWithLifecycle().value
+    val authState = authViewModel.uiState.collectAsState().value
 
     if (authState is AuthUiState.Authenticated) {
         navController.navigate(NavRoutes.Home.route) {

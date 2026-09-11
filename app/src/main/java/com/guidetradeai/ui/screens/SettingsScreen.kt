@@ -9,7 +9,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsStateWithLifecycle
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
@@ -18,13 +17,10 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import com.guidetradeai.ui.components.GuideTradeCard
 import com.guidetradeai.ui.components.PrimaryButton
-import com.guidetradeai.viewmodel.AuthUiState
 import com.guidetradeai.viewmodel.AuthViewModel
 
 @Composable
 fun SettingsScreen(navController: NavHostController, authViewModel: AuthViewModel) {
-    val authState = authViewModel.uiState.collectAsStateWithLifecycle().value
-
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -37,23 +33,23 @@ fun SettingsScreen(navController: NavHostController, authViewModel: AuthViewMode
         Text("Account and preferences", fontSize = 13.sp, fontWeight = FontWeight.Medium)
         Spacer(modifier = Modifier.height(20.dp))
 
-        GuideTradeCard(onClick = { navController.navigate(NavRoutes.Profile.route) }) {
+        GuideTradeCard(onClick = { navController.navigate("profile") }) {
             Text("Profile", fontWeight = FontWeight.SemiBold)
         }
         Spacer(modifier = Modifier.height(8.dp))
-        GuideTradeCard(onClick = { navController.navigate(NavRoutes.TelegramSettings.route) }) {
+        GuideTradeCard(onClick = { navController.navigate("telegram_settings") }) {
             Text("Telegram", fontWeight = FontWeight.SemiBold)
         }
         Spacer(modifier = Modifier.height(8.dp))
-        GuideTradeCard(onClick = { navController.navigate(NavRoutes.VoiceSettings.route) }) {
+        GuideTradeCard(onClick = { navController.navigate("voice_settings") }) {
             Text("Voice", fontWeight = FontWeight.SemiBold)
         }
         Spacer(modifier = Modifier.height(8.dp))
-        GuideTradeCard(onClick = { navController.navigate(NavRoutes.PaperTrading.route) }) {
+        GuideTradeCard(onClick = { navController.navigate("paper_trading") }) {
             Text("Paper Trading", fontWeight = FontWeight.SemiBold)
         }
         Spacer(modifier = Modifier.height(8.dp))
-        GuideTradeCard(onClick = { navController.navigate(NavRoutes.McpConnections.route) }) {
+        GuideTradeCard(onClick = { navController.navigate("mcp_connections") }) {
             Text("MCP Connections", fontWeight = FontWeight.SemiBold)
         }
         Spacer(modifier = Modifier.height(20.dp))
@@ -61,8 +57,8 @@ fun SettingsScreen(navController: NavHostController, authViewModel: AuthViewMode
             text = "Sign Out",
             onClick = {
                 authViewModel.signOut()
-                navController.navigate(NavRoutes.Login.route) {
-                    popUpTo(NavRoutes.Home.route) { inclusive = true }
+                navController.navigate("login") {
+                    popUpTo("splash") { inclusive = true }
                 }
             },
         )

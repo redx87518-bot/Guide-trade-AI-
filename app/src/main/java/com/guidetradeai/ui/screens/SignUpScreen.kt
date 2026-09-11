@@ -32,7 +32,7 @@ fun SignUpScreen(navController: NavHostController, authViewModel: AuthViewModel)
     var fullName by remember { mutableStateOf("") }
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
-    val authState = authViewModel.uiState.collectAsStateWithLifecycle().value
+    val authState = authViewModel.uiState.collectAsState().value
 
     if (authState is AuthUiState.Authenticated) {
         navController.navigate(NavRoutes.Home.route) {
