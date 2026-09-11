@@ -1,10 +1,27 @@
 package com.guidetradeai.data.remote
 
+import io.github.jan.supabase.SupabaseClient
 import io.github.jan.supabase.auth.Auth
 import io.github.jan.supabase.auth.providers.builtin.Email
 import io.github.jan.supabase.postgrest.postgrest
-import io.github.jan.supabase.supabase
-import kotlinx.coroutines.flow.Flow
+import kotlinx.datetime.Clock
+
+object SupabaseClient {
+    const val URL = "https://dnfutvafibliysnsetwm.supabase.co"
+    const val ANON_KEY = "sb_publishable_Y-kuMPpPKDT9NKKi9fCKcw_YaVdkIpL"
+
+    val client: SupabaseClient by lazy {
+        io.github.jan.supabase.createSupabaseClient(
+            supabaseUrl = URL,
+            supabaseKey = ANON_KEY,
+        ) {
+            install(io.github.jan.supabase.auth.Auth)
+            install(io.github.jan.supabase.postgrest.Postgrest)
+            install(io.github.jan.supabase.functions.Functions)
+            install(io.github.jan.supabase.realtime.Realtime)
+        }
+    }
+}
 
 object SupabaseClientWrapper {
     private val client by lazy { SupabaseClient.client }
@@ -64,7 +81,7 @@ object SupabaseClientWrapper {
                 mapOf(
                     "full_name" to fullName,
                     "avatar_url" to avatarUrl,
-                    "updated_at" to kotlinx.datetime.Clock.System.now().toString(),
+                    "updated_at" to Clock.System.now().toString(),
                 )
             ) {
                 filter { eq("id", userId) }
@@ -97,10 +114,10 @@ object SupabaseClientWrapper {
             val userId = currentUserId()
             client.postgrest["user_settings"].update(
                 mapOf(
-                    "voice_enabled" to settings.voiceEnabled,
-                    "auto_speak" to settings.autoSpeak,
+                    "voice_enabled" to settings.voice_enabled,
+                    "auto_speak" to settings.auto_speak,
                     "theme" to settings.theme,
-                    "updated_at" to kotlinx.datetime.Clock.System.now().toString(),
+                    "updated_at" to Clock.System.now().toString(),
                 )
             ) {
                 filter { eq("user_id", userId) }
@@ -224,11 +241,11 @@ object SupabaseClientWrapper {
             client.postgrest["telegram_settings"].upsert(
                 mapOf(
                     "user_id" to userId,
-                    "bot_token_encrypted" to settings.botTokenEncrypted,
-                    "chat_id" to settings.chatId,
+                    "bot_token_encrypted" to settings.bot_token_encrypted,
+                    "chat_id" to settings.chat_id,
                     "enabled" to settings.enabled,
-                    "send_research" to settings.sendResearch,
-                    "send_chat_results" to settings.sendChatResults,
+                    "send_research" to settings.send_research,
+                    "send_chat_results" to settings.send_chat_results,
                 )
             )
             Result.Success(Unit)
@@ -237,7 +254,6 @@ object SupabaseClientWrapper {
         }
     }
 
-    // Paper Trading
     suspend fun getPaperPositions(): Result<List<PaperPositionData>> {
         return try {
             val userId = currentUserId()
@@ -297,7 +313,6 @@ object SupabaseClientWrapper {
         }
     }
 
-    // MCP Connections
     suspend fun getMcpConnections(): Result<List<McpConnectionData>> {
         return try {
             val userId = currentUserId()
@@ -317,8 +332,8 @@ object SupabaseClientWrapper {
                 mapOf(
                     "user_id" to userId,
                     "name" to connection.name,
-                    "server_url" to connection.serverUrl,
-                    "api_key" to connection.apiKey,
+                    "server_url" to connection.server_url,
+                    "api_key" to connection.api_key,
                     "enabled" to connection.enabled,
                 )
             ) {
