@@ -101,3 +101,82 @@ data class AgentResponse(
     val marketData: MarketData? = null,
     val timestamp: String? = null,
 )
+
+data class PaperOrderRequest(
+    val symbol: String,
+    val side: String,
+    val quantity: Double,
+    val orderType: String = "market",
+    val limitPrice: Double? = null,
+)
+
+@Serializable
+data class PaperDashboardData(
+    val account: PaperAccount?,
+    val positions: List<PaperPosition>,
+    val orders: List<PaperOrder>,
+    val trades: List<PaperTrade>,
+)
+
+@Serializable
+data class User(
+    val id: String = "",
+    val email: String = "",
+    val fullName: String? = null,
+    val avatarUrl: String? = null,
+    val createdAt: String = "",
+    val updatedAt: String = "",
+)
+
+@Serializable
+data class PaperAccount(
+    val id: String = "",
+    val userId: String = "",
+    val balance: Double = 0.0,
+    val equity: Double = 0.0,
+    val buyingPower: Double = 0.0,
+    val createdAt: String = "",
+    val updatedAt: String = "",
+)
+
+@Serializable
+data class PaperPosition(
+    val id: String = "",
+    val userId: String = "",
+    val symbol: String = "",
+    val quantity: Double = 0.0,
+    val avgEntry: Double = 0.0,
+    val currentPrice: Double = 0.0,
+    val marketValue: Double = 0.0,
+    val unrealizedPnl: Double = 0.0,
+    val unrealizedPnlPercent: Double = 0.0,
+    val createdAt: String = "",
+    val updatedAt: String = "",
+)
+
+@Serializable
+data class PaperOrder(
+    val id: String = "",
+    val userId: String = "",
+    val symbol: String = "",
+    val side: String = "",
+    val quantity: Double = 0.0,
+    val price: Double = 0.0,
+    val notionalValue: Double = 0.0,
+    val orderType: String = "",
+    val status: String = "",
+    val createdAt: String = "",
+)
+
+@Serializable
+data class PaperTrade(
+    val id: String = "",
+    val orderId: String = "",
+    val userId: String = "",
+    val symbol: String = "",
+    val side: String = "",
+    val quantity: Double = 0.0,
+    val price: Double = 0.0,
+    val notionalValue: Double = 0.0,
+    val createdAt: String = "",
+)

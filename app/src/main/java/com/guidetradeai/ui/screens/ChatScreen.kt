@@ -11,11 +11,14 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import com.guidetradeai.ui.navigation.NavRoutes
 import com.guidetradeai.viewmodel.ChatViewModel
@@ -35,7 +38,7 @@ fun ChatScreen(
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
-        Text("Chat", fontSize = androidx.compose.ui.unit.sp(24))
+        Text("Chat", fontSize = 24.sp)
         Spacer(modifier = Modifier.height(16.dp))
         TextField(
             value = message,

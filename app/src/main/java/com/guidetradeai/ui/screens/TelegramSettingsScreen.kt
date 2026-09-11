@@ -11,18 +11,20 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 
 @Composable
 fun TelegramSettingsScreen(navController: NavHostController) {
     var botToken by remember { mutableStateOf("") }
     var chatId by remember { mutableStateOf("") }
-    var enabled by remember { mutableStateOf(false) }
 
     Column(
         modifier = Modifier
@@ -31,7 +33,7 @@ fun TelegramSettingsScreen(navController: NavHostController) {
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
-        Text("Telegram Settings", fontSize = androidx.compose.ui.unit.sp(24))
+        Text("Telegram Settings", fontSize = 24.sp)
         Spacer(modifier = Modifier.height(16.dp))
         TextField(
             value = botToken,

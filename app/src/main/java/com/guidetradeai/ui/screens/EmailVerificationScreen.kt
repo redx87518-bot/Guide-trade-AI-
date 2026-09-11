@@ -13,6 +13,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import com.guidetradeai.ui.navigation.NavRoutes
 
@@ -25,7 +26,7 @@ fun EmailVerificationScreen(navController: NavHostController, email: String) {
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
-        Text("Verify Email", fontSize = androidx.compose.ui.unit.sp(24))
+        Text("Verify Email", fontSize = 24.sp)
         Spacer(modifier = Modifier.height(16.dp))
         Text("A verification link has been sent to $email")
         Spacer(modifier = Modifier.height(16.dp))

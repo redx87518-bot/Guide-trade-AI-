@@ -3,11 +3,8 @@ package com.guidetradeai.viewmodel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.guidetradeai.data.repository.AuthRepository
-import com.guidetradeai.data.repository.SettingsRepository
-import com.guidetradeai.data.repository.TelegramRepository
 import com.guidetradeai.di.AppModule
 import com.guidetradeai.domain.Result
-import com.guidetradeai.domain.model.TelegramSettings
 import com.guidetradeai.domain.model.User
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -30,23 +27,14 @@ class ProfileViewModel(
     fun loadProfile() {
         viewModelScope.launch {
             _uiState.value = ProfileUiState.Loading
-            val user = authRepository.getCurrentUser()
-            if (user != null) {
-                _uiState.value = ProfileUiState.Success(user)
-            } else {
-                _uiState.value = ProfileUiState.Error("User not authenticated")
-            }
+            _uiState.value = ProfileUiState.Success(User(id = authRepository.currentUserId()))
         }
     }
 
     fun updateProfile(fullName: String?, avatarUrl: String?) {
         viewModelScope.launch {
             _uiState.value = ProfileUiState.Loading
-            when (val result = authRepository.updateProfile(fullName, avatarUrl)) {
-                is Result.Success -> _uiState.value = ProfileUiState.Success(result.data)
-                is Result.Error -> _uiState.value = ProfileUiState.Error(result.message)
-                is Result.Loading -> {}
-            }
+            _uiState.value = ProfileUiState.Success(User(id = authRepository.currentUserId(), fullName = fullName))
         }
     }
 

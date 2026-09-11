@@ -5,7 +5,7 @@ import androidx.lifecycle.viewModelScope
 import com.guidetradeai.data.repository.PaperTradingRepository
 import com.guidetradeai.di.AppModule
 import com.guidetradeai.domain.Result
-import com.guidetradeai.domain.model.PaperDashboardData
+import com.guidetradeai.domain.model.PaperPosition
 import com.guidetradeai.domain.model.PaperOrder
 import com.guidetradeai.domain.model.PaperOrderRequest
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -15,10 +15,9 @@ import kotlinx.coroutines.launch
 
 sealed class PaperTradingUiState {
     object Loading : PaperTradingUiState()
-    data class Success(val data: PaperDashboardData) : PaperTradingUiState()
-    data class Error(val message: String) : PaperTradingUiState()
+    data class Success(val positions: List<PaperPosition>, val orders: List<PaperOrder>) : PaperTradingUiState()
     data class OrderPlaced(val order: PaperOrder) : PaperTradingUiState()
-    object OrderFailed : PaperTradingUiState()
+    data class Error(val message: String) : PaperTradingUiState()
 }
 
 class PaperTradingViewModel(
@@ -31,10 +30,12 @@ class PaperTradingViewModel(
     fun loadDashboard() {
         viewModelScope.launch {
             _uiState.value = PaperTradingUiState.Loading
-            when (val result = paperTradingRepository.getDashboard()) {
-                is Result.Success -> _uiState.value = PaperTradingUiState.Success(result.data)
-                is Result.Error -> _uiState.value = PaperTradingUiState.Error(result.message)
-                is Result.Loading -> {}
+            val positionsResult = paperTradingRepository.getPositions()
+            val ordersResult = paperTradingRepository.getOrders()
+            if (positionsResult is Result.Success && ordersResult is Result.Success) {
+                _uiState.value = PaperTradingUiState.Success(positionsResult.data, ordersResult.data)
+            } else {
+                _uiState.value = PaperTradingUiState.Error("Failed to load dashboard")
             }
         }
     }
@@ -42,10 +43,17 @@ class PaperTradingViewModel(
     fun placeOrder(request: PaperOrderRequest) {
         viewModelScope.launch {
             _uiState.value = PaperTradingUiState.Loading
-            when (val result = paperTradingRepository.placeOrder(request)) {
+            when (val result = paperTradingRepository.placeOrder(
+                com.guidetradeai.data.remote.PaperOrderData(
+                    symbol = request.symbol,
+                    side = request.side,
+                    quantity = request.quantity,
+                    orderType = request.orderType,
+                )
+            )) {
                 is Result.Success -> _uiState.value = PaperTradingUiState.OrderPlaced(result.data)
                 is Result.Error -> _uiState.value = PaperTradingUiState.Error(result.message)
-                is Result.Loading -> {}
+                else -> {}
             }
         }
     }

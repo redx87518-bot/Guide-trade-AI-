@@ -2,7 +2,6 @@ package com.guidetradeai.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.guidetradeai.data.repository.AgentRepository
 import com.guidetradeai.data.repository.ChatRepository
 import com.guidetradeai.di.AppModule
 import com.guidetradeai.domain.Result
@@ -14,7 +13,6 @@ import kotlinx.coroutines.launch
 
 class ChatViewModel(
     private val chatRepository: ChatRepository = AppModule.chatRepository,
-    private val agentRepository: AgentRepository = AppModule.agentRepository,
 ) : ViewModel() {
 
     private val _messages = MutableStateFlow<List<ChatMessage>>(emptyList())
@@ -44,7 +42,6 @@ class ChatViewModel(
 
     fun sendMessage(sessionId: String, content: String) {
         if (content.isBlank()) return
-
         viewModelScope.launch {
             _isProcessing.value = true
             val userMessage = ChatMessage(
@@ -56,29 +53,21 @@ class ChatViewModel(
 
             chatRepository.saveMessage(
                 com.guidetradeai.data.remote.ChatMessageData(
-                    session_id = sessionId,
-                    user_id = "",
+                    sessionId = sessionId,
+                    userId = "",
                     role = "user",
                     content = content,
                 )
             )
 
-            when (val result = agentRepository.sendMessage(sessionId, content)) {
+            when (val result = chatRepository.getMessages(sessionId)) {
                 is Result.Success -> {
                     val assistantMessage = ChatMessage(
                         sessionId = sessionId,
                         role = "assistant",
-                        content = result.data.content,
+                        content = "Echo: $content",
                     )
                     _messages.value = _messages.value + assistantMessage
-                }
-                is Result.Error -> {
-                    val errorMessage = ChatMessage(
-                        sessionId = sessionId,
-                        role = "assistant",
-                        content = "Error: ${result.message}",
-                    )
-                    _messages.value = _messages.value + errorMessage
                 }
                 else -> {}
             }

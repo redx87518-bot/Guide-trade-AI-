@@ -2,6 +2,7 @@ package com.guidetradeai.ui.screens
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -41,7 +42,6 @@ fun MarketsScreen(
     ) {
         Text("Markets", fontSize = 28.sp)
         Spacer(modifier = Modifier.height(16.dp))
-
         TextField(
             value = symbol,
             onValueChange = { symbol = it },
@@ -62,7 +62,6 @@ fun MarketsScreen(
         ) {
             Text("Load Market Data")
         }
-
         when (uiState) {
             is MarketsUiState.Loading -> Text("Loading...")
             is MarketsUiState.Success -> {

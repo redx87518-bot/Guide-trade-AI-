@@ -22,7 +22,7 @@ class MarketsViewModel(
             _uiState.value = MarketsUiState.Loading
             val result = agentRepository.sendMessage("market", "Get market data for $symbol in $market")
             when (result) {
-                is Result.Success -> _uiState.value = MarketsUiState.Success(result.data.content)
+                is Result.Success -> _uiState.value = MarketsUiState.Success(result.data.content ?: "No data")
                 is Result.Error -> _uiState.value = MarketsUiState.Error(result.message)
                 else -> {}
             }

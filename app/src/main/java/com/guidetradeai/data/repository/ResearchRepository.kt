@@ -17,7 +17,7 @@ import kotlinx.serialization.json.jsonPrimitive
 import java.time.Instant
 import java.time.ZoneId
 
-class ResearchRepository(private val supabase: SupabaseClient) {
+class ResearchRepository(private val supabase: SupabaseClient = SupabaseClient) {
 
     suspend fun generateResearch(query: String, userId: String): Result<ResearchResult> {
         return try {
@@ -31,7 +31,7 @@ class ResearchRepository(private val supabase: SupabaseClient) {
             val parsed = Json.parseToJsonElement(data).jsonObject
             val summary = parsed["summary"]?.jsonPrimitive?.contentOrNull
                 ?: parsed["content"]?.jsonPrimitive?.contentOrNull
-                ?: return Result.error("Empty research response")
+                ?: return Result.Error("Empty research response")
             val result = ResearchResult(
                 id = parsed["id"]?.jsonPrimitive?.contentOrNull ?: "",
                 userId = userId,
@@ -41,9 +41,9 @@ class ResearchRepository(private val supabase: SupabaseClient) {
                 asset = null,
                 createdAt = Instant.now().atZone(ZoneId.of("UTC")).toString(),
             )
-            Result.success(result)
+            Result.Success(result)
         } catch (e: Exception) {
-            Result.error(e.message ?: "Failed to generate research")
+            Result.Error(e.message ?: "Failed to generate research")
         }
     }
 
@@ -63,9 +63,9 @@ class ResearchRepository(private val supabase: SupabaseClient) {
                     createdAt = row["created_at"]?.jsonPrimitive?.content ?: "",
                 )
             }.sortedByDescending { it.createdAt }
-            Result.success(results)
+            Result.Success(results)
         } catch (e: Exception) {
-            Result.error(e.message ?: "Failed to load research history")
+            Result.Error(e.message ?: "Failed to load research history")
         }
     }
 }

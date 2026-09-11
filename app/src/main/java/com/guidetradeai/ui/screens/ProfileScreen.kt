@@ -13,6 +13,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 
 @Composable
@@ -24,7 +25,7 @@ fun ProfileScreen(navController: NavHostController) {
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
-        Text("Profile", fontSize = androidx.compose.ui.unit.sp(28))
+        Text("Profile", fontSize = 28.sp)
         Spacer(modifier = Modifier.height(16.dp))
         Button(
             onClick = { navController.popBackStack() },
