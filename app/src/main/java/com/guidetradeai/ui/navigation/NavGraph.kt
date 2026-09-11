@@ -51,10 +51,6 @@ fun GuideTradeNavGraph(
         composable(NavRoutes.PROFILE) {
             ProfileScreen(navController = navController)
         }
-        composable(NavRoutes.ASSET_DETAIL) { backStackEntry ->
-            val symbol = backStackEntry.arguments?.getString("symbol") ?: ""
-            AssetDetailScreen(symbol = symbol, navController = navController)
-        }
         composable(NavRoutes.SPLASH) {
             SplashScreen(navController = navController)
         }
