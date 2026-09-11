@@ -23,8 +23,8 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Analytics
-import androidx.compose.material.icons.filled.Briefcase
-import androidx.compose.material.icons.filled.ChartArea
+import androidx.compose.material.icons.filled.Work
+import androidx.compose.material.icons.filled.ShowChart
 import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.ContentCopy
@@ -43,7 +43,7 @@ import androidx.compose.material.icons.filled.Send
 import androidx.compose.material.icons.filled.Share
 import androidx.compose.material.icons.filled.SmartToy
 import androidx.compose.material.icons.filled.Speaker
-import androidx.compose.material.icons.filled.Sparkles
+import androidx.compose.material.icons.filled.Star
 import androidx.compose.material.icons.filled.Star
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -144,6 +144,8 @@ import kotlinx.serialization.json.JsonPrimitive
 import kotlinx.serialization.json.buildJsonObject
 import kotlinx.serialization.json.jsonObject
 import kotlinx.serialization.json.jsonPrimitive
+import androidx.lifecycle.viewmodel.compose.viewModel
+import com.guidetradeai.ui.navigation.NavRoutes
 
 @Composable
 fun AgentScreen(

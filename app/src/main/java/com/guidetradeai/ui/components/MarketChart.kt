@@ -37,6 +37,8 @@ import com.guidetradeai.ui.theme.Background
 import com.guidetradeai.ui.theme.DividerColor
 import com.guidetradeai.ui.theme.TextPrimary
 import com.guidetradeai.ui.theme.TextSecondary
+import androidx.lifecycle.viewmodel.compose.viewModel
+import com.guidetradeai.ui.navigation.NavRoutes
 
 @Composable
 fun MarketCard(data: com.guidetradeai.domain.model.MarketDataResponse) {

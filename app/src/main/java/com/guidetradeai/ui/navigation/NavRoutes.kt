@@ -1,4 +1,6 @@
 package com.guidetradeai.ui.navigation
+import androidx.lifecycle.viewmodel.compose.viewModel
+import com.guidetradeai.ui.navigation.NavRoutes
 
 object NavRoutes {
     const val SPLASH = "splash"

@@ -29,6 +29,8 @@ import kotlinx.serialization.json.jsonPrimitive
 import java.util.Locale
 import android.util.Base64
 import java.io.File
+import androidx.lifecycle.viewmodel.compose.viewModel
+import com.guidetradeai.ui.navigation.NavRoutes
 
 class VoiceManager(
     private val context: Context,

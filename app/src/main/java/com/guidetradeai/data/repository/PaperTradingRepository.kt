@@ -23,6 +23,9 @@ import kotlinx.serialization.json.JsonPrimitive
 import kotlinx.serialization.json.buildJsonObject
 import kotlinx.serialization.json.jsonObject
 import kotlinx.serialization.json.jsonPrimitive
+import java.util.UUID
+import androidx.lifecycle.viewmodel.compose.viewModel
+import com.guidetradeai.ui.navigation.NavRoutes
 
 class PaperTradingRepository(
     private val supabase: SupabaseClient,
@@ -68,15 +71,75 @@ class PaperTradingRepository(
                 put("order_type", JsonPrimitive(request.orderType))
                 put("limit_price", request.limitPrice?.let { JsonPrimitive(it) } ?: JsonPrimitive(null))
             }
-            val response = supabase.functions.invoke("paper-order", body = body)
-            val data = response.bodyAsText()
-            val jsonObject = Json.parseToJsonElement(data).jsonObject
-            val error = jsonObject["error"]?.jsonPrimitive?.content
-            if (error != null) {
-                return Result.error(mapPaperError(error))
+            val userId = currentUserId()
+            val newOrder = buildJsonObject {
+                put("user_id", JsonPrimitive(userId))
+                put("symbol", JsonPrimitive(request.symbol))
+                put("side", JsonPrimitive(request.side))
+                put("quantity", JsonPrimitive(request.quantity))
+                put("order_type", JsonPrimitive(request.orderType))
+                put("limit_price", JsonPrimitive(request.limitPrice))
+                put("price", JsonPrimitive(request.limitPrice ?: 0.0))
+                put("notional_value", JsonPrimitive((request.limitPrice ?: 0.0) * request.quantity))
+                put("status", JsonPrimitive("pending"))
             }
-            val orderObj = jsonObject["order"]?.jsonObject ?: jsonObject
-            Result.success(mapToPaperOrder(orderObj))
+            supabase.postgrest.from("paper_orders").insert(newOrder)
+            
+            // Update position or create new one
+            val existingPositions = supabase.postgrest.from("paper_positions")
+                .select { filter { eq("user_id", userId); eq("symbol", request.symbol) } }
+                .decodeList<JsonObject>()
+            
+            if (existingPositions.isNotEmpty()) {
+                val existing = existingPositions.first()
+                val currentQty = existing["quantity"]?.jsonPrimitive?.content?.toDoubleOrNull() ?: 0.0
+                val currentAvg = existing["avg_entry"]?.jsonPrimitive?.content?.toDoubleOrNull() ?: 0.0
+                val newQty = currentQty + request.quantity
+                val newAvg = if (newQty > 0) (currentAvg * currentQty + (request.limitPrice ?: 0.0) * request.quantity) / newQty else 0.0
+                
+                supabase.postgrest.from("paper_positions").update(buildJsonObject {
+                    put("quantity", JsonPrimitive(newQty))
+                    put("avg_entry", JsonPrimitive(newAvg))
+                    put("current_price", JsonPrimitive(request.limitPrice ?: 0.0))
+                    put("market_value", JsonPrimitive(newQty * (request.limitPrice ?: 0.0)))
+                }) {
+                    filter { eq("id", existing["id"]?.jsonPrimitive?.content ?: "") }
+                }
+            } else {
+                supabase.postgrest.from("paper_positions").insert(buildJsonObject {
+                    put("user_id", JsonPrimitive(userId))
+                    put("symbol", JsonPrimitive(request.symbol))
+                    put("quantity", JsonPrimitive(request.quantity))
+                    put("avg_entry", JsonPrimitive(request.limitPrice ?: 0.0))
+                    put("current_price", JsonPrimitive(request.limitPrice ?: 0.0))
+                    put("market_value", JsonPrimitive(request.quantity * (request.limitPrice ?: 0.0)))
+                    put("unrealized_pnl", JsonPrimitive(0.0))
+                    put("unrealized_pnl_percent", JsonPrimitive(0.0))
+                })
+            }
+            
+            // Create trade record
+            supabase.postgrest.from("paper_trades").insert(buildJsonObject {
+                put("user_id", JsonPrimitive(userId))
+                put("symbol", JsonPrimitive(request.symbol))
+                put("side", JsonPrimitive(request.side))
+                put("quantity", JsonPrimitive(request.quantity))
+                put("price", JsonPrimitive(request.limitPrice ?: 0.0))
+                put("notional_value", JsonPrimitive((request.limitPrice ?: 0.0) * request.quantity))
+            })
+            
+            Result.success(PaperOrder(
+                id = java.util.UUID.randomUUID().toString(),
+                userId = userId,
+                symbol = request.symbol,
+                side = request.side,
+                quantity = request.quantity,
+                price = request.limitPrice ?: 0.0,
+                notionalValue = (request.limitPrice ?: 0.0) * request.quantity,
+                orderType = request.orderType,
+                status = "pending",
+                createdAt = java.time.Instant.now().toString()
+            ))
         } catch (e: Exception) {
             Result.error("Failed to place paper order: ${e.message}")
         }

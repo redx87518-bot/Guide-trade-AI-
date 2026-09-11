@@ -3,6 +3,8 @@ package com.guidetradeai.voice
 import android.media.MediaPlayer
 import android.util.Base64
 import java.io.File
+import androidx.lifecycle.viewmodel.compose.viewModel
+import com.guidetradeai.ui.navigation.NavRoutes
 
 class AudioPlayer {
     private var mediaPlayer: MediaPlayer? = null

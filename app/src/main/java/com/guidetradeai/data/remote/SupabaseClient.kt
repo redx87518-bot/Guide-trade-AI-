@@ -11,6 +11,8 @@ import io.github.jan.supabase.serializer.KotlinXSerializer
 import io.github.jan.supabase.storage.Storage
 import io.github.jan.supabase.storage.storage
 import kotlinx.serialization.json.Json
+import androidx.lifecycle.viewmodel.compose.viewModel
+import com.guidetradeai.ui.navigation.NavRoutes
 object SupabaseClient {
     // NOTE: rotate the publishable key in Supabase dashboard → Project Settings → API
     val client = createSupabaseClient(

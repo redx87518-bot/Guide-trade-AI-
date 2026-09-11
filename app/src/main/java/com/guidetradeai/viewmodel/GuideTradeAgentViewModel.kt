@@ -18,6 +18,8 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import java.util.UUID
 import android.util.Log
+import androidx.lifecycle.viewmodel.compose.viewModel
+import com.guidetradeai.ui.navigation.NavRoutes
 
 class GuideTradeAgentViewModel(
     private val agentRepository: GuideTradeAgentRepository = AppModule.guideTradeAgentRepository,

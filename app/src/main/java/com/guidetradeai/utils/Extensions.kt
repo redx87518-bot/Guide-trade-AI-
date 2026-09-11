@@ -3,6 +3,8 @@ package com.guidetradeai.utils
 import java.time.Instant
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
+import androidx.lifecycle.viewmodel.compose.viewModel
+import com.guidetradeai.ui.navigation.NavRoutes
 
 fun String?.formatDate(pattern: String = "MMM dd, yyyy"): String {
     if (this.isNullOrBlank()) return ""

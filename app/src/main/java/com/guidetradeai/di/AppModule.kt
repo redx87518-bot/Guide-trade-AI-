@@ -12,6 +12,8 @@ import com.guidetradeai.data.repository.GuideTradeAgentRepository
 import com.guidetradeai.audio.VoiceManager
 import com.guidetradeai.data.local.AppPreferences
 import com.guidetradeai.data.repository.PaperTradingRepository
+import androidx.lifecycle.viewmodel.compose.viewModel
+import com.guidetradeai.ui.navigation.NavRoutes
 
 val Context.dataStore by preferencesDataStore("app_prefs")
 

@@ -15,9 +15,9 @@ import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.NavigationBarItemDefaults
 import androidx.compose.material3.Text
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Briefcase
-import androidx.compose.material.icons.filled.ChartArea
-import androidx.compose.material.icons.filled.Sparkles
+import androidx.compose.material.icons.filled.Work
+import androidx.compose.material.icons.filled.ShowChart
+import androidx.compose.material.icons.filled.Star
 import androidx.compose.material.icons.filled.SmartToy
 import androidx.compose.material.icons.filled.Star
 import androidx.compose.runtime.Composable
@@ -33,6 +33,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.guidetradeai.ui.theme.GuideTradeColors
+import androidx.lifecycle.viewmodel.compose.viewModel
+import com.guidetradeai.ui.navigation.NavRoutes
 
 data class BottomNavItem(
     val title: String,
@@ -47,9 +49,9 @@ fun GuideTradeBottomBar(
     modifier: Modifier = Modifier,
     items: List<BottomNavItem> = listOf(
         BottomNavItem("Home", Icons.Default.SmartToy, "home"),
-        BottomNavItem("Markets", Icons.Default.ChartArea, "markets"),
-        BottomNavItem("AI", Icons.Default.Sparkles, "agent", isCenter = true),
-        BottomNavItem("Paper", Icons.Default.Briefcase, "paper"),
+        BottomNavItem("Markets", Icons.Default.ShowChart, "markets"),
+        BottomNavItem("AI", Icons.Default.Star, "agent", isCenter = true),
+        BottomNavItem("Paper", Icons.Default.Work, "paper"),
         BottomNavItem("Settings", Icons.Default.Star, "settings"),
     ),
 ) {

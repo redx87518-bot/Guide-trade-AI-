@@ -20,6 +20,8 @@ import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.JsonPrimitive
 import kotlinx.serialization.json.jsonObject
 import kotlinx.serialization.json.jsonPrimitive
+import androidx.lifecycle.viewmodel.compose.viewModel
+import com.guidetradeai.ui.navigation.NavRoutes
 
 sealed class VoiceUiState {
     object Idle : VoiceUiState()
@@ -144,5 +146,3 @@ class VoiceViewModel(
 
     fun clearError() {
         _uiState.value = VoiceUiState.Idle
-    }
-}

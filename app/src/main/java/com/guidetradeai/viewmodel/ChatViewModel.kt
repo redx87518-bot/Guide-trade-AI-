@@ -21,6 +21,8 @@ import kotlinx.coroutines.launch
 import java.time.Instant
 import java.util.UUID
 import android.util.Log
+import androidx.lifecycle.viewmodel.compose.viewModel
+import com.guidetradeai.ui.navigation.NavRoutes
 
 class ChatViewModel(
     private val chatRepository: ChatRepository = AppModule.chatRepository,

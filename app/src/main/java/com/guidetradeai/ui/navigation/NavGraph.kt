@@ -25,6 +25,8 @@ import com.guidetradeai.viewModel.MarketsViewModel
 import com.guidetradeai.viewModel.PaperTradingViewModel
 import com.guidetradeai.viewModel.ResearchViewModel
 import com.guidetradeai.viewModel.SettingsViewModel
+import androidx.lifecycle.viewmodel.compose.viewModel
+import com.guidetradeai.ui.navigation.NavRoutes
 
 @Composable
 fun GuideTradeNavGraph(

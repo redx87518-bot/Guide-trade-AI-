@@ -43,6 +43,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import kotlinx.coroutines.launch
+import androidx.lifecycle.viewmodel.compose.viewModel
+import com.guidetradeai.ui.navigation.NavRoutes
 
 @Composable
 fun OnboardingScreen(navController: NavHostController) {
@@ -108,7 +110,7 @@ fun OnboardingScreen(navController: NavHostController) {
             TextButton(
                 onClick = {
                     val app = context.applicationContext as com.guidetradeai.GuideTradeApp
-                    app.getSharedPreferences().edit()
+                    app.getSharedPreferences("onboarding", android.content.Context.MODE_PRIVATE).edit()
                         .putBoolean("onboarding_complete", true)
                         .apply()
                     navController.navigate(com.guidetradeai.ui.navigation.NavRoutes.LOGIN) {
@@ -133,7 +135,7 @@ fun OnboardingScreen(navController: NavHostController) {
                         }
                     } else {
                         val app = context.applicationContext as com.guidetradeai.GuideTradeApp
-                        app.getSharedPreferences().edit()
+                        app.getSharedPreferences("onboarding", android.content.Context.MODE_PRIVATE).edit()
                             .putBoolean("onboarding_complete", true)
                             .apply()
                         navController.navigate(com.guidetradeai.ui.navigation.NavRoutes.LOGIN) {
