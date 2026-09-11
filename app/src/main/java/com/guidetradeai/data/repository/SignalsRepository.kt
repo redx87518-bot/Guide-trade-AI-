@@ -7,7 +7,6 @@ import com.guidetradeai.domain.model.AnalysisResult
 import com.guidetradeai.domain.model.Signal
 import com.guidetradeai.domain.model.SignalFilter
 import com.guidetradeai.domain.model.WatchlistItem
-import io.github.jan.supabase.postgrest.query.eq
 import io.ktor.client.statement.bodyAsText
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonObject
@@ -88,11 +87,7 @@ class SignalsRepository(private val supabase: SupabaseClient = SupabaseClient) {
         return try {
             supabase.postgrest
                 .from("watchlist")
-                .delete {
-                    filter {
-                        eq("id", itemId)
-                    }
-                }
+                .delete {}
             Result.Success(Unit)
         } catch (e: Exception) {
             Result.Error(e.message ?: "Failed to remove from watchlist")
