@@ -23,8 +23,7 @@ class GuideTradeAgentRepository(
             val body = buildJsonObject {
                 put("goal", JsonPrimitive(request.goal))
                 request.sessionId?.let { put("session_id", JsonPrimitive(it)) }
-                request.provider?.let { put("provider", JsonPrimitive(it)) }
-                request.market?.let { put("market", JsonPrimitive(it)) }
+                                request.market?.let { put("market", JsonPrimitive(it)) }
                 request.symbol?.let { put("symbol", JsonPrimitive(it)) }
                 request.timeframe?.let { put("timeframe", JsonPrimitive(it)) }
                 request.feature?.let { put("feature", JsonPrimitive(it)) }
@@ -102,8 +101,7 @@ class GuideTradeAgentRepository(
                             AgentSession(
                                 id = obj["id"]?.jsonPrimitive?.content ?: "",
                                 title = obj["title"]?.jsonPrimitive?.content ?: "",
-                                provider = obj["provider"]?.jsonPrimitive?.content,
-                                createdAt = obj["created_at"]?.jsonPrimitive?.content,
+                                                                createdAt = obj["created_at"]?.jsonPrimitive?.content,
                                 updatedAt = obj["updated_at"]?.jsonPrimitive?.content,
                             )
                         )
@@ -151,8 +149,7 @@ class GuideTradeAgentRepository(
             sessionId = json["session_id"]?.jsonPrimitive?.content,
             content = json["content"]?.jsonPrimitive?.content,
             summary = json["summary"]?.jsonPrimitive?.content,
-            provider = json["provider"]?.jsonPrimitive?.content,
-            market = json["market"]?.jsonPrimitive?.content,
+                        market = json["market"]?.jsonPrimitive?.content,
             symbol = json["symbol"]?.jsonPrimitive?.content,
             timeframe = json["timeframe"]?.jsonPrimitive?.content,
             toolsUsed = json["tools_used"]?.let { toolsElement ->
@@ -171,8 +168,7 @@ class GuideTradeAgentRepository(
 
     private fun parseMarketData(json: JsonObject): com.guidetradeai.domain.model.MarketDataResponse {
         return com.guidetradeai.domain.model.MarketDataResponse(
-            provider = json["provider"]?.jsonPrimitive?.content ?: "",
-            market = json["market"]?.jsonPrimitive?.content ?: "",
+                        market = json["market"]?.jsonPrimitive?.content ?: "",
             symbol = json["symbol"]?.jsonPrimitive?.content ?: "",
             name = json["name"]?.jsonPrimitive?.content ?: "",
             timestamp = json["timestamp"]?.jsonPrimitive?.content ?: "",
