@@ -10,17 +10,23 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.Button
 import androidx.compose.material3.FilterChip
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
+import com.guidetradeai.domain.model.AnalysisRequest
 import com.guidetradeai.ui.components.EmptyState
 import com.guidetradeai.ui.components.ErrorState
 import com.guidetradeai.ui.components.LoadingState
@@ -31,6 +37,11 @@ import com.guidetradeai.viewmodel.AnalyzeViewModel
 @Composable
 fun AnalyzeScreen(navController: NavHostController, viewModel: AnalyzeViewModel) {
     val uiState = viewModel.uiState.collectAsState().value
+    var selectedMarket by remember { mutableStateOf("crypto") }
+    var selectedSymbol by remember { mutableStateOf("BTC/USD") }
+    var selectedTimeframe by remember { mutableStateOf("1H") }
+    var selectedAnalysis by remember { mutableStateOf("signal") }
+    var symbolQuery by remember { mutableStateOf("") }
 
     Column(
         modifier = Modifier
@@ -82,29 +93,36 @@ fun AnalyzeScreen(navController: NavHostController, viewModel: AnalyzeViewModel)
         LazyRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
             items(markets) { market ->
                 FilterChip(
-                    selected = false,
-                    onClick = {},
+                    selected = selectedMarket == market,
+                    onClick = { selectedMarket = market },
                     label = { Text(market.replaceFirstChar { it.uppercase() }, fontSize = 12.sp) },
                 )
             }
         }
 
         Text("Asset", fontWeight = FontWeight.Medium, fontSize = 13.sp)
-        androidx.compose.material3.OutlinedTextField(
-            value = "",
-            onValueChange = {},
+        OutlinedTextField(
+            value = symbolQuery.ifBlank { selectedSymbol },
+            onValueChange = { symbolQuery = it },
             label = { Text("Search symbol") },
             modifier = Modifier.fillMaxWidth(),
             singleLine = true,
         )
+        Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+            listOf("BTC/USD", "ETH/USD", "EUR/USD", "AAPL", "XAU/USD").forEach { asset ->
+                TextButton(onClick = { selectedSymbol = asset; symbolQuery = asset }) {
+                    Text(asset, fontSize = 11.sp)
+                }
+            }
+        }
 
         Text("Timeframe", fontWeight = FontWeight.Medium, fontSize = 13.sp)
         val timeframes = listOf("1m", "5m", "15m", "1h", "4h", "1D")
-        Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-            timeframes.forEach { tf ->
+        LazyRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+            items(timeframes) { tf ->
                 FilterChip(
-                    selected = false,
-                    onClick = {},
+                    selected = selectedTimeframe.equals(tf, ignoreCase = true),
+                    onClick = { selectedTimeframe = tf },
                     label = { Text(tf, fontSize = 12.sp) },
                 )
             }
@@ -115,16 +133,26 @@ fun AnalyzeScreen(navController: NavHostController, viewModel: AnalyzeViewModel)
         LazyRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
             items(types) { type ->
                 FilterChip(
-                    selected = false,
-                    onClick = {},
+                    selected = selectedAnalysis.equals(type, ignoreCase = true),
+                    onClick = { selectedAnalysis = type },
                     label = { Text(type, fontSize = 12.sp) },
                 )
             }
         }
 
         Spacer(modifier = Modifier.height(4.dp))
-        androidx.compose.material3.Button(
-            onClick = {},
+        Button(
+            onClick = {
+                val symbol = if (symbolQuery.isNotBlank()) symbolQuery else selectedSymbol
+                viewModel.analyze(
+                    AnalysisRequest(
+                        market = selectedMarket,
+                        symbol = symbol,
+                        timeframe = selectedTimeframe,
+                        analysisType = selectedAnalysis,
+                    )
+                )
+            },
             modifier = Modifier.fillMaxWidth(),
             shape = RoundedCornerShape(12.dp),
         ) {
