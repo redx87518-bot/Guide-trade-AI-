@@ -12,17 +12,18 @@ sealed class NavRoutes(val route: String) {
     object Signals : NavRoutes("signals")
     object Analyze : NavRoutes("analyze")
     object Agent : NavRoutes("agent")
-    object Settings : NavRoutes("settings")
+    object More : NavRoutes("more")
     object SignalDetails : NavRoutes("signal_details/{signalId}") {
         fun route(signalId: String) = "signal_details/$signalId"
     }
     object Watchlist : NavRoutes("watchlist")
     object SignalHistory : NavRoutes("signal_history")
+    object Settings : NavRoutes("settings")
+    object PaperTrading : NavRoutes("paper_trading")
+    object McpConnections : NavRoutes("mcp_connections")
     object TelegramSettings : NavRoutes("telegram_settings")
     object VoiceSettings : NavRoutes("voice_settings")
     object Profile : NavRoutes("profile")
-    object PaperTrading : NavRoutes("paper_trading")
-    object McpConnections : NavRoutes("mcp_connections")
     object Chat : NavRoutes("chat/{sessionId}") {
         fun route(sessionId: String? = null) = if (sessionId != null) "chat/$sessionId" else "chat"
     }

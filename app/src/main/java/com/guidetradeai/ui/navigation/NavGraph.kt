@@ -72,7 +72,7 @@ fun GuideTradeNavGraph(
             val viewModel: AgentViewModel = androidx.lifecycle.viewmodel.compose.viewModel()
             AgentScreen(navController, viewModel)
         }
-        composable(NavRoutes.Settings.route) {
+        composable(NavRoutes.More.route) {
             SettingsScreen(navController, authViewModel)
         }
         composable(NavRoutes.SignalDetails.route) { backStackEntry ->

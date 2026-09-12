@@ -4,7 +4,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Analytics
 import androidx.compose.material.icons.filled.Chat
 import androidx.compose.material.icons.filled.Home
-import androidx.compose.material.icons.filled.Settings
+import androidx.compose.material.icons.filled.MoreHoriz
 import androidx.compose.material.icons.filled.ShowChart
 import androidx.compose.material3.Icon
 import androidx.compose.material3.NavigationBar
@@ -28,10 +28,12 @@ fun GuideTradeBottomNav(
     NavigationBar(
         containerColor = androidx.compose.material3.MaterialTheme.colorScheme.surface,
         contentColor = androidx.compose.material3.MaterialTheme.colorScheme.onSurface,
+        tonalElevation = 8.dp,
     ) {
         items.forEach { item ->
+            val selected = currentRoute == item.route
             NavigationBarItem(
-                selected = currentRoute == item.route,
+                selected = selected,
                 onClick = { onItemClick(item.route) },
                 icon = {
                     Icon(

@@ -11,7 +11,6 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
@@ -32,8 +31,8 @@ fun WatchlistScreen(navController: NavHostController, viewModel: WatchlistViewMo
         Text(
             text = "Watchlist",
             fontWeight = FontWeight.Bold,
-            fontSize = 24.sp,
-            modifier = Modifier.padding(16.dp),
+            fontSize = 22.sp,
+            modifier = Modifier.padding(horizontal = 16.dp, vertical = 12.dp),
             color = androidx.compose.material3.MaterialTheme.colorScheme.onBackground,
         )
 
@@ -72,7 +71,7 @@ fun WatchlistScreen(navController: NavHostController, viewModel: WatchlistViewMo
                                 navController.navigate(NavRoutes.SignalDetails.route(item.symbol))
                             },
                         ) {
-                            Column(modifier = Modifier.padding(16.dp)) {
+                            Column(modifier = Modifier.padding(14.dp)) {
                                 Text(
                                     text = item.symbol,
                                     fontWeight = FontWeight.Bold,

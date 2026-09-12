@@ -2,6 +2,7 @@ package com.guidetradeai.ui.screens
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -15,39 +16,74 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
-import com.guidetradeai.ui.components.PrimaryButton
-import com.guidetradeai.viewmodel.PaperTradingUiState
-import com.guidetradeai.viewmodel.PaperTradingViewModel
-import androidx.compose.runtime.collectAsState
 
 @Composable
 fun PaperTradingScreen(navController: NavHostController) {
-    val viewModel: PaperTradingViewModel = PaperTradingViewModel()
-    val state = viewModel.uiState.collectAsState().value
-
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .padding(20.dp),
-        verticalArrangement = Arrangement.Center,
-        horizontalAlignment = Alignment.CenterHorizontally,
+            .padding(horizontal = 16.dp, vertical = 12.dp),
     ) {
-        Text("Paper Trading", fontSize = 24.sp, fontWeight = FontWeight.Bold)
-        Spacer(modifier = Modifier.height(12.dp))
-        PrimaryButton(
-            text = "Load Dashboard",
-            onClick = { viewModel.loadDashboard() },
+        Text(
+            text = "PAPER TRADING",
+            fontWeight = FontWeight.Bold,
+            fontSize = 18.sp,
+            color = androidx.compose.material3.MaterialTheme.colorScheme.onBackground,
         )
-        Spacer(modifier = Modifier.height(12.dp))
-        PrimaryButton(
-            text = "Back",
-            onClick = { navController.popBackStack() },
+        Text(
+            text = "SIMULATED FUNDS ONLY",
+            fontSize = 11.sp,
+            color = androidx.compose.material3.MaterialTheme.colorScheme.onSurfaceVariant,
         )
         Spacer(modifier = Modifier.height(16.dp))
-        when (state) {
-            is PaperTradingUiState.Loading -> Text("Loading...")
-            is PaperTradingUiState.Error -> Text("Error: ${state.message}")
-            else -> Text("Dashboard ready")
+
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.spacedBy(12.dp),
+        ) {
+            Column(modifier = Modifier.weight(1f)) {
+                Text("Balance", fontSize = 12.sp, color = androidx.compose.material3.MaterialTheme.colorScheme.onSurfaceVariant)
+                Text("$100,000.00", fontWeight = FontWeight.Bold, fontSize = 18.sp, color = androidx.compose.material3.MaterialTheme.colorScheme.onBackground)
+            }
+            Column(modifier = Modifier.weight(1f)) {
+                Text("Cash", fontSize = 12.sp, color = androidx.compose.material3.MaterialTheme.colorScheme.onSurfaceVariant)
+                Text("$100,000.00", fontWeight = FontWeight.Bold, fontSize = 18.sp, color = androidx.compose.material3.MaterialTheme.colorScheme.onBackground)
+            }
         }
+
+        Spacer(modifier = Modifier.height(16.dp))
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.spacedBy(12.dp),
+        ) {
+            Column(modifier = Modifier.weight(1f)) {
+                Text("Open Positions", fontSize = 12.sp, color = androidx.compose.material3.MaterialTheme.colorScheme.onSurfaceVariant)
+                Text("0", fontWeight = FontWeight.Bold, fontSize = 18.sp, color = androidx.compose.material3.MaterialTheme.colorScheme.onBackground)
+            }
+            Column(modifier = Modifier.weight(1f)) {
+                Text("Today's P&L", fontSize = 12.sp, color = androidx.compose.material3.MaterialTheme.colorScheme.onSurfaceVariant)
+                Text("$0.00", fontWeight = FontWeight.Bold, fontSize = 18.sp, color = androidx.compose.material3.MaterialTheme.colorScheme.onBackground)
+            }
+        }
+
+        Spacer(modifier = Modifier.height(16.dp))
+        Text("Tabs", fontWeight = FontWeight.SemiBold, fontSize = 14.sp, color = androidx.compose.material3.MaterialTheme.colorScheme.onBackground)
+        Spacer(modifier = Modifier.height(8.dp))
+        Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+            listOf("Overview", "Positions", "Orders", "History").forEach { tab ->
+                androidx.compose.material3.FilterChip(
+                    selected = tab == "Overview",
+                    onClick = {},
+                    label = { Text(tab, fontSize = 12.sp) },
+                )
+            }
+        }
+
+        Spacer(modifier = Modifier.height(16.dp))
+        Text(
+            text = "No open positions",
+            fontSize = 13.sp,
+            color = androidx.compose.material3.MaterialTheme.colorScheme.onSurfaceVariant,
+        )
     }
 }

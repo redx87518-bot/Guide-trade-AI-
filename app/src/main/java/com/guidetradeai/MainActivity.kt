@@ -4,17 +4,14 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Analytics
 import androidx.compose.material.icons.filled.Chat
 import androidx.compose.material.icons.filled.Home
-import androidx.compose.material.icons.filled.Settings
+import androidx.compose.material.icons.filled.MoreHoriz
 import androidx.compose.material.icons.filled.ShowChart
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.setValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
@@ -32,7 +29,7 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         setContent {
             GuideTradeTheme {
-                MaterialTheme {
+                androidx.compose.material3.MaterialTheme {
                     val navController = rememberNavController()
                     val authViewModel: AuthViewModel = viewModel()
                     val navBackStackEntry by navController.currentBackStackEntryAsState()
@@ -43,7 +40,7 @@ class MainActivity : ComponentActivity() {
                         BottomNavItem("Signals", Icons.Default.ShowChart, NavRoutes.Signals.route),
                         BottomNavItem("Analyze", Icons.Default.Analytics, NavRoutes.Analyze.route),
                         BottomNavItem("Agent", Icons.Default.Chat, NavRoutes.Agent.route),
-                        BottomNavItem("Settings", Icons.Default.Settings, NavRoutes.Settings.route),
+                        BottomNavItem("More", Icons.Default.MoreHoriz, NavRoutes.More.route),
                     )
                     val bottomNavRoutes: List<String> = bottomNavItems.map { it.route }
                     val showBottomNav = currentRoute in bottomNavRoutes
