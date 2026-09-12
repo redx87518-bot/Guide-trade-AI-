@@ -37,11 +37,17 @@ import com.guidetradeai.viewmodel.AnalyzeViewModel
 @Composable
 fun AnalyzeScreen(navController: NavHostController, viewModel: AnalyzeViewModel) {
     val uiState = viewModel.uiState.collectAsState().value
-    var selectedMarket by remember { mutableStateOf("crypto") }
-    var selectedSymbol by remember { mutableStateOf("BTC/USD") }
-    var selectedTimeframe by remember { mutableStateOf("1H") }
-    var selectedAnalysis by remember { mutableStateOf("signal") }
-    var symbolQuery by remember { mutableStateOf("") }
+    val selectedMarketState = remember { mutableStateOf("crypto") }
+    val selectedSymbolState = remember { mutableStateOf("BTC/USD") }
+    val selectedTimeframeState = remember { mutableStateOf("1H") }
+    val selectedAnalysisState = remember { mutableStateOf("signal") }
+    val symbolQueryState = remember { mutableStateOf("") }
+
+    val selectedMarket get() = selectedMarketState.value
+    val selectedSymbol get() = selectedSymbolState.value
+    val selectedTimeframe get() = selectedTimeframeState.value
+    val selectedAnalysis get() = selectedAnalysisState.value
+    val symbolQuery get() = symbolQueryState.value
 
     Column(
         modifier = Modifier
@@ -94,7 +100,7 @@ fun AnalyzeScreen(navController: NavHostController, viewModel: AnalyzeViewModel)
             items(markets) { market ->
                 FilterChip(
                     selected = selectedMarket == market,
-                    onClick = { selectedMarket = market },
+                    onClick = { selectedMarketState.value = market },
                     label = { Text(market.replaceFirstChar { it.uppercase() }, fontSize = 12.sp) },
                 )
             }
@@ -103,14 +109,14 @@ fun AnalyzeScreen(navController: NavHostController, viewModel: AnalyzeViewModel)
         Text("Asset", fontWeight = FontWeight.Medium, fontSize = 13.sp)
         OutlinedTextField(
             value = symbolQuery.ifBlank { selectedSymbol },
-            onValueChange = { symbolQuery = it },
+            onValueChange = { symbolQueryState.value = it },
             label = { Text("Search symbol") },
             modifier = Modifier.fillMaxWidth(),
             singleLine = true,
         )
         Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
             listOf("BTC/USD", "ETH/USD", "EUR/USD", "AAPL", "XAU/USD").forEach { asset ->
-                TextButton(onClick = { selectedSymbol = asset; symbolQuery = asset }) {
+                TextButton(onClick = { selectedSymbolState.value = asset; symbolQuery = asset }) {
                     Text(asset, fontSize = 11.sp)
                 }
             }
@@ -134,7 +140,7 @@ fun AnalyzeScreen(navController: NavHostController, viewModel: AnalyzeViewModel)
             items(types) { type ->
                 FilterChip(
                     selected = selectedAnalysis.equals(type, ignoreCase = true),
-                    onClick = { selectedAnalysis = type },
+                    onClick = { selectedAnalysisState.value = type },
                     label = { Text(type, fontSize = 12.sp) },
                 )
             }
