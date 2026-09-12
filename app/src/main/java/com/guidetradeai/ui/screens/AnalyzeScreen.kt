@@ -18,8 +18,10 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
@@ -37,17 +39,11 @@ import com.guidetradeai.viewmodel.AnalyzeViewModel
 @Composable
 fun AnalyzeScreen(navController: NavHostController, viewModel: AnalyzeViewModel) {
     val uiState = viewModel.uiState.collectAsState().value
-    val selectedMarketState = remember { mutableStateOf("crypto") }
-    val selectedSymbolState = remember { mutableStateOf("BTC/USD") }
-    val selectedTimeframeState = remember { mutableStateOf("1H") }
-    val selectedAnalysisState = remember { mutableStateOf("signal") }
-    val symbolQueryState = remember { mutableStateOf("") }
-
-    val selectedMarket get() = selectedMarketState.value
-    val selectedSymbol get() = selectedSymbolState.value
-    val selectedTimeframe get() = selectedTimeframeState.value
-    val selectedAnalysis get() = selectedAnalysisState.value
-    val symbolQuery get() = symbolQueryState.value
+    var selectedMarket: String by remember { mutableStateOf("crypto") }
+    var selectedSymbol: String by remember { mutableStateOf("BTC/USD") }
+    var selectedTimeframe: String by remember { mutableStateOf("1H") }
+    var selectedAnalysis: String by remember { mutableStateOf("signal") }
+    var symbolQuery: String by remember { mutableStateOf("") }
 
     Column(
         modifier = Modifier
@@ -100,7 +96,7 @@ fun AnalyzeScreen(navController: NavHostController, viewModel: AnalyzeViewModel)
             items(markets) { market ->
                 FilterChip(
                     selected = selectedMarket == market,
-                    onClick = { selectedMarketState.value = market },
+                    onClick = { selectedMarket = market },
                     label = { Text(market.replaceFirstChar { it.uppercase() }, fontSize = 12.sp) },
                 )
             }
@@ -109,14 +105,14 @@ fun AnalyzeScreen(navController: NavHostController, viewModel: AnalyzeViewModel)
         Text("Asset", fontWeight = FontWeight.Medium, fontSize = 13.sp)
         OutlinedTextField(
             value = symbolQuery.ifBlank { selectedSymbol },
-            onValueChange = { symbolQueryState.value = it },
+            onValueChange = { symbolQuery = it },
             label = { Text("Search symbol") },
             modifier = Modifier.fillMaxWidth(),
             singleLine = true,
         )
         Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
             listOf("BTC/USD", "ETH/USD", "EUR/USD", "AAPL", "XAU/USD").forEach { asset ->
-                TextButton(onClick = { selectedSymbolState.value = asset; symbolQuery = asset }) {
+                TextButton(onClick = { selectedSymbol = asset; symbolQuery = asset }) {
                     Text(asset, fontSize = 11.sp)
                 }
             }
@@ -140,7 +136,7 @@ fun AnalyzeScreen(navController: NavHostController, viewModel: AnalyzeViewModel)
             items(types) { type ->
                 FilterChip(
                     selected = selectedAnalysis.equals(type, ignoreCase = true),
-                    onClick = { selectedAnalysisState.value = type },
+                    onClick = { selectedAnalysis = type },
                     label = { Text(type, fontSize = 12.sp) },
                 )
             }
