@@ -12,13 +12,14 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Text
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ShowChart
+import androidx.compose.material.icons.filled.AccountBalanceWallet
+import androidx.compose.material.icons.filled.TrendingUp
+import androidx.compose.material.icons.filled.Business
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.size
-import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -31,16 +32,16 @@ import androidx.navigation.NavHostController
 fun McpConnectionsScreen(navController: NavHostController) {
     val categories = listOf(
         McpCategory("MARKET INTELLIGENCE", listOf(
-            McpItem("NORTH7", "Market intelligence & signals", "Read Only", androidx.compose.material.icons.Icons.Default.ShowChart),
+            McpItem("NORTH7", "Market intelligence & signals", "Read Only", Icons.Default.ShowChart),
         )),
         McpCategory("WALLETS", listOf(
-            McpItem("Crypto Wallet", "Read wallet balances and address data", "Read Only", androidx.compose.material.icons.Icons.Default.ShowChart),
+            McpItem("Crypto Wallet", "Read wallet balances and address data", "Read Only", Icons.Default.AccountBalanceWallet),
         )),
         McpCategory("EXCHANGES", listOf(
-            McpItem("Exchange Account", "Read-only account data, demo/paper support", "Read Only", androidx.compose.material.icons.Icons.Default.ShowChart),
+            McpItem("Exchange Account", "Read-only account data, demo/paper support", "Read Only", Icons.Default.TrendingUp),
         )),
         McpCategory("BROKERS", listOf(
-            McpItem("Broker Account", "Read-only account information", "Read Only", androidx.compose.material.icons.Icons.Default.ShowChart),
+            McpItem("Broker Account", "Read-only account information", "Read Only", Icons.Default.Business),
         )),
     )
 
