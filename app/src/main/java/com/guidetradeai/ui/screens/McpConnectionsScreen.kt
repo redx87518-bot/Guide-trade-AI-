@@ -31,16 +31,16 @@ import androidx.navigation.NavHostController
 fun McpConnectionsScreen(navController: NavHostController) {
     val categories = listOf(
         McpCategory("MARKET INTELLIGENCE", listOf(
-            McpItem("NORTH7", "Market intelligence & signals", "Read Only", androidx.compose.material.icons.Icons.Default.TrendingUp),
+            McpItem("NORTH7", "Market intelligence & signals", "Read Only", androidx.compose.material.icons.Icons.Default.ShowChart),
         )),
         McpCategory("WALLETS", listOf(
-            McpItem("Crypto Wallet", "Read wallet balances and address data", "Read Only", androidx.compose.material.icons.Icons.Default.AccountBalanceWallet),
+            McpItem("Crypto Wallet", "Read wallet balances and address data", "Read Only", androidx.compose.material.icons.Icons.Default.ShowChart),
         )),
         McpCategory("EXCHANGES", listOf(
-            McpItem("Exchange Account", "Read-only account data, demo/paper support", "Read Only", androidx.compose.material.icons.Icons.Default.TrendingUp),
+            McpItem("Exchange Account", "Read-only account data, demo/paper support", "Read Only", androidx.compose.material.icons.Icons.Default.ShowChart),
         )),
         McpCategory("BROKERS", listOf(
-            McpItem("Broker Account", "Read-only account information", "Read Only", androidx.compose.material.icons.Icons.Default.Business),
+            McpItem("Broker Account", "Read-only account information", "Read Only", androidx.compose.material.icons.Icons.Default.ShowChart),
         )),
     )
 
