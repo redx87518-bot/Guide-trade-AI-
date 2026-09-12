@@ -7,6 +7,7 @@ import com.guidetradeai.data.repository.TelegramRepository
 import com.guidetradeai.data.repository.AgentRepository
 import com.guidetradeai.data.repository.PaperTradingRepository
 import com.guidetradeai.data.repository.SignalsRepository
+import com.guidetradeai.data.repository.McpRepository
 
 object AppModule {
     val authRepository by lazy { AuthRepository() }
@@ -16,4 +17,5 @@ object AppModule {
     val agentRepository by lazy { AgentRepository() }
     val paperTradingRepository by lazy { PaperTradingRepository() }
     val signalsRepository by lazy { SignalsRepository() }
+    val mcpRepository by lazy { McpRepository() }
 }

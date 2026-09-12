@@ -13,133 +13,156 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Text
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ShowChart
-import androidx.compose.material.icons.filled.AccountBalanceWallet
-import androidx.compose.material.icons.filled.TrendingUp
-import androidx.compose.material.icons.filled.Business
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.size
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
+import com.guidetradeai.ui.components.EmptyState
+import com.guidetradeai.ui.components.ErrorState
+import com.guidetradeai.ui.components.LoadingState
+import com.guidetradeai.viewmodel.McpViewModel
 
 @Composable
 fun McpConnectionsScreen(navController: NavHostController) {
-    val categories = listOf(
-        McpCategory("MARKET INTELLIGENCE", listOf(
-            McpItem("NORTH7", "Market intelligence & signals", "Read Only", Icons.Default.ShowChart),
-        )),
-        McpCategory("WALLETS", listOf(
-            McpItem("Crypto Wallet", "Read wallet balances and address data", "Read Only", Icons.Default.AccountBalanceWallet),
-        )),
-        McpCategory("EXCHANGES", listOf(
-            McpItem("Exchange Account", "Read-only account data, demo/paper support", "Read Only", Icons.Default.TrendingUp),
-        )),
-        McpCategory("BROKERS", listOf(
-            McpItem("Broker Account", "Read-only account information", "Read Only", Icons.Default.Business),
-        )),
-    )
+    val viewModel: McpViewModel = androidx.lifecycle.viewmodel.compose.viewModel()
+    val uiState = viewModel.uiState.collectAsState().value
 
-    LazyColumn(
-        modifier = Modifier.fillMaxSize(),
-    ) {
-        item {
-            Column(modifier = Modifier.padding(horizontal = 16.dp, vertical = 12.dp)) {
-                Text(
-                    text = "MCP Connectors",
-                    fontWeight = FontWeight.Bold,
-                    fontSize = 20.sp,
-                    color = androidx.compose.material3.MaterialTheme.colorScheme.onBackground,
-                )
-                Text(
-                    text = "Connect market, wallet and account data to GuideTrade.",
-                    fontSize = 13.sp,
-                    color = androidx.compose.material3.MaterialTheme.colorScheme.onSurfaceVariant,
+    Column(modifier = Modifier.fillMaxSize()) {
+        Text(
+            text = "MCP Connectors",
+            fontWeight = FontWeight.Bold,
+            fontSize = 22.sp,
+            modifier = Modifier.padding(horizontal = 16.dp, vertical = 12.dp),
+            color = androidx.compose.material3.MaterialTheme.colorScheme.onBackground,
+        )
+        Text(
+            text = "Connect market, wallet and account data to GuideTrade.",
+            fontSize = 13.sp,
+            modifier = Modifier.padding(horizontal = 16.dp),
+            color = androidx.compose.material3.MaterialTheme.colorScheme.onSurfaceVariant,
+        )
+
+        when (uiState) {
+            is com.guidetradeai.viewmodel.McpUiState.Loading -> {
+                LoadingState(modifier = Modifier.fillMaxSize())
+            }
+            is com.guidetradeai.viewmodel.McpUiState.Error -> {
+                ErrorState(
+                    message = uiState.message,
+                    onRetry = { viewModel.loadData() },
+                    modifier = Modifier.fillMaxSize(),
                 )
             }
-        }
-
-        categories.forEach { category ->
-            item {
-                Spacer(modifier = Modifier.height(12.dp))
-                Text(
-                    text = category.title,
-                    fontWeight = FontWeight.SemiBold,
-                    fontSize = 12.sp,
-                    modifier = Modifier.padding(horizontal = 16.dp),
-                    color = androidx.compose.material3.MaterialTheme.colorScheme.onSurfaceVariant,
-                )
-                Spacer(modifier = Modifier.height(6.dp))
-            }
-            items(category.items) { item ->
-                Card(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = 16.dp, vertical = 4.dp),
-                    shape = androidx.compose.foundation.shape.RoundedCornerShape(12.dp),
-                    colors = CardDefaults.cardColors(containerColor = androidx.compose.material3.MaterialTheme.colorScheme.surfaceVariant),
-                ) {
-                    Row(
-                        modifier = Modifier.padding(14.dp),
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.SpaceBetween,
-                    ) {
-                        Row(verticalAlignment = Alignment.CenterVertically) {
-                            Box(
-                                modifier = Modifier
-                                    .size(36.dp)
-                                    .padding(end = 12.dp),
-                                contentAlignment = Alignment.Center,
-                            ) {
-                                androidx.compose.material3.Icon(
-                                    imageVector = item.icon,
-                                    contentDescription = null,
-                                    tint = androidx.compose.material3.MaterialTheme.colorScheme.primary,
-                                )
-                            }
-                            Column {
-                                Text(
-                                    text = item.name,
-                                    fontWeight = FontWeight.Bold,
-                                    fontSize = 14.sp,
-                                    color = androidx.compose.material3.MaterialTheme.colorScheme.onSurface,
-                                )
-                                Text(
-                                    text = item.description,
-                                    fontSize = 12.sp,
-                                    color = androidx.compose.material3.MaterialTheme.colorScheme.onSurfaceVariant,
-                                )
-                                Spacer(modifier = Modifier.height(4.dp))
-                                Text(
-                                    text = item.permission,
-                                    fontSize = 11.sp,
-                                    color = androidx.compose.material3.MaterialTheme.colorScheme.primary,
-                                )
-                            }
+            is com.guidetradeai.viewmodel.McpUiState.Success -> {
+                val catalog = uiState.catalog
+                val connections = uiState.connections
+                LazyColumn(modifier = Modifier.fillMaxSize()) {
+                    if (catalog.isNotEmpty()) {
+                        item {
+                            Spacer(modifier = Modifier.height(12.dp))
+                            Text(
+                                text = "AVAILABLE CONNECTORS",
+                                fontWeight = FontWeight.SemiBold,
+                                fontSize = 12.sp,
+                                modifier = Modifier.padding(horizontal = 16.dp),
+                                color = androidx.compose.material3.MaterialTheme.colorScheme.onSurfaceVariant,
+                            )
+                            Spacer(modifier = Modifier.height(6.dp))
                         }
-                        androidx.compose.material3.TextButton(onClick = {}) {
-                            Text("Add")
+                        items(catalog) { item ->
+                            McpConnectorCard(item = item, isConnected = false, onClick = {})
                         }
+                    }
+                    if (connections.isNotEmpty()) {
+                        item {
+                            Spacer(modifier = Modifier.height(12.dp))
+                            Text(
+                                text = "CONNECTED",
+                                fontWeight = FontWeight.SemiBold,
+                                fontSize = 12.sp,
+                                modifier = Modifier.padding(horizontal = 16.dp),
+                                color = androidx.compose.material3.MaterialTheme.colorScheme.onSurfaceVariant,
+                            )
+                            Spacer(modifier = Modifier.height(6.dp))
+                        }
+                        items(connections) { item ->
+                            McpConnectorCard(item = item, isConnected = true, onClick = {})
+                        }
+                    }
+                    if (catalog.isEmpty() && connections.isEmpty()) {
+                        item {
+                            EmptyState(
+                                title = "No connectors available",
+                                description = "Check back later for available integrations.",
+                                modifier = Modifier.fillMaxWidth(),
+                            )
+                        }
+                    }
+                    item {
+                        Spacer(modifier = Modifier.height(80.dp))
                     }
                 }
             }
-        }
-
-        item {
-            Spacer(modifier = Modifier.height(80.dp))
+            else -> {}
         }
     }
 }
 
-data class McpCategory(val title: String, val items: List<McpItem>)
-data class McpItem(
-    val name: String,
-    val description: String,
-    val permission: String,
-    val icon: androidx.compose.ui.graphics.vector.ImageVector,
-)
+@Composable
+private fun McpConnectorCard(item: com.guidetradeai.data.repository.McpCatalogItem, isConnected: Boolean, onClick: () -> Unit) {
+    Card(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 16.dp, vertical = 4.dp),
+        shape = androidx.compose.foundation.shape.RoundedCornerShape(12.dp),
+        colors = CardDefaults.cardColors(containerColor = androidx.compose.material3.MaterialTheme.colorScheme.surfaceVariant),
+    ) {
+        Row(
+            modifier = Modifier.padding(14.dp),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.SpaceBetween,
+        ) {
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                androidx.compose.material3.Surface(
+                    shape = androidx.compose.foundation.shape.RoundedCornerShape(10.dp),
+                    color = androidx.compose.material3.MaterialTheme.colorScheme.primary.copy(alpha = 0.15f),
+                    modifier = Modifier.padding(end = 12.dp),
+                ) {
+                    Text(
+                        text = item.name.firstOrNull()?.toString() ?: "?",
+                        modifier = Modifier.padding(horizontal = 12.dp, vertical = 8.dp),
+                        fontWeight = FontWeight.Bold,
+                        fontSize = 14.sp,
+                        color = androidx.compose.material3.MaterialTheme.colorScheme.primary,
+                    )
+                }
+                Column {
+                    Text(
+                        text = item.name,
+                        fontWeight = FontWeight.Bold,
+                        fontSize = 14.sp,
+                        color = androidx.compose.material3.MaterialTheme.colorScheme.onSurface,
+                    )
+                    Text(
+                        text = item.description,
+                        fontSize = 12.sp,
+                        color = androidx.compose.material3.MaterialTheme.colorScheme.onSurfaceVariant,
+                    )
+                    Spacer(modifier = Modifier.height(4.dp))
+                    Text(
+                        text = item.permission,
+                        fontSize = 11.sp,
+                        color = androidx.compose.material3.MaterialTheme.colorScheme.primary,
+                    )
+                }
+            }
+            androidx.compose.material3.TextButton(onClick = onClick) {
+                Text(if (isConnected) "Open" else "Add")
+            }
+        }
+    }
+}
