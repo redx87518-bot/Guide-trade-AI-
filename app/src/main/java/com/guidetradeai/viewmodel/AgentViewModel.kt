@@ -12,6 +12,14 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import java.util.UUID
 
+data class ChatMessage(
+    val id: String = UUID.randomUUID().toString(),
+    val role: String = "user",
+    val content: String = "",
+    val summary: String? = null,
+    val timestamp: String? = null,
+)
+
 sealed class AgentUiState {
     object Idle : AgentUiState()
     object Loading : AgentUiState()
@@ -26,7 +34,13 @@ class AgentViewModel(
     private val _uiState = MutableStateFlow<AgentUiState>(AgentUiState.Idle)
     val uiState: StateFlow<AgentUiState> = _uiState.asStateFlow()
 
+    private val _messages = MutableStateFlow<List<ChatMessage>>(emptyList())
+    val messages: StateFlow<List<ChatMessage>> = _messages.asStateFlow()
+
     fun sendMessage(query: String) {
+        val userMessage = ChatMessage(role = "user", content = query)
+        _messages.value = _messages.value + userMessage
+
         viewModelScope.launch {
             _uiState.value = AgentUiState.Loading
             val sessionId = UUID.randomUUID().toString()
@@ -38,8 +52,22 @@ class AgentViewModel(
                     } else {
                         AgentUiState.Error("No response from agent.")
                     }
+                    val agentMessage = ChatMessage(
+                        role = "agent",
+                        content = response?.content ?: "Analysis complete",
+                        summary = response?.summary,
+                        timestamp = response?.timestamp,
+                    )
+                    _messages.value = _messages.value + agentMessage
                 }
-                is Result.Error -> _uiState.value = AgentUiState.Error(result.message)
+                is Result.Error -> {
+                    _uiState.value = AgentUiState.Error(result.message)
+                    val errorMessage = ChatMessage(
+                        role = "agent",
+                        content = "Error: ${result.message}",
+                    )
+                    _messages.value = _messages.value + errorMessage
+                }
                 else -> {}
             }
         }

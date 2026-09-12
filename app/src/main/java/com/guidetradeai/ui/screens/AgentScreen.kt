@@ -45,6 +45,7 @@ import com.guidetradeai.viewmodel.AgentViewModel
 @Composable
 fun AgentScreen(navController: NavHostController, viewModel: AgentViewModel) {
     val uiState = viewModel.uiState.collectAsState().value
+    val messages = viewModel.messages.collectAsState().value
     var query by remember { mutableStateOf("") }
     val listState = rememberLazyListState()
 
@@ -71,104 +72,84 @@ fun AgentScreen(navController: NavHostController, viewModel: AgentViewModel) {
             }
         }
 
-        when (uiState) {
-            is com.guidetradeai.viewmodel.AgentUiState.Loading -> {
-                Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                    Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                        Text(
-                            text = "GuideTrade is analyzing...",
-                            color = androidx.compose.material3.MaterialTheme.colorScheme.onSurfaceVariant,
-                            fontSize = 14.sp,
+        if (messages.isEmpty() && uiState is com.guidetradeai.viewmodel.AgentUiState.Idle) {
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(horizontal = 16.dp),
+                verticalArrangement = Arrangement.Center,
+                horizontalAlignment = Alignment.CenterHorizontally,
+            ) {
+                Text(
+                    text = "Ask GuideTrade",
+                    fontWeight = FontWeight.Bold,
+                    fontSize = 20.sp,
+                    color = androidx.compose.material3.MaterialTheme.colorScheme.onBackground,
+                )
+                Spacer(modifier = Modifier.height(8.dp))
+                Text(
+                    text = "Analyze markets, signals, and conditions.",
+                    fontSize = 14.sp,
+                    color = androidx.compose.material3.MaterialTheme.colorScheme.onSurfaceVariant,
+                )
+                Spacer(modifier = Modifier.height(16.dp))
+                LazyRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                    val prompts = listOf("Analyze BTC/USD", "Latest signals", "Check market regime", "Analyze EUR/USD")
+                    items(prompts) { prompt ->
+                        FilterChip(
+                            selected = false,
+                            onClick = {
+                                query = prompt
+                                viewModel.sendMessage(prompt)
+                            },
+                            label = { Text(prompt, fontSize = 12.sp) },
                         )
-                        Spacer(modifier = Modifier.height(12.dp))
-                        LazyRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                            items(3) {
-                                Box(
-                                    modifier = Modifier
-                                        .size(8.dp)
-                                        .clip(CircleShape)
-                                        .background(androidx.compose.material3.MaterialTheme.colorScheme.primary),
-                                )
-                            }
-                        }
                     }
                 }
             }
-            is com.guidetradeai.viewmodel.AgentUiState.Success -> {
-                LazyColumn(
-                    state = listState,
-                    modifier = Modifier.fillMaxSize(),
-                    verticalArrangement = Arrangement.spacedBy(8.dp),
-                ) {
-                    item {
-                        Box(modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)) {
-                            Card(
-                                shape = RoundedCornerShape(16.dp),
-                                colors = CardDefaults.cardColors(containerColor = androidx.compose.material3.MaterialTheme.colorScheme.surfaceVariant),
-                            ) {
-                                Column(modifier = Modifier.padding(14.dp)) {
-                                    Text(
-                                        text = uiState.response.summary ?: uiState.response.content ?: "Analysis complete",
-                                        fontSize = 14.sp,
-                                        color = androidx.compose.material3.MaterialTheme.colorScheme.onSurface,
-                                    )
+        } else {
+            LazyColumn(
+                state = listState,
+                modifier = Modifier.fillMaxSize(),
+                verticalArrangement = Arrangement.spacedBy(8.dp),
+            ) {
+                items(messages) { message ->
+                    ChatBubble(message = message)
+                }
+                when (uiState) {
+                    is com.guidetradeai.viewmodel.AgentUiState.Loading -> {
+                        item {
+                            Box(modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)) {
+                                Card(
+                                    shape = RoundedCornerShape(16.dp),
+                                    colors = CardDefaults.cardColors(containerColor = androidx.compose.material3.MaterialTheme.colorScheme.surfaceVariant),
+                                ) {
+                                    Column(modifier = Modifier.padding(14.dp)) {
+                                        Text(
+                                            text = "GuideTrade is analyzing...",
+                                            fontSize = 14.sp,
+                                            color = androidx.compose.material3.MaterialTheme.colorScheme.onSurfaceVariant,
+                                        )
+                                        Spacer(modifier = Modifier.height(8.dp))
+                                        LazyRow(horizontalArrangement = Arrangement.spacedBy(6.dp)) {
+                                            items(3) {
+                                                Box(
+                                                    modifier = Modifier
+                                                        .size(6.dp)
+                                                        .clip(CircleShape)
+                                                        .background(androidx.compose.material3.MaterialTheme.colorScheme.primary),
+                                                )
+                                            }
+                                        }
+                                    }
                                 }
                             }
                         }
                     }
+                    else -> {}
                 }
-            }
-            is com.guidetradeai.viewmodel.AgentUiState.Error -> {
-                Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                    Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                        Text(
-                            text = "Unable to retrieve market intelligence.",
-                            color = androidx.compose.material3.MaterialTheme.colorScheme.error,
-                            fontSize = 14.sp,
-                        )
-                        Spacer(modifier = Modifier.height(8.dp))
-                        androidx.compose.material3.TextButton(onClick = { viewModel.reset() }) {
-                            Text("Retry")
-                        }
-                    }
-                }
-            }
-            else -> {
-                if (query.isBlank()) {
-                    Column(
-                        modifier = Modifier
-                            .fillMaxSize()
-                            .padding(horizontal = 16.dp),
-                        verticalArrangement = Arrangement.Center,
-                        horizontalAlignment = Alignment.CenterHorizontally,
-                    ) {
-                        Text(
-                            text = "Ask GuideTrade",
-                            fontWeight = FontWeight.Bold,
-                            fontSize = 20.sp,
-                            color = androidx.compose.material3.MaterialTheme.colorScheme.onBackground,
-                        )
-                        Spacer(modifier = Modifier.height(8.dp))
-                        Text(
-                            text = "Analyze markets, signals, and conditions.",
-                            fontSize = 14.sp,
-                            color = androidx.compose.material3.MaterialTheme.colorScheme.onSurfaceVariant,
-                        )
-                        Spacer(modifier = Modifier.height(16.dp))
-                        LazyRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                            val prompts = listOf("Analyze BTC/USD", "Latest signals", "Check market regime", "Analyze EUR/USD")
-                            items(prompts) { prompt ->
-                                FilterChip(
-                                    selected = false,
-                                    onClick = {
-                                        query = prompt
-                                        viewModel.sendMessage(prompt)
-                                    },
-                                    label = { Text(prompt, fontSize = 12.sp) },
-                                )
-                            }
-                        }
-                    }
+                item {
+                    Spacer(modifier = Modifier.height(80.dp))
                 }
             }
         }
@@ -179,13 +160,6 @@ fun AgentScreen(navController: NavHostController, viewModel: AgentViewModel) {
                 .padding(horizontal = 12.dp, vertical = 8.dp),
             verticalAlignment = Alignment.CenterVertically,
         ) {
-            IconButton(onClick = {}) {
-                Icon(
-                    imageVector = Icons.Default.Send,
-                    contentDescription = "Send",
-                    tint = androidx.compose.material3.MaterialTheme.colorScheme.onSurfaceVariant,
-                )
-            }
             androidx.compose.material3.OutlinedTextField(
                 value = query,
                 onValueChange = { query = it },
@@ -199,6 +173,37 @@ fun AgentScreen(navController: NavHostController, viewModel: AgentViewModel) {
                     imageVector = Icons.Default.Send,
                     contentDescription = "Send",
                     tint = androidx.compose.material3.MaterialTheme.colorScheme.primary,
+                )
+            }
+        }
+    }
+}
+
+@Composable
+private fun ChatBubble(message: ChatMessage) {
+    val isUser = message.role == "user"
+    val backgroundColor = if (isUser) {
+        androidx.compose.material3.MaterialTheme.colorScheme.primary.copy(alpha = 0.15f)
+    } else {
+        androidx.compose.material3.MaterialTheme.colorScheme.surfaceVariant
+    }
+
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 16.dp, vertical = 4.dp),
+        horizontalArrangement = if (isUser) Arrangement.End else Arrangement.Start,
+    ) {
+        Card(
+            shape = RoundedCornerShape(16.dp),
+            colors = CardDefaults.cardColors(containerColor = backgroundColor),
+            modifier = Modifier.fillMaxWidth(0.85f),
+        ) {
+            Column(modifier = Modifier.padding(14.dp)) {
+                Text(
+                    text = message.content,
+                    fontSize = 14.sp,
+                    color = androidx.compose.material3.MaterialTheme.colorScheme.onSurface,
                 )
             }
         }
