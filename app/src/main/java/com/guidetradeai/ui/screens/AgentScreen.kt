@@ -41,6 +41,7 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import com.guidetradeai.ui.components.SignalCard
 import com.guidetradeai.viewmodel.AgentViewModel
+import com.guidetradeai.viewmodel.ChatMessage as AgentChatMessage
 
 @Composable
 fun AgentScreen(navController: NavHostController, viewModel: AgentViewModel) {
@@ -114,7 +115,7 @@ fun AgentScreen(navController: NavHostController, viewModel: AgentViewModel) {
                 verticalArrangement = Arrangement.spacedBy(8.dp),
             ) {
                 items(messages) { message ->
-                    ChatBubble(message = message)
+                    ChatBubble(message = message as AgentChatMessage)
                 }
                 when (uiState) {
                     is com.guidetradeai.viewmodel.AgentUiState.Loading -> {
@@ -180,7 +181,7 @@ fun AgentScreen(navController: NavHostController, viewModel: AgentViewModel) {
 }
 
 @Composable
-private fun ChatBubble(message: ChatMessage) {
+private fun ChatBubble(message: AgentChatMessage) {
     val isUser = message.role == "user"
     val backgroundColor = if (isUser) {
         androidx.compose.material3.MaterialTheme.colorScheme.primary.copy(alpha = 0.15f)
