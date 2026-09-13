@@ -103,7 +103,8 @@ class SignalsRepository(private val supabase: SupabaseClient = SupabaseClient) {
             val elements = Json.parseToJsonElement(json)
             val signalsArray = when {
                 elements is JsonObject && elements["data"] is JsonObject -> (elements["data"] as JsonObject)["signals"]
-                else -> elements["signals"] ?: elements
+                elements is JsonObject -> elements["signals"]
+                else -> null
             }
             when {
                 signalsArray is kotlinx.serialization.json.JsonArray -> signalsArray.map { elem ->
