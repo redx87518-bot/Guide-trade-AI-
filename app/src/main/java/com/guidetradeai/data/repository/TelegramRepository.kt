@@ -1,5 +1,7 @@
 package com.guidetradeai.data.repository
 
+import com.guidetradeai.util.ErrorSanitizer
+
 import com.guidetradeai.data.remote.SupabaseClient
 import com.guidetradeai.domain.Result
 import com.guidetradeai.domain.model.TelegramSettings
@@ -10,7 +12,7 @@ class TelegramRepository(private val supabase: SupabaseClient = SupabaseClient) 
         return try {
             Result.Success(TelegramSettings())
         } catch (e: Exception) {
-            Result.Error(e.message ?: "Failed to load Telegram settings")
+            Result.Error(ErrorSanitizer.userFriendly(e.message ?: "Failed to load Telegram settings"))
         }
     }
 
@@ -23,7 +25,7 @@ class TelegramRepository(private val supabase: SupabaseClient = SupabaseClient) 
         return try {
             Result.Success("OK")
         } catch (e: Exception) {
-            Result.Error(e.message ?: "Failed to test Telegram connection")
+            Result.Error(ErrorSanitizer.userFriendly(e.message ?: "Failed to test Telegram connection"))
         }
     }
 
@@ -37,7 +39,7 @@ class TelegramRepository(private val supabase: SupabaseClient = SupabaseClient) 
         return try {
             Result.Success(Unit)
         } catch (e: Exception) {
-            Result.Error(e.message ?: "Failed to save Telegram settings")
+            Result.Error(ErrorSanitizer.userFriendly(e.message ?: "Failed to save Telegram settings"))
         }
     }
 
@@ -45,7 +47,7 @@ class TelegramRepository(private val supabase: SupabaseClient = SupabaseClient) 
         return try {
             Result.Success(Unit)
         } catch (e: Exception) {
-            Result.Error(e.message ?: "Failed to disable Telegram")
+            Result.Error(ErrorSanitizer.userFriendly(e.message ?: "Failed to disable Telegram"))
         }
     }
 

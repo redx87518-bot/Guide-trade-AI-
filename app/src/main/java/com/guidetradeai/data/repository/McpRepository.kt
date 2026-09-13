@@ -1,5 +1,7 @@
 package com.guidetradeai.data.repository
 
+import com.guidetradeai.util.ErrorSanitizer
+
 import com.guidetradeai.data.remote.SupabaseClient
 import com.guidetradeai.domain.Result
 import io.ktor.client.statement.bodyAsText
@@ -30,7 +32,7 @@ class McpRepository(private val supabase: SupabaseClient = SupabaseClient) {
             val items = parseCatalog(data)
             Result.Success(items)
         } catch (e: Exception) {
-            Result.Error(e.message ?: "Failed to load MCP catalog")
+            Result.Error(ErrorSanitizer.userFriendly(e.message ?: "Failed to load MCP catalog"))
         }
     }
 
@@ -44,7 +46,7 @@ class McpRepository(private val supabase: SupabaseClient = SupabaseClient) {
             val items = parseCatalog(data)
             Result.Success(items)
         } catch (e: Exception) {
-            Result.Error(e.message ?: "Failed to load connections")
+            Result.Error(ErrorSanitizer.userFriendly(e.message ?: "Failed to load connections"))
         }
     }
 

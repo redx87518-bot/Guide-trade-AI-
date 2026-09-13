@@ -1,5 +1,7 @@
 package com.guidetradeai.data.repository
 
+import com.guidetradeai.util.ErrorSanitizer
+
 import com.guidetradeai.data.remote.SupabaseClient
 import com.guidetradeai.data.remote.ChatMessageData
 import com.guidetradeai.data.remote.ChatSessionData
@@ -12,7 +14,7 @@ class ChatRepository(private val supabase: SupabaseClient = SupabaseClient) {
             val result = supabase.postgrest.from("chat_sessions").select {}.decodeList<ChatSessionData>()
             Result.Success(result)
         } catch (e: Exception) {
-            Result.Error(e.message ?: "Failed to load sessions")
+            Result.Error(ErrorSanitizer.userFriendly(e.message ?: "Failed to load sessions"))
         }
     }
 
@@ -25,7 +27,7 @@ class ChatRepository(private val supabase: SupabaseClient = SupabaseClient) {
             })
             Result.Success(ChatSessionData(id = id, title = title))
         } catch (e: Exception) {
-            Result.Error(e.message ?: "Failed to create session")
+            Result.Error(ErrorSanitizer.userFriendly(e.message ?: "Failed to create session"))
         }
     }
 
@@ -34,7 +36,7 @@ class ChatRepository(private val supabase: SupabaseClient = SupabaseClient) {
             supabase.postgrest.from("chat_sessions").delete { filter { eq("id", sessionId) } }
             Result.Success(Unit)
         } catch (e: Exception) {
-            Result.Error(e.message ?: "Failed to delete session")
+            Result.Error(ErrorSanitizer.userFriendly(e.message ?: "Failed to delete session"))
         }
     }
 
@@ -43,7 +45,7 @@ class ChatRepository(private val supabase: SupabaseClient = SupabaseClient) {
             val result = supabase.postgrest.from("chat_messages").select { filter { eq("session_id", sessionId) } }.decodeList<ChatMessageData>()
             Result.Success(result)
         } catch (e: Exception) {
-            Result.Error(e.message ?: "Failed to load messages")
+            Result.Error(ErrorSanitizer.userFriendly(e.message ?: "Failed to load messages"))
         }
     }
 
@@ -52,7 +54,7 @@ class ChatRepository(private val supabase: SupabaseClient = SupabaseClient) {
             supabase.postgrest.from("chat_messages").insert(message)
             Result.Success(message)
         } catch (e: Exception) {
-            Result.Error(e.message ?: "Failed to save message")
+            Result.Error(ErrorSanitizer.userFriendly(e.message ?: "Failed to save message"))
         }
     }
 }

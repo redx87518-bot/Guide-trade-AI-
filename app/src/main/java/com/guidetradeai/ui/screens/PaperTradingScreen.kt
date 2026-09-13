@@ -57,6 +57,7 @@ fun PaperTradingScreen(navController: NavHostController) {
                 )
             }
             is com.guidetradeai.viewmodel.PaperTradingUiState.Success -> {
+                val account = uiState.account
                 val positions = uiState.positions
                 val orders = uiState.orders
                 val trades = uiState.trades
@@ -66,11 +67,11 @@ fun PaperTradingScreen(navController: NavHostController) {
                 ) {
                     Column(modifier = Modifier.weight(1f)) {
                         Text("Balance", fontSize = 12.sp, color = androidx.compose.material3.MaterialTheme.colorScheme.onSurfaceVariant)
-                        Text("$100,000.00", fontWeight = FontWeight.Bold, fontSize = 18.sp, color = androidx.compose.material3.MaterialTheme.colorScheme.onBackground)
+                        Text("$${String.format("%.2f", account.balance)}", fontWeight = FontWeight.Bold, fontSize = 18.sp, color = androidx.compose.material3.MaterialTheme.colorScheme.onBackground)
                     }
                     Column(modifier = Modifier.weight(1f)) {
                         Text("Cash", fontSize = 12.sp, color = androidx.compose.material3.MaterialTheme.colorScheme.onSurfaceVariant)
-                        Text("$100,000.00", fontWeight = FontWeight.Bold, fontSize = 18.sp, color = androidx.compose.material3.MaterialTheme.colorScheme.onBackground)
+                        Text("$${String.format("%.2f", account.buyingPower)}", fontWeight = FontWeight.Bold, fontSize = 18.sp, color = androidx.compose.material3.MaterialTheme.colorScheme.onBackground)
                     }
                 }
 
@@ -85,7 +86,8 @@ fun PaperTradingScreen(navController: NavHostController) {
                     }
                     Column(modifier = Modifier.weight(1f)) {
                         Text("Today's P&L", fontSize = 12.sp, color = androidx.compose.material3.MaterialTheme.colorScheme.onSurfaceVariant)
-                        Text("$0.00", fontWeight = FontWeight.Bold, fontSize = 18.sp, color = androidx.compose.material3.MaterialTheme.colorScheme.onBackground)
+                        val totalPnl = positions.sumOf { it.unrealizedPnl }
+                        Text("$${String.format("%.2f", totalPnl)}", fontWeight = FontWeight.Bold, fontSize = 18.sp, color = androidx.compose.material3.MaterialTheme.colorScheme.onBackground)
                     }
                 }
 

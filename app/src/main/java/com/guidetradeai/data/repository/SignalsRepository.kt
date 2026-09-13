@@ -1,5 +1,7 @@
 package com.guidetradeai.data.repository
 
+import com.guidetradeai.util.ErrorSanitizer
+
 import com.guidetradeai.data.remote.SupabaseClient
 import com.guidetradeai.domain.Result
 import com.guidetradeai.domain.model.AnalysisRequest
@@ -20,6 +22,7 @@ class SignalsRepository(private val supabase: SupabaseClient = SupabaseClient) {
     suspend fun getSignals(filter: SignalFilter): Result<List<Signal>> {
         return try {
             val body = JsonObject(buildMap {
+                put("action", JsonPrimitive("signals"))
                 filter.market?.let { put("market", JsonPrimitive(it)) }
                 filter.timeframe?.let { put("timeframe", JsonPrimitive(it)) }
                 filter.direction?.let { put("direction", JsonPrimitive(it)) }
@@ -30,7 +33,7 @@ class SignalsRepository(private val supabase: SupabaseClient = SupabaseClient) {
             val signals = parseSignals(data)
             Result.Success(signals)
         } catch (e: Exception) {
-            Result.Error(e.message ?: "Failed to load signals")
+            Result.Error(ErrorSanitizer.userFriendly(e.message ?: "Failed to load signals"))
         }
     }
 
@@ -47,26 +50,26 @@ class SignalsRepository(private val supabase: SupabaseClient = SupabaseClient) {
             val signal = parseSignalFromJson(data)
             Result.Success(AnalysisResult(signal = signal, content = data))
         } catch (e: Exception) {
-            Result.Error(e.message ?: "Analysis failed")
+            Result.Error(ErrorSanitizer.userFriendly(e.message ?: "Analysis failed"))
         }
     }
 
     suspend fun getWatchlist(): Result<List<WatchlistItem>> {
         return try {
-            val userId = supabase.auth.currentUserOrNull()?.id ?: return Result.Error("Not authenticated")
+            val userId = supabase.auth.currentUserOrNull()?.id ?: return Result.Error(ErrorSanitizer.userFriendly("Not authenticated"))
             val result = supabase.postgrest
                 .from("watchlist")
                 .select {}
                 .decodeList<WatchlistItem>()
             Result.Success(result)
         } catch (e: Exception) {
-            Result.Error(e.message ?: "Failed to load watchlist")
+            Result.Error(ErrorSanitizer.userFriendly(e.message ?: "Failed to load watchlist"))
         }
     }
 
     suspend fun addToWatchlist(symbol: String, market: String, timeframe: String): Result<Unit> {
         return try {
-            val userId = supabase.auth.currentUserOrNull()?.id ?: return Result.Error("Not authenticated")
+            val userId = supabase.auth.currentUserOrNull()?.id ?: return Result.Error(ErrorSanitizer.userFriendly("Not authenticated"))
             val item = WatchlistItem(
                 id = userId + "_" + symbol + "_" + market + "_" + timeframe,
                 userId = userId,
@@ -79,7 +82,7 @@ class SignalsRepository(private val supabase: SupabaseClient = SupabaseClient) {
                 .insert(item)
             Result.Success(Unit)
         } catch (e: Exception) {
-            Result.Error(e.message ?: "Failed to add to watchlist")
+            Result.Error(ErrorSanitizer.userFriendly(e.message ?: "Failed to add to watchlist"))
         }
     }
 
@@ -90,7 +93,7 @@ class SignalsRepository(private val supabase: SupabaseClient = SupabaseClient) {
                 .delete {}
             Result.Success(Unit)
         } catch (e: Exception) {
-            Result.Error(e.message ?: "Failed to remove from watchlist")
+            Result.Error(ErrorSanitizer.userFriendly(e.message ?: "Failed to remove from watchlist"))
         }
     }
 

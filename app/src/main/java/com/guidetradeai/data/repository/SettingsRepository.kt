@@ -1,5 +1,7 @@
 package com.guidetradeai.data.repository
 
+import com.guidetradeai.util.ErrorSanitizer
+
 import com.guidetradeai.data.remote.SupabaseClient
 import com.guidetradeai.domain.Result
 import com.guidetradeai.domain.model.UserSettings
@@ -10,7 +12,7 @@ class SettingsRepository(private val supabase: SupabaseClient = SupabaseClient) 
         return try {
             Result.Success(UserSettings())
         } catch (e: Exception) {
-            Result.Error(e.message ?: "Failed to load settings")
+            Result.Error(ErrorSanitizer.userFriendly(e.message ?: "Failed to load settings"))
         }
     }
 
@@ -18,7 +20,7 @@ class SettingsRepository(private val supabase: SupabaseClient = SupabaseClient) 
         return try {
             Result.Success(Unit)
         } catch (e: Exception) {
-            Result.Error(e.message ?: "Failed to update settings")
+            Result.Error(ErrorSanitizer.userFriendly(e.message ?: "Failed to update settings"))
         }
     }
 
@@ -26,7 +28,7 @@ class SettingsRepository(private val supabase: SupabaseClient = SupabaseClient) 
         return try {
             Result.Success(Unit)
         } catch (e: Exception) {
-            Result.Error(e.message ?: "Failed to update settings")
+            Result.Error(ErrorSanitizer.userFriendly(e.message ?: "Failed to update settings"))
         }
     }
 
@@ -34,7 +36,7 @@ class SettingsRepository(private val supabase: SupabaseClient = SupabaseClient) 
         return try {
             Result.Success(Unit)
         } catch (e: Exception) {
-            Result.Error(e.message ?: "Failed to update theme")
+            Result.Error(ErrorSanitizer.userFriendly(e.message ?: "Failed to update theme"))
         }
     }
 }

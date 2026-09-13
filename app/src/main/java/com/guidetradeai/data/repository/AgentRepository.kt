@@ -1,5 +1,7 @@
 package com.guidetradeai.data.repository
 
+import com.guidetradeai.util.ErrorSanitizer
+
 import com.guidetradeai.data.remote.SupabaseClient
 import com.guidetradeai.domain.Result
 import com.guidetradeai.domain.model.AgentRequest
@@ -25,7 +27,7 @@ class AgentRepository(private val supabase: SupabaseClient = SupabaseClient) {
             val parsed = parseAgentResponse(data)
             Result.Success(parsed)
         } catch (e: Exception) {
-            Result.Error(e.message ?: "Agent request failed")
+            Result.Error(ErrorSanitizer.userFriendly(e.message ?: "Agent request failed"))
         }
     }
 

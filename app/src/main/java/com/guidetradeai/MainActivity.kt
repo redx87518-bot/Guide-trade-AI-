@@ -23,13 +23,15 @@ import com.guidetradeai.ui.navigation.GuideTradeNavGraph
 import com.guidetradeai.ui.navigation.NavRoutes
 import com.guidetradeai.ui.theme.GuideTradeTheme
 import com.guidetradeai.viewmodel.AuthViewModel
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Surface
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
             GuideTradeTheme {
-                androidx.compose.material3.MaterialTheme {
+                Surface(modifier = Modifier.fillMaxSize()) {
                     val navController = rememberNavController()
                     val authViewModel: AuthViewModel = viewModel()
                     val navBackStackEntry by navController.currentBackStackEntryAsState()
@@ -45,25 +47,29 @@ class MainActivity : ComponentActivity() {
                     val bottomNavRoutes: List<String> = bottomNavItems.map { it.route }
                     val showBottomNav = currentRoute in bottomNavRoutes
 
-                    androidx.compose.foundation.layout.Box(modifier = Modifier.fillMaxSize()) {
+                    Scaffold(
+                        bottomBar = {
+                            if (showBottomNav) {
+                                GuideTradeBottomNav(
+                                    items = bottomNavItems,
+                                    currentRoute = currentRoute,
+                                    onItemClick = { route ->
+                                        if (route == currentRoute) return@GuideTradeBottomNav
+                                        navController.navigate(route) {
+                                            popUpTo(NavRoutes.Home.route) { inclusive = false }
+                                            launchSingleTop = true
+                                            restoreState = true
+                                        }
+                                    },
+                                )
+                            }
+                        },
+                    ) { innerPadding ->
                         GuideTradeNavGraph(
                             navController = navController,
                             authViewModel = authViewModel,
+                            modifier = Modifier.fillMaxSize(),
                         )
-                        if (showBottomNav) {
-                            GuideTradeBottomNav(
-                                items = bottomNavItems,
-                                currentRoute = currentRoute,
-                                onItemClick = { route ->
-                                    if (route == currentRoute) return@GuideTradeBottomNav
-                                    navController.navigate(route) {
-                                        popUpTo(NavRoutes.Home.route) { inclusive = false }
-                                        launchSingleTop = true
-                                        restoreState = true
-                                    }
-                                },
-                            )
-                        }
                     }
                 }
             }

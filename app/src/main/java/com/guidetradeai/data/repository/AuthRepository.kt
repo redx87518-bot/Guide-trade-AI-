@@ -1,5 +1,7 @@
 package com.guidetradeai.data.repository
 
+import com.guidetradeai.util.ErrorSanitizer
+
 import com.guidetradeai.data.remote.SupabaseClient
 import com.guidetradeai.domain.Result
 import io.github.jan.supabase.gotrue.providers.builtin.Email
@@ -19,7 +21,7 @@ class AuthRepository(private val supabase: SupabaseClient = SupabaseClient) {
             }
             Result.Success(Unit)
         } catch (e: Exception) {
-            Result.Error(e.message ?: "Sign up failed")
+            Result.Error(ErrorSanitizer.userFriendly(e.message ?: "Sign up failed"))
         }
     }
 
@@ -31,7 +33,7 @@ class AuthRepository(private val supabase: SupabaseClient = SupabaseClient) {
             }
             Result.Success(Unit)
         } catch (e: Exception) {
-            Result.Error(e.message ?: "Sign in failed")
+            Result.Error(ErrorSanitizer.userFriendly(e.message ?: "Sign in failed"))
         }
     }
 
@@ -47,7 +49,7 @@ class AuthRepository(private val supabase: SupabaseClient = SupabaseClient) {
             supabase.auth.resetPasswordForEmail(email)
             Result.Success(Unit)
         } catch (e: Exception) {
-            Result.Error(e.message ?: "Password reset failed")
+            Result.Error(ErrorSanitizer.userFriendly(e.message ?: "Password reset failed"))
         }
     }
 }

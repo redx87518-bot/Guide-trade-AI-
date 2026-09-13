@@ -35,10 +35,12 @@ fun GuideTradeNavGraph(
     navController: NavHostController,
     authViewModel: AuthViewModel,
     startDestination: String = NavRoutes.Splash.route,
+    modifier: Modifier = Modifier.fillMaxSize(),
 ) {
     NavHost(
         navController = navController,
         startDestination = startDestination,
+        modifier = modifier,
     ) {
         composable(NavRoutes.Splash.route) {
             SplashScreen(navController = navController, authViewModel = authViewModel)

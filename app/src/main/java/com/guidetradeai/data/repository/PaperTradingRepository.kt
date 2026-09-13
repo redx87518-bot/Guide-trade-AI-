@@ -1,19 +1,31 @@
 package com.guidetradeai.data.repository
 
 import com.guidetradeai.data.remote.SupabaseClient
+import com.guidetradeai.data.remote.PaperAccountData
 import com.guidetradeai.data.remote.PaperOrderData
 import com.guidetradeai.data.remote.PaperPositionData
 import com.guidetradeai.data.remote.PaperTradeData
 import com.guidetradeai.domain.Result
+import com.guidetradeai.util.ErrorSanitizer
 
 class PaperTradingRepository(private val supabase: SupabaseClient = SupabaseClient) {
+
+    suspend fun getAccount(): Result<PaperAccountData> {
+        return try {
+            val result = supabase.postgrest.from("paper_accounts").select {}.decodeList<PaperAccountData>()
+            val account = result.firstOrNull() ?: PaperAccountData()
+            Result.Success(account)
+        } catch (e: Exception) {
+            Result.Error(ErrorSanitizer.userFriendly(e.message ?: "Failed to load account"))
+        }
+    }
 
     suspend fun getPositions(): Result<List<PaperPositionData>> {
         return try {
             val result = supabase.postgrest.from("paper_positions").select {}.decodeList<PaperPositionData>()
             Result.Success(result)
         } catch (e: Exception) {
-            Result.Error(e.message ?: "Failed to load positions")
+            Result.Error(ErrorSanitizer.userFriendly(e.message ?: "Failed to load positions"))
         }
     }
 
@@ -22,7 +34,7 @@ class PaperTradingRepository(private val supabase: SupabaseClient = SupabaseClie
             val result = supabase.postgrest.from("paper_orders").select {}.decodeList<PaperOrderData>()
             Result.Success(result)
         } catch (e: Exception) {
-            Result.Error(e.message ?: "Failed to load orders")
+            Result.Error(ErrorSanitizer.userFriendly(e.message ?: "Failed to load orders"))
         }
     }
 
@@ -31,7 +43,7 @@ class PaperTradingRepository(private val supabase: SupabaseClient = SupabaseClie
             supabase.postgrest.from("paper_orders").insert(order)
             Result.Success(order)
         } catch (e: Exception) {
-            Result.Error(e.message ?: "Failed to place order")
+            Result.Error(ErrorSanitizer.userFriendly(e.message ?: "Failed to place order"))
         }
     }
 
@@ -40,7 +52,7 @@ class PaperTradingRepository(private val supabase: SupabaseClient = SupabaseClie
             val result = supabase.postgrest.from("paper_trades").select {}.decodeList<PaperTradeData>()
             Result.Success(result)
         } catch (e: Exception) {
-            Result.Error(e.message ?: "Failed to load trades")
+            Result.Error(ErrorSanitizer.userFriendly(e.message ?: "Failed to load trades"))
         }
     }
 }
