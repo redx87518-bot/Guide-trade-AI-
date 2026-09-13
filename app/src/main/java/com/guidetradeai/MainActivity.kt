@@ -68,7 +68,7 @@ class MainActivity : ComponentActivity() {
                         GuideTradeNavGraph(
                             navController = navController,
                             authViewModel = authViewModel,
-                            modifier = Modifier.fillMaxSize(),
+                            modifier = Modifier.padding(innerPadding),
                         )
                     }
                 }
