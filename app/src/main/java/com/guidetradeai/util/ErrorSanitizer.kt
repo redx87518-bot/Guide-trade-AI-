@@ -2,13 +2,13 @@ package com.guidetradeai.util
 
 object ErrorSanitizer {
     private val sensitivePatterns = listOf(
-        Regex("(?i)authorization[\s:=]+bearer[\s]+[A-Za-z0-9_.-]+"),
-        Regex("(?i)bearer[\s]+[A-Za-z0-9_.-]+"),
-        Regex("(?i)api[_-]?key[\s:=]+[A-Za-z0-9_.-]+"),
-        Regex("(?i)token[\s:=]+[A-Za-z0-9_.-]+"),
-        Regex("(?i)secret[\s:=]+[A-Za-z0-9_.-]+"),
-        Regex("(?i)password[\s:=]+[A-Za-z0-9_.-]+"),
-        Regex("eyJ[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+"),
+        Regex("""(?i)authorization[\s:=]+bearer[\s]+[A-Za-z0-9_.-]+"""),
+        Regex("""(?i)bearer[\s]+[A-Za-z0-9_.-]+"""),
+        Regex("""(?i)api[_-]?key[\s:=]+[A-Za-z0-9_.-]+"""),
+        Regex("""(?i)token[\s:=]+[A-Za-z0-9_.-]+"""),
+        Regex("""(?i)secret[\s:=]+[A-Za-z0-9_.-]+"""),
+        Regex("""(?i)password[\s:=]+[A-Za-z0-9_.-]+"""),
+        Regex("""eyJ[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+"""),
     )
 
     fun sanitize(raw: String?): String {
