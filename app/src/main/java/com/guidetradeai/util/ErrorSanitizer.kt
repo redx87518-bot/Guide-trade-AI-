@@ -15,8 +15,10 @@ object ErrorSanitizer {
         if (raw == null) return "Unknown error"
         var sanitized = raw
         sensitivePatterns.forEach { regex ->
-            sanitized = sanitized.replace(regex, "[REDACTED]")
+            sanitized = sanitized!!.replace(regex, "[REDACTED]")
         }
+        return sanitized
+    }
         return sanitized
     }
 
