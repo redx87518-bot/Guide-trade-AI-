@@ -15,13 +15,13 @@ object ErrorSanitizer {
         if (raw == null) return "Unknown error"
         var sanitized = raw
         sensitivePatterns.forEach { regex ->
-            sanitized = regex.replace(sanitized, "[REDACTED]")
+            sanitized = sanitized.replace(regex, "[REDACTED]")
         }
         return sanitized
     }
 
     fun userFriendly(raw: String?): String {
-        val sanitized = sanitize(raw)
+        val sanitized = sanitize(raw ?: return "Unknown error")
         return when {
             sanitized.contains("Failed to load signals") -> "Unable to load signals. Pull to refresh."
             sanitized.contains("Failed to load dashboard") -> "Unable to load paper trading dashboard."
