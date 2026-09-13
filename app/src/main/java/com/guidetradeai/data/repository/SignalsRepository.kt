@@ -101,46 +101,12 @@ class SignalsRepository(private val supabase: SupabaseClient = SupabaseClient) {
         if (json == null) return emptyList()
         return try {
             val elements = Json.parseToJsonElement(json)
-            if (elements is JsonObject) {
-                val dataArray = elements["data"]
-                if (dataArray is JsonObject) {
-                    val signalsArray = dataArray["signals"]
-                    if (signalsArray is kotlinx.serialization.json.JsonArray) {
-                        signalsArray.map { elem ->
-                            val obj = elem as JsonObject
-                            Signal(
-                                id = obj["id"]?.jsonPrimitive?.contentOrNull ?: "",
-                                symbol = obj["symbol"]?.jsonPrimitive?.contentOrNull ?: "",
-                                name = obj["name"]?.jsonPrimitive?.contentOrNull ?: "",
-                                market = obj["market"]?.jsonPrimitive?.contentOrNull ?: "crypto",
-                                timeframe = obj["timeframe"]?.jsonPrimitive?.contentOrNull ?: "1H",
-                                direction = obj["direction"]?.jsonPrimitive?.contentOrNull ?: obj["signal"]?.jsonPrimitive?.contentOrNull ?: "neutral",
-                                strength = obj["strength"]?.jsonPrimitive?.contentOrNull?.toDoubleOrNull() ?: obj["score"]?.jsonPrimitive?.contentOrNull?.toDoubleOrNull() ?: 0.0,
-                                entry = obj["entry"]?.jsonPrimitive?.contentOrNull?.toDoubleOrNull(),
-                                invalidation = obj["invalidation"]?.jsonPrimitive?.contentOrNull?.toDoubleOrNull(),
-                                target1 = obj["target1"]?.jsonPrimitive?.contentOrNull?.toDoubleOrNull(),
-                                target2 = obj["target2"]?.jsonPrimitive?.contentOrNull?.toDoubleOrNull(),
-                                target3 = obj["target3"]?.jsonPrimitive?.contentOrNull?.toDoubleOrNull(),
-                                currentPrice = (obj["currentPrice"]?.jsonPrimitive?.contentOrNull ?: obj["price"]?.jsonPrimitive?.contentOrNull)?.toDoubleOrNull(),
-                                summary = obj["summary"]?.jsonPrimitive?.contentOrNull,
-                                analysis = obj["analysis"]?.jsonPrimitive?.contentOrNull,
-                                risk = obj["risk"]?.jsonPrimitive?.contentOrNull,
-                                marketContext = (obj["marketContext"]?.jsonPrimitive?.contentOrNull ?: obj["market_context"]?.jsonPrimitive?.contentOrNull),
-                                technicalInfo = (obj["technicalInfo"]?.jsonPrimitive?.contentOrNull ?: obj["technical_info"]?.jsonPrimitive?.contentOrNull),
-                                why = obj["why"]?.jsonPrimitive?.contentOrNull,
-                                source = obj["source"]?.jsonPrimitive?.contentOrNull ?: "NORTH7",
-                                timestamp = obj["timestamp"]?.jsonPrimitive?.contentOrNull ?: "",
-                                updatedAt = obj["updatedAt"]?.jsonPrimitive?.contentOrNull ?: "",
-                            )
-                        }
-                    } else {
-                        emptyList()
-                    }
-                } else {
-                    emptyList()
-                }
-            } else if (elements is kotlinx.serialization.json.JsonArray) {
-                elements.map { elem ->
+            val signalsArray = when {
+                elements is JsonObject && elements["data"] is JsonObject -> (elements["data"] as JsonObject)["signals"]
+                else -> elements["signals"] ?: elements
+            }
+            when {
+                signalsArray is kotlinx.serialization.json.JsonArray -> signalsArray.map { elem ->
                     val obj = elem as JsonObject
                     Signal(
                         id = obj["id"]?.jsonPrimitive?.contentOrNull ?: "",
@@ -167,8 +133,8 @@ class SignalsRepository(private val supabase: SupabaseClient = SupabaseClient) {
                         updatedAt = obj["updatedAt"]?.jsonPrimitive?.contentOrNull ?: "",
                     )
                 }
-            } else {
-                emptyList()
+                signalsArray is kotlinx.serialization.json.JsonArray && signalsArray.isEmpty() -> emptyList()
+                else -> emptyList()
             }
         } catch (e: Exception) {
             emptyList()

@@ -100,6 +100,7 @@ data class AgentResponse(
     val tasks: List<String> = emptyList(),
     val marketData: MarketData? = null,
     val timestamp: String? = null,
+    val signals: List<Signal> = emptyList(),
 )
 
 data class PaperOrderRequest(

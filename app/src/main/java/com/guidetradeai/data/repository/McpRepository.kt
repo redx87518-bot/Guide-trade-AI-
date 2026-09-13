@@ -54,25 +54,26 @@ class McpRepository(private val supabase: SupabaseClient = SupabaseClient) {
         if (json == null) return emptyList()
         return try {
             val elements = Json.parseToJsonElement(json)
-            if (elements is JsonObject) {
-                val dataArray = elements["data"]
-                if (dataArray is JsonArray) {
-                    dataArray.map { elem ->
-                        val obj = elem as JsonObject
-                        McpCatalogItem(
-                            id = obj["id"]?.jsonPrimitive?.contentOrNull ?: "",
-                            name = obj["name"]?.jsonPrimitive?.contentOrNull ?: "",
-                            description = obj["description"]?.jsonPrimitive?.contentOrNull ?: "",
-                            category = obj["category"]?.jsonPrimitive?.contentOrNull ?: "",
-                            permission = obj["permission"]?.jsonPrimitive?.contentOrNull ?: "Read Only",
-                            icon = obj["icon"]?.jsonPrimitive?.contentOrNull ?: "ShowChart",
-                        )
-                    }
-                } else {
-                    emptyList()
+            val itemsArray = when {
+                elements is JsonObject && elements["data"] is JsonArray -> elements["data"] as JsonArray
+                elements is JsonObject && elements["catalog"] is JsonArray -> elements["catalog"] as JsonArray
+                elements is JsonObject && elements["connectors"] is JsonArray -> elements["connectors"] as JsonArray
+                elements is JsonArray -> elements
+                else -> null
+            }
+            when {
+                itemsArray != null -> itemsArray.map { elem ->
+                    val obj = elem as JsonObject
+                    McpCatalogItem(
+                        id = obj["id"]?.jsonPrimitive?.contentOrNull ?: "",
+                        name = obj["name"]?.jsonPrimitive?.contentOrNull ?: "",
+                        description = obj["description"]?.jsonPrimitive?.contentOrNull ?: "",
+                        category = obj["category"]?.jsonPrimitive?.contentOrNull ?: "",
+                        permission = obj["permission"]?.jsonPrimitive?.contentOrNull ?: "Read Only",
+                        icon = obj["icon"]?.jsonPrimitive?.contentOrNull ?: "ShowChart",
+                    )
                 }
-            } else {
-                emptyList()
+                else -> emptyList()
             }
         } catch (e: Exception) {
             emptyList()

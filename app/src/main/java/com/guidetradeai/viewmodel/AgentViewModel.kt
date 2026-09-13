@@ -52,9 +52,18 @@ class AgentViewModel(
                     } else {
                         AgentUiState.Error("No response from agent.")
                     }
+                    val displayContent = when {
+                        !response?.signals.isNullOrEmpty() -> {
+                            val signal = response!!.signals.first()
+                            "${signal.symbol} • ${signal.timeframe}\n${signal.direction.uppercase()}\n${signal.summary ?: signal.analysis ?: "Signal analysis complete"}"
+                        }
+                        !response?.content.isNullOrBlank() -> response!!.content!!
+                        !response?.summary.isNullOrBlank() -> response!!.summary!!
+                        else -> "Analysis complete"
+                    }
                     val agentMessage = ChatMessage(
                         role = "agent",
-                        content = response?.content ?: "Analysis complete",
+                        content = displayContent,
                         summary = response?.summary,
                         timestamp = response?.timestamp,
                     )
@@ -64,7 +73,7 @@ class AgentViewModel(
                     _uiState.value = AgentUiState.Error(result.message)
                     val errorMessage = ChatMessage(
                         role = "agent",
-                        content = "Error: ${result.message}",
+                        content = result.message,
                     )
                     _messages.value = _messages.value + errorMessage
                 }
