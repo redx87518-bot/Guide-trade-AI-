@@ -13,7 +13,7 @@ object ErrorSanitizer {
 
     fun sanitize(raw: String?): String {
         if (raw == null) return "Unknown error"
-        var sanitized = raw
+        var sanitized = raw!!
         sensitivePatterns.forEach { regex ->
             sanitized = sanitized.replace(regex, "[REDACTED]")
         }
